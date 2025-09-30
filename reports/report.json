@@ -1,0 +1,173 @@
+{
+  "metadata": {
+    "generated_at": "2025-08-12T18:15:57.493207",
+    "tool": "PyPrestaScan",
+    "version": "1.0.0",
+    "total_pages": 1,
+    "total_issues": 9,
+    "total_duplicates": 0,
+    "images_with_alt_issues": 4
+  },
+  "statistics": {
+    "status": {
+      "2xx": 1
+    },
+    "issues": {
+      "CRITICAL": 2,
+      "INFO": 5,
+      "WARNING": 2
+    },
+    "alt_text": {
+      "MISSING": 4,
+      "OK": 10
+    },
+    "general": {
+      "total_pages": 1,
+      "product_pages": 0,
+      "category_pages": 0,
+      "cms_pages": 0,
+      "avg_score": 63.0
+    },
+    "queue": {
+      "pending": 0,
+      "processing": 0,
+      "completed": 0,
+      "failed": 1,
+      "total": 1
+    }
+  },
+  "pages": [
+    {
+      "id": 1,
+      "url": "https://collezionecasa.it/",
+      "normalized_url": "https://collezionecasa.it/",
+      "status_code": 200,
+      "ttfb_ms": 452,
+      "content_type": "text/html; charset=utf-8",
+      "content_length": 75582,
+      "title": "Collezione Casa | Biancheria e Arredo Casa di Alta Qualità",
+      "title_length": 58,
+      "meta_description": "Collezione Casa - Negozio online di Biancheria per la Casa e Arredo Casa. Selezioniamo i migliori Marchi di Biancheria sul Mercato a prezzi vantaggiosi.",
+      "meta_description_length": 152,
+      "meta_robots": "",
+      "x_robots_tag": "",
+      "canonical": "",
+      "h1_count": 0,
+      "headings_map": "{\"h2\": 3, \"h3\": 3, \"h4\": 1}",
+      "internal_links_count": 52,
+      "external_links_count": 9,
+      "nofollow_links_count": 7,
+      "hreflang_map": "{}",
+      "og_title": "",
+      "og_description": "",
+      "og_image": "",
+      "jsonld_types": "[]",
+      "images_total": 14,
+      "images_missing_alt": 4,
+      "images_empty_alt": 0,
+      "images_generic_alt": 0,
+      "is_product": 0,
+      "is_category": 0,
+      "is_cms": 0,
+      "is_faceted_filter": 0,
+      "is_cart_or_checkout": 1,
+      "is_account": 0,
+      "content_hash": "53d98d3fc6065d8483e59bbf8b50e4f8",
+      "score": 63.0,
+      "crawled_at": "2025-08-12 18:15:57.367897",
+      "depth": 0
+    }
+  ],
+  "images_issues": [
+    {
+      "page_url": "https://collezionecasa.it/",
+      "image_src": "https://collezionecasa.it/modules/tvcmsmultibanner1/views/img/_slide_laterale_4_posteer.png",
+      "alt_text": null,
+      "alt_status": "MISSING"
+    },
+    {
+      "page_url": "https://collezionecasa.it/",
+      "image_src": "https://collezionecasa.it/modules/tvcmsmultibanner1/views/img/_slider_sotto_quadri_tondi_4.png",
+      "alt_text": null,
+      "alt_status": "MISSING"
+    },
+    {
+      "page_url": "https://collezionecasa.it/",
+      "image_src": "https://collezionecasa.it/modules/tvcmsmultibanner1/views/img/slide_laterale_ombrelloni.jpg",
+      "alt_text": null,
+      "alt_status": "MISSING"
+    },
+    {
+      "page_url": "https://collezionecasa.it/",
+      "image_src": "https://collezionecasa.it/modules/tvcmsmultibanner1/views/img/slider_sotto_accappatoio_3.png",
+      "alt_text": null,
+      "alt_status": "MISSING"
+    }
+  ],
+  "issues": [
+    {
+      "page_url": "https://collezionecasa.it/",
+      "severity": "WARNING",
+      "code": "CANONICAL_MISSING",
+      "message": "Pagina senza canonical URL",
+      "meta": "{\"field\": \"canonical\", \"value\": \"\"}"
+    },
+    {
+      "page_url": "https://collezionecasa.it/",
+      "severity": "WARNING",
+      "code": "IMAGES_MISSING_ALT",
+      "message": "Immagini senza attributo ALT",
+      "meta": "{\"field\": \"images_alt\", \"missing\": 4, \"empty\": 0, \"total\": 14}"
+    },
+    {
+      "page_url": "https://collezionecasa.it/",
+      "severity": "INFO",
+      "code": "IMAGES_NO_LAZY_LOADING",
+      "message": "Immagini senza attributo loading=\"lazy\"",
+      "meta": "{\"field\": \"images_lazy\", \"no_lazy\": 14, \"total\": 14}"
+    },
+    {
+      "page_url": "https://collezionecasa.it/",
+      "severity": "INFO",
+      "code": "HEADINGS_HIERARCHY",
+      "message": "Salti nella gerarchia dei heading",
+      "meta": "{\"field\": \"headings_hierarchy\", \"issues\": [\"missing_h1\", \"skip_h1_to_h2\"]}"
+    },
+    {
+      "page_url": "https://collezionecasa.it/",
+      "severity": "INFO",
+      "code": "OG_IMAGE_MISSING",
+      "message": "Pagina senza og:image",
+      "meta": "{\"field\": \"og_image\", \"value\": \"\"}"
+    },
+    {
+      "page_url": "https://collezionecasa.it/",
+      "severity": "INFO",
+      "code": "OG_DESCRIPTION_MISSING",
+      "message": "Pagina senza og:description",
+      "meta": "{\"field\": \"og_description\", \"value\": \"\"}"
+    },
+    {
+      "page_url": "https://collezionecasa.it/",
+      "severity": "INFO",
+      "code": "OG_TITLE_MISSING",
+      "message": "Pagina senza og:title",
+      "meta": "{\"field\": \"og_title\", \"value\": \"\"}"
+    },
+    {
+      "page_url": "https://collezionecasa.it/",
+      "severity": "CRITICAL",
+      "code": "CART_INDEXABLE",
+      "message": "Pagina cart/checkout senza noindex",
+      "meta": "{\"field\": \"robots\", \"page_type\": \"cart_checkout\", \"current\": \"\"}"
+    },
+    {
+      "page_url": "https://collezionecasa.it/",
+      "severity": "CRITICAL",
+      "code": "H1_MISSING",
+      "message": "La pagina non ha tag H1",
+      "meta": "{\"field\": \"h1\", \"count\": 0}"
+    }
+  ],
+  "duplicates": []
+}

@@ -1,0 +1,5 @@
+# Dipendenze GUI aggiuntive per PyPrestaScan
+PySide6>=6.6.0
+
+# Include tutte le dipendenze base
+-r requirements.txt
