@@ -1014,6 +1014,16 @@ class MainWindow(QMainWindow):
     def _start_crawl(self):
         """Avvia crawling"""
         try:
+            # Valida URL
+            url = self.url_edit.text().strip()
+            if not url:
+                QMessageBox.warning(self, "Errore", "Inserisci un URL valido")
+                return
+
+            if not url.startswith(('http://', 'https://')):
+                QMessageBox.warning(self, "Errore", "L'URL deve iniziare con http:// o https://")
+                return
+
             # Valida configurazione
             config = self._build_config()
             cli_context = self._build_cli_context()
@@ -1171,9 +1181,10 @@ class MainWindow(QMainWindow):
         # Colore per livello
         color_map = {
             "DEBUG": "#888888",
-            "INFO": "#000000", 
+            "INFO": "#00D4FF",  # Cyan chiaro per INFO
             "WARNING": "#FF8C00",
-            "ERROR": "#FF0000"
+            "ERROR": "#FF0000",
+            "SUCCESS": "#00FF00"
         }
         
         color = color_map.get(level, "#000000")
