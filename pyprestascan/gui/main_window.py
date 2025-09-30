@@ -48,10 +48,16 @@ class CrawlerWorker(QObject):
         self._pages_crawled = 0
         self._issues_found = 0
         self._images_no_alt = 0
+        self._start_time = None
+        self._last_crawled_urls = set()  # Per tracking URL già mostrate
 
     def run_crawl(self):
         """Esegue il crawling"""
         try:
+            # Registra tempo di inizio
+            import time
+            self._start_time = time.time()
+
             # Crea nuovo event loop per questo thread
             loop = asyncio.new_event_loop()
             asyncio.set_event_loop(loop)
@@ -145,6 +151,7 @@ class CrawlerWorker(QObject):
         """Esegue aggiornamento progress leggendo dal DB"""
         try:
             import sqlite3
+            import time
             db_path = self.scanner.db.db_path
 
             with sqlite3.connect(db_path) as conn:
@@ -166,6 +173,41 @@ class CrawlerWorker(QObject):
                 result = cursor.fetchone()[0]
                 images_no_alt = result if result else 0
 
+                # Recupera URL appena crawlate (ultime 5 non ancora mostrate)
+                cursor.execute("""
+                    SELECT url, status_code
+                    FROM pages
+                    WHERE status_code IS NOT NULL
+                    ORDER BY crawled_at DESC
+                    LIMIT 5
+                """)
+                recent_pages = cursor.fetchall()
+
+            # Log URL crawlate (solo quelle nuove)
+            for url, status_code in recent_pages:
+                if url not in self._last_crawled_urls:
+                    self._last_crawled_urls.add(url)
+                    # Emetti log per mostrare URL crawlata
+                    status_emoji = "✅" if 200 <= status_code < 300 else "⚠️"
+                    self.log_message.emit("INFO", f"{status_emoji} [{status_code}] {url}")
+
+            # Calcola tempo trascorso e ETA
+            elapsed_time = 0
+            eta_str = "--"
+            if self._start_time:
+                elapsed_time = time.time() - self._start_time
+
+                # Calcola velocità e tempo stimato
+                if pages_crawled > 0 and elapsed_time > 0:
+                    pages_per_sec = pages_crawled / elapsed_time
+                    remaining_pages = self.config.max_urls - pages_crawled
+
+                    if remaining_pages > 0 and pages_per_sec > 0:
+                        eta_seconds = remaining_pages / pages_per_sec
+                        eta_minutes = int(eta_seconds / 60)
+                        eta_secs = int(eta_seconds % 60)
+                        eta_str = f"{eta_minutes}m {eta_secs}s"
+
             # Emetti segnali sempre (non solo se cambiato)
             self._pages_crawled = pages_crawled
             self.progress_updated.emit(
@@ -174,12 +216,14 @@ class CrawlerWorker(QObject):
                 f"Scansionate {pages_crawled}/{self.config.max_urls} pagine"
             )
 
-            # Aggiorna statistiche
+            # Aggiorna statistiche (include elapsed_time e eta)
             self.stats_updated.emit({
                 'pages_crawled': pages_crawled,
                 'pages_failed': 0,
                 'total_issues': issues_found,
-                'images_no_alt': images_no_alt
+                'images_no_alt': images_no_alt,
+                'elapsed_time': elapsed_time,
+                'eta': eta_str
             })
 
         except Exception as e:
@@ -359,6 +403,9 @@ class MainWindow(QMainWindow):
 
         # Tab: Fixes
         self._create_fixes_tab()
+
+        # Tab: Aiuto
+        self._create_help_tab()
 
         # Status bar
         self.status_bar = QStatusBar()
@@ -549,7 +596,41 @@ class MainWindow(QMainWindow):
         url_layout.addWidget(self.prestashop_check, 2, 0, 1, 2)
         
         scroll_layout.addWidget(url_group)
-        
+
+        # Gruppo Preset Scansione
+        preset_group = QGroupBox("🎯 Modalità Scansione")
+        preset_layout = QVBoxLayout(preset_group)
+
+        preset_label = QLabel("Seleziona una modalità predefinita o personalizza i parametri sotto:")
+        preset_label.setWordWrap(True)
+        preset_layout.addWidget(preset_label)
+
+        preset_buttons_layout = QHBoxLayout()
+
+        # Bottone scansione veloce
+        self.fast_scan_btn = QPushButton("⚡ Scansione Veloce")
+        self.fast_scan_btn.setStyleSheet("QPushButton { background-color: #4CAF50; color: white; padding: 10px; font-weight: bold; }")
+        self.fast_scan_btn.setToolTip("500 pagine, 30 worker, delay 100ms - veloce ma sicuro")
+        self.fast_scan_btn.clicked.connect(self._apply_fast_preset)
+        preset_buttons_layout.addWidget(self.fast_scan_btn)
+
+        # Bottone scansione approfondita
+        self.deep_scan_btn = QPushButton("🔍 Scansione Approfondita")
+        self.deep_scan_btn.setStyleSheet("QPushButton { background-color: #2196F3; color: white; padding: 10px; font-weight: bold; }")
+        self.deep_scan_btn.setToolTip("10000 pagine, 20 worker, delay 200ms - analisi completa e rispettosa")
+        self.deep_scan_btn.clicked.connect(self._apply_deep_preset)
+        preset_buttons_layout.addWidget(self.deep_scan_btn)
+
+        # Bottone scansione solo ALT immagini
+        self.alt_scan_btn = QPushButton("🖼️ Solo ALT Immagini")
+        self.alt_scan_btn.setStyleSheet("QPushButton { background-color: #FF9800; color: white; padding: 10px; font-weight: bold; }")
+        self.alt_scan_btn.setToolTip("1000 pagine, 25 worker, delay 150ms - focus immagini")
+        self.alt_scan_btn.clicked.connect(self._apply_alt_preset)
+        preset_buttons_layout.addWidget(self.alt_scan_btn)
+
+        preset_layout.addLayout(preset_buttons_layout)
+        scroll_layout.addWidget(preset_group)
+
         # Gruppo Limiti Crawling
         limits_group = QGroupBox("⚡ Parametri Crawling")
         limits_layout = QGridLayout(limits_group)
@@ -566,15 +647,15 @@ class MainWindow(QMainWindow):
         limits_layout.addWidget(QLabel("Richieste parallele:"), 1, 0)
         self.concurrency_spin = QSpinBox()
         self.concurrency_spin.setRange(1, 100)
-        self.concurrency_spin.setValue(20)
+        self.concurrency_spin.setValue(20)  # Valore sicuro di default
         limits_layout.addWidget(self.concurrency_spin, 1, 1)
-        
+
         # Delay
         limits_layout.addWidget(QLabel("Delay tra richieste (ms):"), 2, 0)
         self.delay_spin = QSpinBox()
         self.delay_spin.setRange(0, 5000)
-        self.delay_spin.setValue(0)
-        self.delay_spin.setSingleStep(100)
+        self.delay_spin.setValue(150)  # Default sicuro: 150ms
+        self.delay_spin.setSingleStep(50)
         limits_layout.addWidget(self.delay_spin, 2, 1)
         
         # Profondità
@@ -693,10 +774,14 @@ class MainWindow(QMainWindow):
         stats_layout.addWidget(self.images_no_alt_label, 1, 1)
         
         progress_layout.addLayout(stats_layout)
-        
-        # Tempo stimato
-        self.eta_label = QLabel("Tempo stimato: --")
-        progress_layout.addWidget(self.eta_label)
+
+        # Timer e tempo stimato
+        timer_layout = QHBoxLayout()
+        self.elapsed_label = QLabel("⏱️ Tempo trascorso: 0m 0s")
+        self.eta_label = QLabel("⏳ Tempo stimato: --")
+        timer_layout.addWidget(self.elapsed_label)
+        timer_layout.addWidget(self.eta_label)
+        progress_layout.addLayout(timer_layout)
         
         layout.addWidget(progress_group)
         
@@ -939,6 +1024,157 @@ class MainWindow(QMainWindow):
 
         self.tab_widget.addTab(fixes_widget, "🔧 Fix Suggeriti")
 
+    def _create_help_tab(self):
+        """Crea tab aiuto con istruzioni"""
+        help_widget = QWidget()
+        layout = QVBoxLayout(help_widget)
+
+        # Scroll area per contenuto lungo
+        scroll = QScrollArea()
+        scroll.setWidgetResizable(True)
+        scroll_widget = QWidget()
+        scroll_layout = QVBoxLayout(scroll_widget)
+
+        # Header con logo e titolo
+        header_frame = QFrame()
+        header_frame.setStyleSheet("QFrame { background-color: #2196F3; border-radius: 8px; padding: 20px; }")
+        header_layout = QVBoxLayout(header_frame)
+
+        title_label = QLabel("🔍 PyPrestaScan")
+        title_label.setStyleSheet("color: white; font-size: 32px; font-weight: bold;")
+        title_label.setAlignment(Qt.AlignCenter)
+        header_layout.addWidget(title_label)
+
+        subtitle_label = QLabel("Scanner SEO Professionale per PrestaShop")
+        subtitle_label.setStyleSheet("color: white; font-size: 16px;")
+        subtitle_label.setAlignment(Qt.AlignCenter)
+        header_layout.addWidget(subtitle_label)
+
+        version_label = QLabel("Versione 1.0.0")
+        version_label.setStyleSheet("color: #E3F2FD; font-size: 12px;")
+        version_label.setAlignment(Qt.AlignCenter)
+        header_layout.addWidget(version_label)
+
+        scroll_layout.addWidget(header_frame)
+
+        # Sezione Come Usare
+        usage_group = QGroupBox("📖 Come Usare PyPrestaScan")
+        usage_layout = QVBoxLayout(usage_group)
+
+        usage_text = QLabel(
+            "<h3>1️⃣ Configurazione</h3>"
+            "<ul>"
+            "<li><b>Inserisci l'URL</b> del tuo sito PrestaShop (es: https://tuosito.com)</li>"
+            "<li><b>Scegli una modalità</b> di scansione predefinita o personalizza i parametri</li>"
+            "<li><b>Modalità disponibili:</b>"
+            "<ul>"
+            "<li>⚡ <b>Scansione Veloce</b>: 500 pagine, ideale per test rapidi</li>"
+            "<li>🔍 <b>Scansione Approfondita</b>: 10000 pagine, analisi completa</li>"
+            "<li>🖼️ <b>Solo ALT Immagini</b>: 1000 pagine, focus su immagini</li>"
+            "</ul>"
+            "</li>"
+            "</ul>"
+            "<h3>2️⃣ Avvio Scansione</h3>"
+            "<ul>"
+            "<li>Clicca su <b>▶️ Avvia Scansione</b></li>"
+            "<li>Monitora il progresso in tempo reale nel tab <b>Progress & Log</b></li>"
+            "<li>Vedrai: pagine scansionate, issues trovati, immagini senza ALT, timer</li>"
+            "</ul>"
+            "<h3>3️⃣ Analisi Risultati</h3>"
+            "<ul>"
+            "<li>Vai al tab <b>📊 Risultati</b> per vedere gli issues rilevati</li>"
+            "<li>Filtra per severità: <b>Critical</b>, <b>Warning</b>, <b>Info</b></li>"
+            "<li>Esporta in <b>CSV</b> per analisi dettagliate</li>"
+            "</ul>"
+            "<h3>4️⃣ Fix Automatici</h3>"
+            "<ul>"
+            "<li>Vai al tab <b>🔧 Fix Suggeriti</b></li>"
+            "<li>Clicca su <b>Genera Fix Suggeriti</b></li>"
+            "<li>Visualizza i fix con confidence score</li>"
+            "<li>Esporta <b>SQL</b> per applicarli al database PrestaShop</li>"
+            "<li>⚠️ <b>Fai sempre un backup prima di applicare le query SQL!</b></li>"
+            "</ul>"
+        )
+        usage_text.setWordWrap(True)
+        usage_text.setTextFormat(Qt.RichText)
+        usage_layout.addWidget(usage_text)
+
+        scroll_layout.addWidget(usage_group)
+
+        # Sezione Sviluppatore
+        dev_group = QGroupBox("👨‍💻 Sviluppatore")
+        dev_layout = QVBoxLayout(dev_group)
+
+        dev_frame = QFrame()
+        dev_frame.setStyleSheet("QFrame { background-color: #F5F5F5; border-radius: 8px; padding: 15px; }")
+        dev_inner_layout = QVBoxLayout(dev_frame)
+
+        dev_name = QLabel("<h2>Andrea Piani</h2>")
+        dev_name.setTextFormat(Qt.RichText)
+        dev_inner_layout.addWidget(dev_name)
+
+        dev_title = QLabel("Full-Stack Developer & SEO Specialist")
+        dev_title.setStyleSheet("color: #666; font-size: 14px;")
+        dev_inner_layout.addWidget(dev_title)
+
+        dev_website = QLabel('<a href="https://www.andreapiani.com" style="color: #2196F3; font-size: 14px;">🌐 www.andreapiani.com</a>')
+        dev_website.setTextFormat(Qt.RichText)
+        dev_website.setOpenExternalLinks(True)
+        dev_inner_layout.addWidget(dev_website)
+
+        dev_layout.addWidget(dev_frame)
+        scroll_layout.addWidget(dev_group)
+
+        # Sezione Open Source
+        opensource_group = QGroupBox("💎 Progetto Open Source")
+        opensource_layout = QVBoxLayout(opensource_group)
+
+        opensource_text = QLabel(
+            "<p style='font-size: 14px;'>"
+            "PyPrestaScan è un progetto <b>open-source gratuito</b> rilasciato su GitHub.</p>"
+            "<p style='font-size: 14px;'>"
+            "🌟 <b>Contributi, feedback e segnalazioni sono sempre benvenuti!</b></p>"
+            "<br>"
+            "<p style='font-size: 14px;'>"
+            "📦 <b>Repository GitHub:</b><br>"
+            '<a href="https://github.com/andreapianidev/pyprestascan" style="color: #2196F3;">'
+            'github.com/andreapianidev/pyprestascan</a>'
+            "</p>"
+            "<br>"
+            "<p style='font-size: 14px;'>"
+            "🐛 <b>Segnala bug o richiedi funzionalità:</b><br>"
+            '<a href="https://github.com/andreapianidev/pyprestascan/issues" style="color: #2196F3;">'
+            'github.com/andreapianidev/pyprestascan/issues</a>'
+            "</p>"
+            "<br>"
+            "<p style='font-size: 12px; color: #666;'>"
+            "Licenza: MIT - Libero per uso commerciale e personale"
+            "</p>"
+        )
+        opensource_text.setTextFormat(Qt.RichText)
+        opensource_text.setWordWrap(True)
+        opensource_text.setOpenExternalLinks(True)
+        opensource_layout.addWidget(opensource_text)
+
+        scroll_layout.addWidget(opensource_group)
+
+        # Footer
+        footer_label = QLabel(
+            "<p style='text-align: center; color: #999; font-size: 11px;'>"
+            "Made with ❤️ by Andrea Piani for the PrestaShop Community<br>"
+            "Progetto open-source in continuo miglioramento"
+            "</p>"
+        )
+        footer_label.setTextFormat(Qt.RichText)
+        footer_label.setAlignment(Qt.AlignCenter)
+        scroll_layout.addWidget(footer_label)
+
+        scroll_layout.addStretch()
+        scroll.setWidget(scroll_widget)
+        layout.addWidget(scroll)
+
+        self.tab_widget.addTab(help_widget, "❓ Aiuto")
+
     def _setup_connections(self):
         """Configura connessioni segnali"""
         # Connetti segnali UI
@@ -1004,13 +1240,65 @@ class MainWindow(QMainWindow):
     def _browse_export_dir(self):
         """Sfoglia directory export"""
         dir_path = QFileDialog.getExistingDirectory(
-            self, 
+            self,
             "Seleziona Directory Report",
             self.export_dir_edit.text()
         )
-        
+
         if dir_path:
             self.export_dir_edit.setText(dir_path)
+
+    def _apply_fast_preset(self):
+        """Applica preset scansione veloce"""
+        self.max_urls_spin.setValue(500)
+        self.concurrency_spin.setValue(30)
+        self.delay_spin.setValue(100)
+        self.depth_spin.setValue(0)
+        QMessageBox.information(
+            self,
+            "Preset Applicato",
+            "⚡ Scansione Veloce attivata!\n\n"
+            "• 500 pagine massime\n"
+            "• 30 richieste parallele\n"
+            "• 100ms delay (sicuro)\n"
+            "• Profondità illimitata\n\n"
+            "Ideale per test rapidi e preview del sito."
+        )
+
+    def _apply_deep_preset(self):
+        """Applica preset scansione approfondita"""
+        self.max_urls_spin.setValue(10000)
+        self.concurrency_spin.setValue(20)
+        self.delay_spin.setValue(200)
+        self.depth_spin.setValue(0)
+        QMessageBox.information(
+            self,
+            "Preset Applicato",
+            "🔍 Scansione Approfondita attivata!\n\n"
+            "• 10000 pagine massime\n"
+            "• 20 richieste parallele\n"
+            "• 200ms delay (molto sicuro)\n"
+            "• Profondità illimitata\n\n"
+            "Analisi completa e accurata, rispetta i limiti del server."
+        )
+
+    def _apply_alt_preset(self):
+        """Applica preset scansione ALT immagini"""
+        self.max_urls_spin.setValue(1000)
+        self.concurrency_spin.setValue(25)
+        self.delay_spin.setValue(150)
+        self.depth_spin.setValue(0)
+        QMessageBox.information(
+            self,
+            "Preset Applicato",
+            "🖼️ Scansione ALT Immagini attivata!\n\n"
+            "• 1000 pagine massime\n"
+            "• 25 richieste parallele\n"
+            "• 150ms delay (bilanciato)\n"
+            "• Profondità illimitata\n\n"
+            "Focus su immagini senza attributo ALT.\n"
+            "Controlla i risultati nella sezione 'Immagini senza ALT'."
+        )
     
     def _open_config_dialog(self):
         """Apre dialog configurazione avanzata"""
@@ -1149,6 +1437,16 @@ class MainWindow(QMainWindow):
         self.pages_failed_label.setText(f"Pagine fallite: {stats.get('pages_failed', 0)}")
         self.issues_found_label.setText(f"Issues trovati: {stats.get('total_issues', 0)}")
         self.images_no_alt_label.setText(f"Immagini senza ALT: {stats.get('images_no_alt', 0)}")
+
+        # Aggiorna timer elapsed e ETA
+        elapsed_time = stats.get('elapsed_time', 0)
+        if elapsed_time > 0:
+            elapsed_minutes = int(elapsed_time / 60)
+            elapsed_secs = int(elapsed_time % 60)
+            self.elapsed_label.setText(f"⏱️ Tempo trascorso: {elapsed_minutes}m {elapsed_secs}s")
+
+        eta = stats.get('eta', '--')
+        self.eta_label.setText(f"⏳ Tempo stimato: {eta}")
     
     def _on_crawl_finished(self, success: bool, message: str):
         """Gestisce fine crawling"""
