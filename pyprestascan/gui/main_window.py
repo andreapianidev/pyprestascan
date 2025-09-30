@@ -166,16 +166,12 @@ class CrawlerWorker(QObject):
                 result = cursor.fetchone()[0]
                 images_no_alt = result if result else 0
 
-                # Conta pagine in coda
-                cursor.execute("SELECT COUNT(*) FROM queue WHERE status = 'PENDING'")
-                pages_queued = cursor.fetchone()[0]
-
             # Emetti segnali sempre (non solo se cambiato)
             self._pages_crawled = pages_crawled
             self.progress_updated.emit(
                 pages_crawled,
                 self.config.max_urls,
-                f"Crawlate {pages_crawled}, In coda: {pages_queued}"
+                f"Scansionate {pages_crawled}/{self.config.max_urls} pagine"
             )
 
             # Aggiorna statistiche
