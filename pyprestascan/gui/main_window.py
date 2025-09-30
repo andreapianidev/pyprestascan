@@ -123,61 +123,74 @@ class CrawlerWorker(QObject):
         """Monitora progress in background thread"""
         import time
 
+        # Attendi che scanner e db siano inizializzati
+        for _ in range(50):  # Max 5 secondi
+            if self.scanner and self.scanner.db:
+                break
+            time.sleep(0.1)
+
         while not self._stop_requested:
-            time.sleep(1)  # Aggiorna ogni secondo
+            time.sleep(0.5)  # Aggiorna ogni mezzo secondo per più reattività
 
             # Esci se scanner è terminato
             if self.scanner and not self.scanner.is_running:
+                # Ultimo update prima di uscire
+                self._do_progress_update()
                 break
 
             if self.scanner and self.scanner.db:
-                try:
-                    # Leggi statistiche dal database in modo sincrono
-                    import sqlite3
-                    db_path = self.scanner.db.db_path
+                self._do_progress_update()
 
-                    with sqlite3.connect(db_path) as conn:
-                        cursor = conn.cursor()
+    def _do_progress_update(self):
+        """Esegue aggiornamento progress leggendo dal DB"""
+        try:
+            import sqlite3
+            db_path = self.scanner.db.db_path
 
-                        # Conta pagine crawlate
-                        cursor.execute("SELECT COUNT(*) FROM pages WHERE status_code IS NOT NULL")
-                        pages_crawled = cursor.fetchone()[0]
+            with sqlite3.connect(db_path) as conn:
+                cursor = conn.cursor()
 
-                        # Conta issues
-                        cursor.execute("SELECT COUNT(*) FROM issues")
-                        issues_found = cursor.fetchone()[0]
+                # Conta pagine crawlate
+                cursor.execute("SELECT COUNT(*) FROM pages WHERE status_code IS NOT NULL")
+                pages_crawled = cursor.fetchone()[0]
 
-                        # Conta immagini senza ALT
-                        cursor.execute("""
-                            SELECT SUM(images_missing_alt + images_empty_alt)
-                            FROM pages
-                        """)
-                        result = cursor.fetchone()[0]
-                        images_no_alt = result if result else 0
+                # Conta issues
+                cursor.execute("SELECT COUNT(*) FROM issues")
+                issues_found = cursor.fetchone()[0]
 
-                        # Conta pagine in coda
-                        cursor.execute("SELECT COUNT(*) FROM queue WHERE status = 'PENDING'")
-                        pages_queued = cursor.fetchone()[0]
+                # Conta immagini senza ALT
+                cursor.execute("""
+                    SELECT SUM(images_missing_alt + images_empty_alt)
+                    FROM pages
+                """)
+                result = cursor.fetchone()[0]
+                images_no_alt = result if result else 0
 
-                    # Emetti segnali se cambiato
-                    if pages_crawled != self._pages_crawled:
-                        self._pages_crawled = pages_crawled
-                        self.progress_updated.emit(
-                            pages_crawled,
-                            self.config.max_urls,
-                            f"Crawlate {pages_crawled}, In coda: {pages_queued}"
-                        )
+                # Conta pagine in coda
+                cursor.execute("SELECT COUNT(*) FROM queue WHERE status = 'PENDING'")
+                pages_queued = cursor.fetchone()[0]
 
-                        # Aggiorna statistiche
-                        self.stats_updated.emit({
-                            'pages_crawled': pages_crawled,
-                            'pages_failed': 0,  # TODO: calcolare fallite
-                            'total_issues': issues_found,
-                            'images_no_alt': images_no_alt
-                        })
+            # Emetti segnali sempre (non solo se cambiato)
+            self._pages_crawled = pages_crawled
+            self.progress_updated.emit(
+                pages_crawled,
+                self.config.max_urls,
+                f"Crawlate {pages_crawled}, In coda: {pages_queued}"
+            )
 
-                except Exception:
-                    pass  # Ignora errori durante monitoring
+            # Aggiorna statistiche
+            self.stats_updated.emit({
+                'pages_crawled': pages_crawled,
+                'pages_failed': 0,
+                'total_issues': issues_found,
+                'images_no_alt': images_no_alt
+            })
+
+        except Exception as e:
+            # Log errore per debug
+            import traceback
+            print(f"Error in progress update: {e}")
+            traceback.print_exc()
 
     def stop_crawl(self):
         """Richiede stop del crawling"""
