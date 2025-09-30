@@ -408,46 +408,7 @@ class ReportExporter:
         }
     
     async def _copy_assets(self) -> None:
-        """Copia asset CSS/JS nella directory report"""
-        assets_source = Path(__file__).parent.parent / "assets"
-        assets_dest = self.export_dir / "assets"
-        
-        # Crea directory assets
-        assets_dest.mkdir(exist_ok=True)
-        
-        # Lista asset necessari (sarebbero da creare)
-        required_assets = [
-            'chart.min.js',
-            'datatables.min.js',
-            'datatables.min.css',
-            'bootstrap.min.css',
-            'report.css'
-        ]
-        
-        # Per ora creiamo placeholder - in implementazione reale
-        # si copierebbe da directory assets/ del progetto
-        for asset in required_assets:
-            asset_path = assets_dest / asset
-            if not asset_path.exists():
-                # Crea file placeholder
-                asset_path.write_text(f"/* {asset} - placeholder */")
-        
-        # CSS personalizzato
-        custom_css = """
-        .kpi-card { 
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            border-radius: 8px;
-            padding: 20px;
-            margin: 10px;
-        }
-        .score-excellent { color: #28a745; }
-        .score-good { color: #17a2b8; }
-        .score-warning { color: #ffc107; }
-        .score-poor { color: #dc3545; }
-        .issue-critical { background-color: #f8d7da; }
-        .issue-warning { background-color: #fff3cd; }
-        .issue-info { background-color: #d1ecf1; }
-        """
-        
-        (assets_dest / "report.css").write_text(custom_css)
+        """Prepara assets per il report (ora usa CDN, quindi non servono file locali)"""
+        # Gli assets CSS/JS sono ora caricati da CDN nel template HTML
+        # per una migliore compatibilità e prestazioni
+        pass
