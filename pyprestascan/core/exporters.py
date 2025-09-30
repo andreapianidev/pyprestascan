@@ -260,11 +260,19 @@ class ReportExporter:
         # Distribuzione score
         score_distribution = self._get_score_distribution(pages_data)
         
+        # Estrai nome sito dall'URL
+        from urllib.parse import urlparse
+        site_url = self.config.url
+        parsed_url = urlparse(site_url)
+        site_name = parsed_url.netloc.replace('www.', '')
+
         # Template data
         return {
+            'site_name': site_name,
+            'site_url': site_url,
             'generated_at': datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
             'tool_version': '1.0.0',
-            
+
             # KPI
             'total_pages': total_pages,
             'success_rate': round(success_rate or 0, 1),

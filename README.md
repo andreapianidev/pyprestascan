@@ -80,7 +80,7 @@ Full-Stack Developer & SEO Specialist
 
 ```bash
 # Clona il repository
-git clone https://github.com/yourusername/PyPrestaScan.git
+git clone https://github.com/andreapianidev/PyPrestaScan.git
 cd PyPrestaScan
 
 # Installa le dipendenze
@@ -418,8 +418,8 @@ Questo progetto è distribuito con licenza **MIT** - vedi il file [LICENSE](LICE
 
 Per domande, bug o feature request:
 
-- 🐛 **Issues GitHub**: [github.com/yourusername/PyPrestaScan/issues](https://github.com/yourusername/PyPrestaScan/issues)
-- 💬 **Discussioni**: [github.com/yourusername/PyPrestaScan/discussions](https://github.com/yourusername/PyPrestaScan/discussions)
+- 🐛 **Issues GitHub**: [github.com/andreapianidev/PyPrestaScan/issues](https://github.com/andreapianidev/PyPrestaScan/issues)
+- 💬 **Discussioni**: [github.com/andreapianidev/PyPrestaScan/discussions](https://github.com/andreapianidev/PyPrestaScan/discussions)
 - 🔗 **Contatto diretto**: [linktr.ee/andreapianidev](http://linktr.ee/andreapianidev)
 
 ---
@@ -442,9 +442,9 @@ Se PyPrestaScan ti è stato utile, considera di lasciare una ⭐ su GitHub!
 [![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](CONTRIBUTING.md)
 
-[🏠 Homepage](https://github.com/yourusername/PyPrestaScan) •
-[📚 Docs](https://github.com/yourusername/PyPrestaScan/wiki) •
-[🐛 Report Bug](https://github.com/yourusername/PyPrestaScan/issues) •
-[✨ Request Feature](https://github.com/yourusername/PyPrestaScan/issues)
+[🏠 Homepage](https://github.com/andreapianidev/PyPrestaScan) •
+[📚 Docs](https://github.com/andreapianidev/PyPrestaScan/wiki) •
+[🐛 Report Bug](https://github.com/andreapianidev/PyPrestaScan/issues) •
+[✨ Request Feature](https://github.com/andreapianidev/PyPrestaScan/issues)
 
 </div>
