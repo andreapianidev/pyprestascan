@@ -123,8 +123,12 @@ class CrawlerWorker(QObject):
         """Monitora progress in background thread"""
         import time
 
-        while not self._stop_requested and (not self.scanner or self.scanner.is_running):
+        while not self._stop_requested:
             time.sleep(1)  # Aggiorna ogni secondo
+
+            # Esci se scanner è terminato
+            if self.scanner and not self.scanner.is_running:
+                break
 
             if self.scanner and self.scanner.db:
                 try:
@@ -695,6 +699,15 @@ class MainWindow(QMainWindow):
         self.log_text = QTextEdit()
         self.log_text.setReadOnly(True)
         self.log_text.setFont(QFont("Monaco", 9))
+        self.log_text.setStyleSheet("""
+            QTextEdit {
+                background-color: #1E1E1E;
+                color: #E0E0E0;
+                border: 1px solid #3A3A3A;
+                border-radius: 4px;
+                padding: 8px;
+            }
+        """)
         log_layout.addWidget(self.log_text)
         
         # Log controls
