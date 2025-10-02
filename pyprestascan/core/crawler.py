@@ -161,7 +161,10 @@ class PyPrestaScanner:
             self.logger.warning("🛑 Crawling interrotto dall'utente")
             return 1
         except Exception as e:
+            import traceback
+            error_details = traceback.format_exc()
             self.logger.error(f"Errore durante crawling: {e}")
+            self.logger.error(f"Traceback:\n{error_details}")
             if self.cli_context.debug:
                 raise
             return 1
