@@ -1,10 +1,17 @@
 # PyPrestaScan 🔍
 
+[![PyPI version](https://badge.fury.io/py/pyprestascan.svg)](https://pypi.org/project/pyprestascan/)
+[![Python](https://img.shields.io/badge/Python-3.8+-blue.svg)](https://python.org)
+[![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
+[![Downloads](https://pepy.tech/badge/pyprestascan)](https://pepy.tech/project/pyprestascan)
+
 ![PyPrestaScan Screenshot](https://www.andreapiani.com/pyprestascan.png)
 
 **Scanner SEO professionale per PrestaShop con sistema di fix automatici**
 
 PyPrestaScan è uno strumento open-source avanzato per l'analisi SEO completa di siti PrestaShop. Scansiona il tuo e-commerce, identifica problemi SEO critici e genera suggerimenti automatici per risolverli.
+
+📦 **Installazione rapida:** `pip install pyprestascan[gui]`
 
 ---
 
@@ -76,14 +83,30 @@ Full-Stack Developer & SEO Specialist
 - Python 3.8+ (3.12+ raccomandato)
 - pip
 
-### Setup rapido
+### 📦 Installazione da PyPI (Consigliata)
+
+```bash
+# Installazione base (CLI)
+pip install pyprestascan
+
+# Con interfaccia grafica
+pip install pyprestascan[gui]
+
+# Avvia la GUI
+pyprestascan-gui
+
+# Oppure usa la CLI
+pyprestascan scan https://tuosito.com/it/ --max-urls 1000
+```
+
+### 🔧 Installazione da sorgenti (Development)
 
 ```bash
 # Clona il repository
 git clone https://github.com/andreapianidev/pyprestascan.git
 cd pyprestascan
 
-# Installa con pip (include tutte le dipendenze)
+# Installa in modalità development
 pip install -e ".[gui]"
 
 # Avvia l'interfaccia grafica
@@ -101,6 +124,10 @@ python -m pyprestascan scan https://tuosito.com/it/ --max-urls 1000
 
 1. **Avvia la GUI**:
    ```bash
+   # Se installato da PyPI
+   pyprestascan-gui
+
+   # Oppure se installato da sorgenti
    python -m pyprestascan.gui.main_window
    ```
 
@@ -127,11 +154,14 @@ python -m pyprestascan scan https://tuosito.com/it/ --max-urls 1000
 ### Command Line Interface (CLI)
 
 ```bash
-# Scansione base
+# Scansione base (se installato da PyPI)
+pyprestascan scan https://tuosito.com/it/
+
+# Oppure se installato da sorgenti
 python -m pyprestascan scan https://tuosito.com/it/
 
 # Scansione con opzioni avanzate
-python -m pyprestascan scan https://tuosito.com/it/ \
+pyprestascan scan https://tuosito.com/it/ \
   --max-urls 5000 \
   --concurrency 30 \
   --timeout 20 \
@@ -139,7 +169,7 @@ python -m pyprestascan scan https://tuosito.com/it/ \
   --export-dir ./reports
 
 # Riprendi scansione interrotta
-python -m pyprestascan scan https://tuosito.com/it/ --resume
+pyprestascan scan https://tuosito.com/it/ --resume
 
 # Debug mode
 python -m pyprestascan scan https://tuosito.com/it/ --debug
