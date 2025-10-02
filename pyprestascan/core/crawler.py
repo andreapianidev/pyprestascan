@@ -107,6 +107,7 @@ class PyPrestaScanner:
         self.stats = CrawlStats()
         self.is_running = False
         self.should_stop = False
+        self.sitemap_url_count = 0  # Conteggio URL da sitemap
         
         # Progress tracking
         self.progress = create_progress()
@@ -247,10 +248,10 @@ class PyPrestaScanner:
         """Scopre e processa sitemap"""
         try:
             sitemap_urls = await self.fetcher.discover_sitemaps(base_url)
-            
+
             for sitemap_url in sitemap_urls:
                 urls = await self.fetcher.fetch_sitemap(sitemap_url)
-                
+
                 if urls:
                     # Converti a QueueEntry
                     entries = []
@@ -265,12 +266,17 @@ class PyPrestaScanner:
                                 priority=50,
                                 added_at=datetime.now()
                             ))
-                    
+
                     # Aggiungi alla coda (batch)
                     if entries:
                         added = await self.db.add_to_queue(entries)
+                        self.sitemap_url_count += added  # Conta URL da sitemap
                         self.logger.info(f"🗺️ Aggiunti {added} URL da sitemap {sitemap_url}")
-        
+
+            # Log totale
+            if self.sitemap_url_count > 0:
+                self.logger.success(f"✅ Totale URL da sitemap: {self.sitemap_url_count}")
+
         except Exception as e:
             self.logger.warning(f"⚠️ Errore discovery sitemap: {e}")
     
@@ -465,6 +471,7 @@ class PyPrestaScanner:
         exporter = ReportExporter(
             db=self.db,
             export_dir=export_dir,
+            base_url=str(self.config.url),
             include_generic_alt=self.config.include_generic,
             logger=self.logger
         )

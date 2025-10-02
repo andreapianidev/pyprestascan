@@ -39,6 +39,7 @@ ENV/
 Thumbs.db
 
 # Project specific
+reports/
 report/
 *.db
 *.log

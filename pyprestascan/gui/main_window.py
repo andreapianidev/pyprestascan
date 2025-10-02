@@ -488,37 +488,56 @@ class MainWindow(QMainWindow):
         main_layout.addWidget(header_widget)
     
     def _create_toolbar(self):
-        """Crea toolbar"""
+        """Crea toolbar con pulsanti grandi"""
         toolbar = QToolBar("Azioni Principali")
+        toolbar.setIconSize(QSize(32, 32))  # Icone più grandi
+        toolbar.setToolButtonStyle(Qt.ToolButtonTextBesideIcon)  # Testo accanto all'icona
+
+        # Imposta dimensioni e stile toolbar con sfondo scuro come il resto dell'app
+        toolbar.setStyleSheet("""
+            QToolBar {
+                spacing: 10px;
+                padding: 8px;
+                background-color: #3c3c3c;
+                border-bottom: 2px solid #2b2b2b;
+            }
+            QToolButton {
+                font-size: 16px;
+                font-weight: bold;
+                padding: 10px 20px;
+                border-radius: 6px;
+                margin: 2px;
+                color: #ffffff;
+                background-color: #4a4a4a;
+                border: 1px solid #5a5a5a;
+            }
+            QToolButton:hover {
+                background-color: #2196F3;
+                border: 1px solid #1976D2;
+            }
+            QToolButton:pressed {
+                background-color: #1976D2;
+            }
+            QToolButton:disabled {
+                color: #808080;
+                background-color: #3a3a3a;
+            }
+        """)
+
         self.addToolBar(toolbar)
-        
-        # Azione Start
-        self.start_action = QAction("▶️ Avvia Scansione", self)
+
+        # Azione Start (più grande)
+        self.start_action = QAction("▶️  Avvia Scansione", self)
         self.start_action.setStatusTip("Avvia scansione SEO")
         self.start_action.triggered.connect(self._start_crawl)
         toolbar.addAction(self.start_action)
-        
-        # Azione Stop
-        self.stop_action = QAction("⏹️ Ferma Scansione", self)
+
+        # Azione Stop (più grande)
+        self.stop_action = QAction("⏹️  Ferma Scansione", self)
         self.stop_action.setStatusTip("Ferma scansione in corso")
         self.stop_action.setEnabled(False)
         self.stop_action.triggered.connect(self._stop_crawl)
         toolbar.addAction(self.stop_action)
-        
-        toolbar.addSeparator()
-        
-        # Azione Apri Report
-        self.open_report_action = QAction("📊 Apri Report", self)
-        self.open_report_action.setStatusTip("Apri ultimo report generato")
-        self.open_report_action.setEnabled(False)
-        self.open_report_action.triggered.connect(self._open_report)
-        toolbar.addAction(self.open_report_action)
-        
-        # Azione Configurazione
-        self.config_action = QAction("⚙️ Configurazione", self)
-        self.config_action.setStatusTip("Apri configurazione avanzata")
-        self.config_action.triggered.connect(self._open_config_dialog)
-        toolbar.addAction(self.config_action)
     
     def _create_menu_bar(self):
         """Crea menu bar"""
@@ -549,7 +568,7 @@ class MainWindow(QMainWindow):
         
         # Menu Strumenti
         tools_menu = menubar.addMenu("Strumenti")
-        tools_menu.addAction(self.config_action)
+        # Configurazione accessibile dal tab dedicato
         
         # Menu Aiuto
         help_menu = menubar.addMenu("Aiuto")
@@ -706,7 +725,75 @@ class MainWindow(QMainWindow):
         lang_layout.addWidget(self.lang_map_edit)
         
         scroll_layout.addWidget(lang_group)
-        
+
+        # Gruppo User Agent
+        ua_group = QGroupBox("🕵️ User Agent")
+        ua_layout = QVBoxLayout(ua_group)
+
+        ua_layout.addWidget(QLabel("Seleziona User Agent per le richieste HTTP:"))
+
+        self.user_agent_combo = QComboBox()
+        self.user_agent_combo.addItem(
+            "Chrome Windows (Default)",
+            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+        )
+        self.user_agent_combo.addItem(
+            "Chrome macOS",
+            "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+        )
+        self.user_agent_combo.addItem(
+            "Firefox Windows",
+            "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:121.0) Gecko/20100101 Firefox/121.0"
+        )
+        self.user_agent_combo.addItem(
+            "Firefox macOS",
+            "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:121.0) Gecko/20100101 Firefox/121.0"
+        )
+        self.user_agent_combo.addItem(
+            "Safari macOS",
+            "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.2 Safari/605.1.15"
+        )
+        self.user_agent_combo.addItem(
+            "Edge Windows",
+            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36 Edg/120.0.0.0"
+        )
+        self.user_agent_combo.addItem(
+            "iPhone Safari",
+            "Mozilla/5.0 (iPhone; CPU iPhone OS 17_2 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.2 Mobile/15E148 Safari/604.1"
+        )
+        self.user_agent_combo.addItem(
+            "Android Chrome",
+            "Mozilla/5.0 (Linux; Android 13) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.6099.43 Mobile Safari/537.36"
+        )
+        self.user_agent_combo.addItem(
+            "GoogleBot",
+            "Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)"
+        )
+        self.user_agent_combo.addItem(
+            "Custom (Personalizzato)",
+            ""
+        )
+
+        ua_layout.addWidget(self.user_agent_combo)
+
+        # Campo custom user agent (hidden by default)
+        self.custom_ua_edit = QLineEdit()
+        self.custom_ua_edit.setPlaceholderText("Inserisci User Agent personalizzato...")
+        self.custom_ua_edit.setVisible(False)
+        ua_layout.addWidget(self.custom_ua_edit)
+
+        # Label info con UA attuale
+        self.ua_info_label = QLabel()
+        self.ua_info_label.setWordWrap(True)
+        self.ua_info_label.setStyleSheet("color: #666; font-size: 11px; padding: 5px;")
+        ua_layout.addWidget(self.ua_info_label)
+
+        # Connetti cambio selezione
+        self.user_agent_combo.currentIndexChanged.connect(self._on_user_agent_changed)
+        self._on_user_agent_changed(0)  # Imposta default
+
+        scroll_layout.addWidget(ua_group)
+
         # Debug options
         debug_group = QGroupBox("🐛 Opzioni Debug")
         debug_layout = QVBoxLayout(debug_group)
@@ -1109,7 +1196,7 @@ class MainWindow(QMainWindow):
         dev_frame.setStyleSheet("QFrame { background-color: #F5F5F5; border-radius: 8px; padding: 15px; }")
         dev_inner_layout = QVBoxLayout(dev_frame)
 
-        dev_name = QLabel("<h2>Andrea Piani</h2>")
+        dev_name = QLabel("<h2 style='color: #2b2b2b;'>Andrea Piani</h2>")
         dev_name.setTextFormat(Qt.RichText)
         dev_inner_layout.addWidget(dev_name)
 
@@ -1359,7 +1446,23 @@ class MainWindow(QMainWindow):
         if self.crawler_worker:
             self.crawler_worker.stop_crawl()
             self._log_message("WARNING", "🛑 Richiesta di stop inviata...")
-    
+
+    def _on_user_agent_changed(self, index: int):
+        """Gestisce cambio User Agent"""
+        # Mostra/nascondi campo custom
+        is_custom = self.user_agent_combo.currentText().startswith("Custom")
+        self.custom_ua_edit.setVisible(is_custom)
+
+        # Aggiorna label info
+        if is_custom:
+            self.ua_info_label.setText("💡 Inserisci un User Agent personalizzato nel campo sopra")
+        else:
+            ua_string = self.user_agent_combo.currentData()
+            if ua_string:
+                # Mostra solo prime 80 caratteri
+                display_ua = ua_string[:80] + "..." if len(ua_string) > 80 else ua_string
+                self.ua_info_label.setText(f"UA: {display_ua}")
+
     def _build_config(self) -> CrawlConfig:
         """Costruisce configurazione da UI"""
         # Parsing lang_map
@@ -1370,10 +1473,21 @@ class MainWindow(QMainWindow):
                 if '=' in pair:
                     key, value = pair.split('=', 1)
                     lang_map[key.strip()] = value.strip()
-        
+
         # Depth (0 = unlimited -> None)
         depth = self.depth_spin.value() if self.depth_spin.value() > 0 else None
-        
+
+        # User Agent
+        user_agent = None
+        if self.user_agent_combo.currentText().startswith("Custom"):
+            # User agent personalizzato
+            custom_ua = self.custom_ua_edit.text().strip()
+            if custom_ua:
+                user_agent = custom_ua
+        else:
+            # User agent dal combo
+            user_agent = self.user_agent_combo.currentData()
+
         config = CrawlConfig(
             url=self.url_edit.text().strip(),
             max_urls=self.max_urls_spin.value(),
@@ -1386,9 +1500,10 @@ class MainWindow(QMainWindow):
             export_dir=Path(self.export_dir_edit.text().strip()),
             include_generic=self.include_generic_check.isChecked(),
             lang_map=lang_map,
-            depth=depth
+            depth=depth,
+            user_agent=user_agent
         )
-        
+
         return config
     
     def _build_cli_context(self) -> CliContext:
@@ -1468,7 +1583,6 @@ class MainWindow(QMainWindow):
             # Abilita bottoni report
             self.view_report_btn.setEnabled(True)
             self.open_export_dir_btn.setEnabled(True)
-            self.open_report_action.setEnabled(True)
             
             # Passa a tab risultati
             self.tab_widget.setCurrentIndex(2)

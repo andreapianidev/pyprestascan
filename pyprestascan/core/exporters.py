@@ -17,14 +17,16 @@ from .utils import RichLogger
 class ReportExporter:
     """Esportatore report multi-formato"""
     
-    def __init__(self, 
-                 db: CrawlDatabase, 
-                 export_dir: Path, 
+    def __init__(self,
+                 db: CrawlDatabase,
+                 export_dir: Path,
+                 base_url: str = "",
                  include_generic_alt: bool = False,
                  logger: Optional[RichLogger] = None):
-        
+
         self.db = db
         self.export_dir = Path(export_dir)
+        self.base_url = base_url
         self.include_generic_alt = include_generic_alt
         self.logger = logger or RichLogger()
         
@@ -262,9 +264,9 @@ class ReportExporter:
         
         # Estrai nome sito dall'URL
         from urllib.parse import urlparse
-        site_url = self.config.url
+        site_url = self.base_url or "Unknown"
         parsed_url = urlparse(site_url)
-        site_name = parsed_url.netloc.replace('www.', '')
+        site_name = parsed_url.netloc.replace('www.', '') if parsed_url.netloc else "Unknown"
 
         # Template data
         return {
