@@ -1611,11 +1611,12 @@ class MainWindow(QMainWindow):
             from pathlib import Path
             import asyncio
             
-            # Path database dal progetto corrente
-            db_path = Path(self.export_dir_edit.text()) / f"{self.project_edit.text()}.db"
-            
+            # Path database dal progetto corrente (usa la stessa logica di ProjectManager)
+            project_name = self.project_edit.text()
+            db_path = Path.home() / ".pyprestascan" / project_name / "crawl.db"
+
             if not db_path.exists():
-                self._log_message("WARNING", "Database non trovato - esegui prima una scansione")
+                self._log_message("WARNING", f"Database non trovato in {db_path} - esegui prima una scansione")
                 return
             
             # Carica risultati reali dal database
@@ -1850,11 +1851,13 @@ class MainWindow(QMainWindow):
             from ..core.storage import CrawlDatabase
             from pathlib import Path
             import asyncio
-            
-            db_path = Path(self.export_dir_edit.text()) / f"{self.project_edit.text()}.db"
-            
+
+            # Path database dal progetto corrente (usa la stessa logica di ProjectManager)
+            project_name = self.project_edit.text()
+            db_path = Path.home() / ".pyprestascan" / project_name / "crawl.db"
+
             if not db_path.exists():
-                QMessageBox.information(self, "Database non trovato", "Database del progetto non disponibile")
+                QMessageBox.information(self, "Database non trovato", f"Database del progetto non disponibile in:\n{db_path}")
                 return
             
             db = CrawlDatabase(db_path)
