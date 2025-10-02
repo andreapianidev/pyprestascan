@@ -227,10 +227,8 @@ class CrawlerWorker(QObject):
             })
 
         except Exception as e:
-            # Log errore per debug
-            import traceback
-            print(f"Error in progress update: {e}")
-            traceback.print_exc()
+            # Silenzioso - errori progress non critici
+            pass
 
     def stop_crawl(self):
         """Richiede stop del crawling"""
@@ -2229,7 +2227,7 @@ class MainWindow(QMainWindow):
             self._populate_fixes_table(fixes)
 
         except Exception as e:
-            print(f"Errore caricamento fix: {e}")
+            self._log_message("ERROR", f"Errore caricamento fix: {e}")
 
     def _populate_fixes_table(self, fixes):
         """Popola tabella fix"""

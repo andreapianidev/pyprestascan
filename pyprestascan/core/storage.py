@@ -436,9 +436,12 @@ class CrawlDatabase:
                     ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                 """, values_tuple)
             except Exception as e:
-                print(f"DEBUG: Values tuple length: {len(values_tuple)}")
-                print(f"DEBUG: Database error: {e}")
-                print(f"DEBUG: Page URL: {page.url}")
+                # Log errore database per debugging
+                import traceback
+                error_msg = f"Errore salvando pagina {page.url}: {e}"
+                if hasattr(self, 'logger'):
+                    self.logger.error(error_msg)
+                    self.logger.debug(traceback.format_exc())
                 raise
             await db.commit()
     
