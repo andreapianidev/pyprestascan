@@ -102,30 +102,61 @@ class RealCrawlerWorker(QObject):
         self.pages_estimate = 0
     
     def _emit_progress_update(self):
-        """Emette aggiornamento progress stimato"""
+        """Legge progress REALE dal database"""
         if self._should_stop:
             self.progress_timer.stop()
             return
-            
-        # Stima approssimativa del progresso
-        self.pages_estimate += 5  # Simula crawling
-        
-        if self.pages_estimate >= self.config.max_urls:
-            self.pages_estimate = self.config.max_urls
-            self.progress_timer.stop()
-        
-        status = f"Scansione in corso... ~{self.pages_estimate} pagine"
-        self.progress_updated.emit(self.pages_estimate, status)
-        
-        # Statistiche simulate
-        stats = {
-            'pages_crawled': self.pages_estimate,
-            'pages_failed': max(0, self.pages_estimate // 20),
-            'total_issues': max(0, self.pages_estimate // 10),
-            'images_analyzed': self.pages_estimate * 3,
-            'images_no_alt': max(0, self.pages_estimate // 15)
-        }
-        self.stats_updated.emit(stats)
+
+        # Leggi dati REALI dal database del crawler
+        try:
+            import sqlite3
+            from pathlib import Path
+
+            db_path = Path.home() / ".pyprestascan" / self.config.project / "crawl.db"
+            if not db_path.exists():
+                return
+
+            with sqlite3.connect(str(db_path)) as conn:
+                cursor = conn.cursor()
+
+                # Conta pagine reali
+                cursor.execute("SELECT COUNT(*) FROM pages")
+                pages_crawled = cursor.fetchone()[0]
+
+                # Conta issues reali
+                cursor.execute("SELECT COUNT(*) FROM issues")
+                total_issues = cursor.fetchone()[0]
+
+                # Immagini senza ALT reali
+                cursor.execute("SELECT SUM(images_missing_alt + images_empty_alt) FROM pages")
+                result = cursor.fetchone()[0]
+                images_no_alt = result if result else 0
+
+                # Conta immagini totali
+                cursor.execute("SELECT SUM(images_total) FROM pages")
+                result = cursor.fetchone()[0]
+                images_analyzed = result if result else 0
+
+                # Pagine fallite
+                cursor.execute("SELECT COUNT(*) FROM pages WHERE status_code >= 400")
+                pages_failed = cursor.fetchone()[0]
+
+            status = f"Scansione in corso... {pages_crawled} pagine"
+            self.progress_updated.emit(pages_crawled, status)
+
+            # Statistiche REALI dal database
+            stats = {
+                'pages_crawled': pages_crawled,
+                'pages_failed': pages_failed,
+                'total_issues': total_issues,
+                'images_analyzed': images_analyzed,
+                'images_no_alt': images_no_alt
+            }
+            self.stats_updated.emit(stats)
+
+        except Exception as e:
+            # Fallback silenzioso se il DB non è pronto
+            pass
     
     def stop_crawl(self):
         """Ferma crawling"""
@@ -901,21 +932,60 @@ class PyPrestaScanGUI(QMainWindow):
         self.success_rate_label.setText(f"Tasso successo: {success_rate:.1f}%")
         self.avg_score_label.setText(f"Score medio: {stats.get('avg_speed', 0):.1f}")
         self.critical_issues_label.setText(f"Issues critici: {stats.get('total_issues', 0)}")
-        
-        # TODO: Popolare tabella issues con dati reali dal database
-        sample_issues = [
-            ("🔴", "CRITICAL", "Title mancanti", "5"),
-            ("🟡", "WARNING", "Meta description assenti", "12"), 
-            ("🔵", "INFO", "OpenGraph immagini mancanti", "8")
-        ]
-        
-        self.issues_table.setRowCount(len(sample_issues))
-        for i, (severity, level, desc, count) in enumerate(sample_issues):
-            self.issues_table.setItem(i, 0, QTableWidgetItem(severity))
-            self.issues_table.setItem(i, 1, QTableWidgetItem(level))
-            self.issues_table.setItem(i, 2, QTableWidgetItem(desc))
-            self.issues_table.setItem(i, 3, QTableWidgetItem(count))
+
+        # Carica TOP issues REALI dal database
+        self._load_real_issues_to_table()
     
+    def _load_real_issues_to_table(self):
+        """Carica TOP 10 issues REALI dal database nella tabella"""
+        try:
+            import sqlite3
+            from pathlib import Path
+
+            db_path = Path.home() / ".pyprestascan" / self.current_profile.project / "crawl.db"
+            if not db_path.exists():
+                self.issues_table.setRowCount(0)
+                return
+
+            with sqlite3.connect(str(db_path)) as conn:
+                cursor = conn.cursor()
+
+                # Query TOP 10 issues per frequenza
+                cursor.execute("""
+                    SELECT
+                        severity,
+                        code,
+                        COUNT(*) as count,
+                        COUNT(DISTINCT page_url) as affected_pages
+                    FROM issues
+                    GROUP BY severity, code
+                    ORDER BY
+                        CASE severity
+                            WHEN 'CRITICAL' THEN 1
+                            WHEN 'WARNING' THEN 2
+                            ELSE 3
+                        END,
+                        count DESC
+                    LIMIT 10
+                """)
+
+                issues = cursor.fetchall()
+
+            # Popola tabella con dati REALI
+            self.issues_table.setRowCount(len(issues))
+            for i, (severity, code, count, affected_pages) in enumerate(issues):
+                # Emoji per severity
+                emoji = "🔴" if severity == "CRITICAL" else "🟡" if severity == "WARNING" else "🔵"
+
+                self.issues_table.setItem(i, 0, QTableWidgetItem(f"{emoji} {severity}"))
+                self.issues_table.setItem(i, 1, QTableWidgetItem(code))
+                self.issues_table.setItem(i, 2, QTableWidgetItem(f"{count} occorrenze"))
+                self.issues_table.setItem(i, 3, QTableWidgetItem(f"{affected_pages} pagine"))
+
+        except Exception as e:
+            # Fallback se errore
+            self.issues_table.setRowCount(0)
+
     def _log_message(self, level: str, message: str):
         """Aggiunge messaggio al log"""
         timestamp = datetime.now().strftime("%H:%M:%S")
