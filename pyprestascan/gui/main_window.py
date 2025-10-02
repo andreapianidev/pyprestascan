@@ -157,8 +157,8 @@ class CrawlerWorker(QObject):
             with sqlite3.connect(db_path) as conn:
                 cursor = conn.cursor()
 
-                # Conta pagine crawlate
-                cursor.execute("SELECT COUNT(*) FROM pages WHERE status_code IS NOT NULL")
+                # Conta pagine crawlate (TUTTE le pagine salvate, non solo con status_code)
+                cursor.execute("SELECT COUNT(*) FROM pages")
                 pages_crawled = cursor.fetchone()[0]
 
                 # Conta issues
