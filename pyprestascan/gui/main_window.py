@@ -524,18 +524,8 @@ class MainWindow(QMainWindow):
 
         self.addToolBar(toolbar)
 
-        # Azione Start (più grande)
-        self.start_action = QAction("▶️  Avvia Scansione", self)
-        self.start_action.setStatusTip("Avvia scansione SEO")
-        self.start_action.triggered.connect(self._start_crawl)
-        toolbar.addAction(self.start_action)
-
-        # Azione Stop (più grande)
-        self.stop_action = QAction("⏹️  Ferma Scansione", self)
-        self.stop_action.setStatusTip("Ferma scansione in corso")
-        self.stop_action.setEnabled(False)
-        self.stop_action.triggered.connect(self._stop_crawl)
-        toolbar.addAction(self.stop_action)
+        # Nota: i pulsanti Avvia/Ferma sono nel tab Configurazione per UX migliore
+        # Qui mettiamo solo azioni secondarie come export, settings, etc.
     
     def _create_menu_bar(self):
         """Crea menu bar"""
@@ -1295,9 +1285,8 @@ class MainWindow(QMainWindow):
     def _validate_form(self):
         """Valida form e abilita/disabilita bottoni"""
         url_valid = bool(self.url_edit.text().strip())
-        
+
         self.start_btn.setEnabled(url_valid and not self.is_crawling)
-        self.start_action.setEnabled(url_valid and not self.is_crawling)
     
     def _handle_quiet_mode(self, state):
         """Gestisce modalità quiet"""
@@ -1522,8 +1511,6 @@ class MainWindow(QMainWindow):
         # Bottoni
         self.start_btn.setEnabled(not is_crawling)
         self.stop_btn.setEnabled(is_crawling)
-        self.start_action.setEnabled(not is_crawling)
-        self.stop_action.setEnabled(is_crawling)
         
         # Status bar
         if is_crawling:
