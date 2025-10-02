@@ -73,24 +73,24 @@ Full-Stack Developer & SEO Specialist
 ## 🚀 Installazione
 
 ### Requisiti
-- Python 3.8+
+- Python 3.8+ (3.12+ raccomandato)
 - pip
 
 ### Setup rapido
 
 ```bash
 # Clona il repository
-git clone https://github.com/andreapianidev/PyPrestaScan.git
-cd PyPrestaScan
+git clone https://github.com/andreapianidev/pyprestascan.git
+cd pyprestascan
 
-# Installa le dipendenze
-pip install -r requirements.txt
+# Installa con pip (include tutte le dipendenze)
+pip install -e ".[gui]"
 
 # Avvia l'interfaccia grafica
-python run_gui.py
+python -m pyprestascan.gui.main_window
 
 # Oppure usa la CLI
-python run_cli.py scan https://tuosito.com/it/ --max-urls 1000
+python -m pyprestascan scan https://tuosito.com/it/ --max-urls 1000
 ```
 
 ---
@@ -101,7 +101,7 @@ python run_cli.py scan https://tuosito.com/it/ --max-urls 1000
 
 1. **Avvia la GUI**:
    ```bash
-   python run_gui.py
+   python -m pyprestascan.gui.main_window
    ```
 
 2. **Configura la scansione**:
@@ -128,10 +128,10 @@ python run_cli.py scan https://tuosito.com/it/ --max-urls 1000
 
 ```bash
 # Scansione base
-python run_cli.py scan https://tuosito.com/it/
+python -m pyprestascan scan https://tuosito.com/it/
 
 # Scansione con opzioni avanzate
-python run_cli.py scan https://tuosito.com/it/ \
+python -m pyprestascan scan https://tuosito.com/it/ \
   --max-urls 5000 \
   --concurrency 30 \
   --timeout 20 \
@@ -139,13 +139,13 @@ python run_cli.py scan https://tuosito.com/it/ \
   --export-dir ./reports
 
 # Riprendi scansione interrotta
-python run_cli.py scan https://tuosito.com/it/ --resume
+python -m pyprestascan scan https://tuosito.com/it/ --resume
 
 # Debug mode
-python run_cli.py scan https://tuosito.com/it/ --debug
+python -m pyprestascan scan https://tuosito.com/it/ --debug
 
 # Quiet mode (solo errori)
-python run_cli.py scan https://tuosito.com/it/ --quiet
+python -m pyprestascan scan https://tuosito.com/it/ --quiet
 ```
 
 ---
