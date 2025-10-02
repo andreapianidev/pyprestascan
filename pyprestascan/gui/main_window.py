@@ -1630,7 +1630,7 @@ class MainWindow(QMainWindow):
             db_path = Path(self.export_dir_edit.text()) / f"{self.project_edit.text()}.db"
             
             if not db_path.exists():
-                self._load_sample_results()
+                self._log_message("WARNING", "Database non trovato - esegui prima una scansione")
                 return
             
             # Carica risultati reali dal database
@@ -1672,54 +1672,6 @@ class MainWindow(QMainWindow):
             
         except Exception as e:
             self._log_message("ERROR", f"Errore caricamento risultati: {str(e)}")
-            self._load_sample_results()
-    
-    def _load_sample_results(self):
-        """Carica dati di esempio quando non ci sono risultati reali"""
-        self.total_pages_label.setText("Pagine totali: --")
-        self.success_rate_label.setText("Tasso successo: --%")
-        self.avg_score_label.setText("Score medio: --")
-        self.critical_issues_label.setText("Issues critici: --")
-        
-        # Popola tabella (esempio)
-        sample_issues = [
-            ("CRITICAL", "TITLE_MISSING", "Title mancante", "--"),
-            ("WARNING", "META_DESC_MISSING", "Meta description mancante", "--"),
-            ("INFO", "OG_IMAGE_MISSING", "OpenGraph image mancante", "--"),
-        ]
-        
-        self.results_table.setRowCount(len(sample_issues))
-        for row, (severity, code, desc, count) in enumerate(sample_issues):
-            # Applica colori per severity
-            severity_item = QTableWidgetItem(severity)
-            if severity == "CRITICAL":
-                severity_item.setBackground(QColor("#ffebee"))
-                severity_item.setForeground(QColor("#c62828"))
-            elif severity == "WARNING":
-                severity_item.setBackground(QColor("#fff3e0"))
-                severity_item.setForeground(QColor("#ef6c00"))
-            else:  # INFO
-                severity_item.setBackground(QColor("#e3f2fd"))
-                severity_item.setForeground(QColor("#1976d2"))
-            
-            self.results_table.setItem(row, 0, severity_item)
-            self.results_table.setItem(row, 1, QTableWidgetItem(code))
-            self.results_table.setItem(row, 2, QTableWidgetItem(desc))
-            self.results_table.setItem(row, 3, QTableWidgetItem(count))
-            self.results_table.setItem(row, 4, QTableWidgetItem(count))  # Pagine coinvolte = occorrenze per sample
-        
-        # Salva dati di esempio per filtraggio
-        self.all_issues_data = [
-            {
-                'code': issue[1],
-                'severity': issue[0], 
-                'message': issue[2],
-                'count': int(issue[3].replace('--', '0')),
-                'affected_pages': int(issue[3].replace('--', '0')),
-                'sort_key': 0 if issue[0] == 'CRITICAL' else 1 if issue[0] == 'WARNING' else 2
-            }
-            for issue in sample_issues
-        ]
     
     def _group_issues_by_severity(self, issues):
         """Raggruppa issues per severity e codice"""
