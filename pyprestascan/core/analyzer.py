@@ -328,13 +328,18 @@ class SEORuleEngine:
     
     def _check_meta_description_too_short(self, page: PageData, images: List[ImageData]) -> List[dict]:
         """Verifica meta description troppo corta"""
-        if page.meta_description and len(page.meta_description) < 50:
-            return [{'field': 'meta_description', 'length': len(page.meta_description), 'min': 50}]
+        # Segnala solo se MOLTO corta (<30 caratteri) o su pagine importanti
+        if page.meta_description:
+            if len(page.meta_description) < 30:
+                return [{'field': 'meta_description', 'length': len(page.meta_description), 'min': 50}]
+            elif (page.is_product or page.is_category) and len(page.meta_description) < 50:
+                return [{'field': 'meta_description', 'length': len(page.meta_description), 'min': 50}]
         return []
     
     def _check_canonical_missing(self, page: PageData, images: List[ImageData]) -> List[dict]:
-        """Verifica canonical mancante"""
-        if not page.canonical or not page.canonical.strip():
+        """Verifica canonical mancante (solo su pagine importanti)"""
+        # Segnala solo su pagine prodotto/categoria/filtri
+        if (page.is_product or page.is_category or page.is_faceted_filter) and (not page.canonical or not page.canonical.strip()):
             return [{'field': 'canonical', 'value': page.canonical}]
         return []
     
@@ -415,44 +420,51 @@ class SEORuleEngine:
         return []
     
     def _check_og_title_missing(self, page: PageData, images: List[ImageData]) -> List[dict]:
-        """Verifica OpenGraph title mancante"""
-        if not page.og_title or not page.og_title.strip():
+        """Verifica OpenGraph title mancante (solo su pagine importanti)"""
+        # Segnala solo su pagine prodotto/categoria
+        if (page.is_product or page.is_category) and (not page.og_title or not page.og_title.strip()):
             return [{'field': 'og_title', 'value': page.og_title}]
         return []
-    
+
     def _check_og_description_missing(self, page: PageData, images: List[ImageData]) -> List[dict]:
-        """Verifica OpenGraph description mancante"""
-        if not page.og_description or not page.og_description.strip():
+        """Verifica OpenGraph description mancante (solo su pagine importanti)"""
+        # Segnala solo su pagine prodotto/categoria
+        if (page.is_product or page.is_category) and (not page.og_description or not page.og_description.strip()):
             return [{'field': 'og_description', 'value': page.og_description}]
         return []
-    
+
     def _check_og_image_missing(self, page: PageData, images: List[ImageData]) -> List[dict]:
-        """Verifica OpenGraph image mancante"""
-        if not page.og_image or not page.og_image.strip():
+        """Verifica OpenGraph image mancante (solo su pagine prodotto)"""
+        # Segnala solo su pagine prodotto
+        if page.is_product and (not page.og_image or not page.og_image.strip()):
             return [{'field': 'og_image', 'value': page.og_image}]
         return []
     
     def _check_headings_hierarchy(self, page: PageData, images: List[ImageData]) -> List[dict]:
         """Verifica gerarchia heading corretta"""
+        # Solo su pagine prodotto/categoria dove è più importante
+        if not (page.is_product or page.is_category):
+            return []
+
         headings = page.headings_map
         if not headings:
             return []
-        
+
         # Verifica sequenza logica H1->H2->H3...
         hierarchy_issues = []
-        
+
         # Dovrebbe sempre iniziare con H1
         if 'h1' not in headings and any(f'h{i}' in headings for i in range(2, 7)):
             hierarchy_issues.append('missing_h1')
-        
-        # Verifica salti (es. H1->H3 senza H2)
-        for level in range(1, 6):  # h1 to h5
+
+        # Verifica salti gravi (es. H1->H4 senza H2, H3)
+        for level in range(1, 5):  # h1 to h4
             current = f'h{level}'
-            next_level = f'h{level + 1}'
-            
-            if current not in headings and next_level in headings:
-                hierarchy_issues.append(f'skip_{current}_to_{next_level}')
-        
+            skip_level = f'h{level + 2}'  # Salto di 2 livelli
+
+            if current in headings and skip_level in headings and f'h{level + 1}' not in headings:
+                hierarchy_issues.append(f'skip_{current}_to_{skip_level}')
+
         if hierarchy_issues:
             return [{'field': 'headings_hierarchy', 'issues': hierarchy_issues}]
         return []
@@ -461,11 +473,12 @@ class SEORuleEngine:
         """Verifica immagini senza lazy loading"""
         if not images:
             return []
-        
-        no_lazy_count = sum(1 for img in images 
+
+        no_lazy_count = sum(1 for img in images
                            if not img.loading_attr or img.loading_attr != 'lazy')
-        
-        if no_lazy_count > 0 and len(images) >= 3:  # Solo se ci sono molte immagini
+
+        # Segnala solo se ci sono MOLTE immagini (>10) e la maggioranza non ha lazy loading
+        if no_lazy_count > 10 and no_lazy_count / len(images) > 0.8:
             return [{
                 'field': 'images_lazy',
                 'no_lazy': no_lazy_count,

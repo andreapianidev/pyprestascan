@@ -10,7 +10,6 @@ from datetime import datetime
 
 import httpx
 from aiolimiter import AsyncLimiter
-# import reppy  # Temporaneamente disabilitato per compatibilità Python 3.13
 
 from ..core.utils import RichLogger
 
