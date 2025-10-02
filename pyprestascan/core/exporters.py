@@ -268,6 +268,11 @@ class ReportExporter:
         parsed_url = urlparse(site_url)
         site_name = parsed_url.netloc.replace('www.', '') if parsed_url.netloc else "Unknown"
 
+        # Performance e duplicati
+        avg_ttfb = general_stats.get('avg_ttfb_ms', 0)
+        duplicates_count = general_stats.get('duplicates', 0)
+        pages_failed = status_stats.get('4xx', 0) + status_stats.get('5xx', 0)
+
         # Template data
         return {
             'site_name': site_name,
@@ -282,12 +287,15 @@ class ReportExporter:
             'pages_with_issues_pct': round(pages_with_issues_pct or 0, 1),
             'images_no_alt': images_no_alt,
             'avg_score': round(general_stats.get('avg_score') or 0, 1),
-            
+            'avg_ttfb': round(avg_ttfb, 0),
+            'duplicates_count': duplicates_count,
+            'pages_failed': pages_failed,
+
             # Statistiche dettagliate
             'status_stats': status_stats,
             'issue_stats': issue_stats,
             'alt_stats': alt_stats,
-            
+
             # Breakdown per tipo pagina
             'product_pages': general_stats.get('product_pages', 0),
             'category_pages': general_stats.get('category_pages', 0),
