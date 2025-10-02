@@ -470,7 +470,7 @@ class MainWindow(QMainWindow):
         header_layout.addStretch()
         
         # Badge versione
-        version_label = QLabel("v1.0.0")
+        version_label = QLabel("v1.0.1")
         version_label.setStyleSheet("""
             QLabel {
                 color: white;
@@ -2485,7 +2485,7 @@ class MainWindow(QMainWindow):
         """Mostra dialog about"""
         QMessageBox.about(self, "Info su PyPrestaScan", 
             """
-            <h2>PyPrestaScan v1.0.0</h2>
+            <h2>PyPrestaScan v1.0.1</h2>
             <p>CLI per analisi SEO specializzata di e-commerce PrestaShop</p>
             
             <p><b>Caratteristiche:</b></p>
