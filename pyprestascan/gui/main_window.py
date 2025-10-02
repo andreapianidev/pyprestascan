@@ -1110,26 +1110,49 @@ class MainWindow(QMainWindow):
         scroll_widget = QWidget()
         scroll_layout = QVBoxLayout(scroll_widget)
 
-        # Header con logo e titolo
+        # Header con gradiente moderno
         header_frame = QFrame()
-        header_frame.setStyleSheet("QFrame { background-color: #2196F3; border-radius: 8px; padding: 20px; }")
+        header_frame.setStyleSheet("""
+            QFrame {
+                background: qlineargradient(x1:0, y1:0, x2:1, y2:1,
+                    stop:0 #667eea, stop:0.5 #764ba2, stop:1 #f093fb);
+                border-radius: 12px;
+                padding: 30px;
+            }
+        """)
         header_layout = QVBoxLayout(header_frame)
+        header_layout.setSpacing(12)
 
         title_label = QLabel("🔍 PyPrestaScan")
-        title_label.setStyleSheet("color: white; font-size: 32px; font-weight: bold;")
+        title_label.setStyleSheet("color: white; font-size: 36px; font-weight: bold; background: transparent;")
         title_label.setAlignment(Qt.AlignCenter)
         header_layout.addWidget(title_label)
 
         subtitle_label = QLabel("Scanner SEO Professionale per PrestaShop")
-        subtitle_label.setStyleSheet("color: white; font-size: 16px;")
+        subtitle_label.setStyleSheet("color: #ffffff; font-size: 18px; font-weight: 500; background: transparent;")
         subtitle_label.setAlignment(Qt.AlignCenter)
         header_layout.addWidget(subtitle_label)
 
-        version_label = QLabel("Versione 1.0.0")
-        version_label.setStyleSheet("color: #E3F2FD; font-size: 12px;")
-        version_label.setAlignment(Qt.AlignCenter)
-        header_layout.addWidget(version_label)
+        # Badge versione con stile moderno
+        version_container = QWidget()
+        version_container.setStyleSheet("background: transparent;")
+        version_layout = QHBoxLayout(version_container)
+        version_layout.setContentsMargins(0, 10, 0, 0)
+        version_layout.addStretch()
 
+        version_label = QLabel("v1.0.1")
+        version_label.setStyleSheet("""
+            color: white;
+            font-size: 13px;
+            font-weight: 600;
+            background: rgba(255,255,255,0.25);
+            border-radius: 14px;
+            padding: 6px 18px;
+        """)
+        version_layout.addWidget(version_label)
+        version_layout.addStretch()
+
+        header_layout.addWidget(version_container)
         scroll_layout.addWidget(header_frame)
 
         # Sezione Come Usare
@@ -1568,13 +1591,13 @@ class MainWindow(QMainWindow):
             # Abilita bottoni report
             self.view_report_btn.setEnabled(True)
             self.open_export_dir_btn.setEnabled(True)
-            
+
             # Passa a tab risultati
             self.tab_widget.setCurrentIndex(2)
-            
-            # Carica risultati
-            self._load_results()
-            
+
+            # Carica risultati con QTimer per evitare problemi event loop
+            QTimer.singleShot(500, self._load_results)
+
             # Mostra notifica successo
             QMessageBox.information(self, "Completato", "Scansione completata con successo!")
         else:
@@ -1622,17 +1645,17 @@ class MainWindow(QMainWindow):
             # Carica risultati reali dal database
             db = CrawlDatabase(db_path)
             
-            # Crea nuovo event loop se necessario
+            # Crea nuovo event loop dedicato per evitare conflitti
+            loop = asyncio.new_event_loop()
+            asyncio.set_event_loop(loop)
+
             try:
-                loop = asyncio.get_event_loop()
-            except RuntimeError:
-                loop = asyncio.new_event_loop()
-                asyncio.set_event_loop(loop)
-            
-            # Esegui queries async in modo sincrono per GUI
-            stats = loop.run_until_complete(db.get_crawl_stats())
-            pages = loop.run_until_complete(db.export_pages())
-            issues = loop.run_until_complete(db.export_issues())
+                # Esegui queries async in modo sincrono per GUI
+                stats = loop.run_until_complete(db.get_crawl_stats())
+                pages = loop.run_until_complete(db.export_pages())
+                issues = loop.run_until_complete(db.export_issues())
+            finally:
+                loop.close()
             
             # Aggiorna KPI
             general = stats.get('general', {})
