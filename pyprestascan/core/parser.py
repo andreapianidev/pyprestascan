@@ -391,13 +391,16 @@ class SEOParser:
             '?q=' in url_lower):
             page_data.is_faceted_filter = True
         
-        # Rilevamento pagine transazionali da form e classi CSS
-        if (tree.css_first('form[action*="cart"]') or
-            tree.css_first('form[action*="order"]') or
-            tree.css_first('.cart') or
-            tree.css_first('.checkout') or
-            'cart' in html_content.lower() or
-            'checkout' in html_content.lower()):
+        # Rilevamento pagine transazionali SOLO da URL e body class specifici
+        url_lower = page_data.url.lower()
+        is_cart_url = any(keyword in url_lower for keyword in ['/cart', '/order', '/checkout', 'controller=cart', 'controller=order'])
+
+        if (is_cart_url or
+            tree.css_first('body.page-cart') or  # Body class PrestaShop specifico
+            tree.css_first('body.page-order') or
+            tree.css_first('body.page-checkout') or
+            tree.css_first('body[id="cart"]') or
+            tree.css_first('body[id="order"]')):
             page_data.is_cart_or_checkout = True
         
         # Rilevamento account da form login/register

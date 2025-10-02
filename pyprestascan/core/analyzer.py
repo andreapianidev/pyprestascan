@@ -406,36 +406,39 @@ class SEORuleEngine:
         return []
     
     def _check_hreflang_missing(self, page: PageData, images: List[ImageData]) -> List[dict]:
-        """Verifica hreflang mancante in sito multilingua"""
-        # Rileva multilingua da URL o configurazione
+        """Verifica hreflang mancante - SOLO su prodotti/categorie multilingua"""
+        # Segnala solo su pagine importanti (prodotto/categoria) in siti multilingua
+        if not (page.is_product or page.is_category):
+            return []
+
         url_lower = page.url.lower()
         has_lang_indicators = any([
             '/it/' in url_lower, '/en/' in url_lower, '/fr/' in url_lower,
             '/es/' in url_lower, '/de/' in url_lower,
             'id_lang=' in url_lower
         ])
-        
+
         if has_lang_indicators and not page.hreflang_map:
             return [{'field': 'hreflang', 'detected_multilang': True}]
         return []
     
     def _check_og_title_missing(self, page: PageData, images: List[ImageData]) -> List[dict]:
-        """Verifica OpenGraph title mancante (solo su pagine importanti)"""
-        # Segnala solo su pagine prodotto/categoria
-        if (page.is_product or page.is_category) and (not page.og_title or not page.og_title.strip()):
+        """Verifica OpenGraph title mancante (solo su prodotti)"""
+        # Segnala SOLO su prodotti (categoria troppo generico)
+        if page.is_product and (not page.og_title or not page.og_title.strip()):
             return [{'field': 'og_title', 'value': page.og_title}]
         return []
 
     def _check_og_description_missing(self, page: PageData, images: List[ImageData]) -> List[dict]:
-        """Verifica OpenGraph description mancante (solo su pagine importanti)"""
-        # Segnala solo su pagine prodotto/categoria
-        if (page.is_product or page.is_category) and (not page.og_description or not page.og_description.strip()):
+        """Verifica OpenGraph description mancante (solo su prodotti)"""
+        # Segnala SOLO su prodotti (categoria troppo generico)
+        if page.is_product and (not page.og_description or not page.og_description.strip()):
             return [{'field': 'og_description', 'value': page.og_description}]
         return []
 
     def _check_og_image_missing(self, page: PageData, images: List[ImageData]) -> List[dict]:
-        """Verifica OpenGraph image mancante (solo su pagine prodotto)"""
-        # Segnala solo su pagine prodotto
+        """Verifica OpenGraph image mancante (solo su prodotti)"""
+        # Segnala SOLO su prodotti
         if page.is_product and (not page.og_image or not page.og_image.strip()):
             return [{'field': 'og_image', 'value': page.og_image}]
         return []
@@ -470,20 +473,9 @@ class SEORuleEngine:
         return []
     
     def _check_images_no_lazy_loading(self, page: PageData, images: List[ImageData]) -> List[dict]:
-        """Verifica immagini senza lazy loading"""
-        if not images:
-            return []
-
-        no_lazy_count = sum(1 for img in images
-                           if not img.loading_attr or img.loading_attr != 'lazy')
-
-        # Segnala solo se ci sono MOLTE immagini (>10) e la maggioranza non ha lazy loading
-        if no_lazy_count > 10 and no_lazy_count / len(images) > 0.8:
-            return [{
-                'field': 'images_lazy',
-                'no_lazy': no_lazy_count,
-                'total': len(images)
-            }]
+        """Verifica immagini senza lazy loading - DISABILITATO (troppo rumoroso)"""
+        # DISABILITATO: lazy loading è nice-to-have ma non critico per SEO
+        # e genera troppi falsi positivi su siti legacy
         return []
 
 
