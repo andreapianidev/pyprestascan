@@ -3,7 +3,7 @@
 [![PyPI version](https://badge.fury.io/py/pyprestascan.svg)](https://pypi.org/project/pyprestascan/)
 [![Python](https://img.shields.io/badge/Python-3.8+-blue.svg)](https://python.org)
 [![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
-[![Downloads](https://pepy.tech/badge/pyprestascan)](https://pepy.tech/project/pyprestascan)
+[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](https://github.com/andreapianidev/pyprestascan/pulls)
 
 ![PyPrestaScan Screenshot](https://www.andreapiani.com/pyprestascan.png)
 
