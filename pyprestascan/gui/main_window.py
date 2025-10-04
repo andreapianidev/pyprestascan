@@ -471,7 +471,7 @@ class MainWindow(QMainWindow):
         header_layout.addStretch()
         
         # Badge versione
-        version_label = QLabel("v1.0.1")
+        version_label = QLabel("v1.1.0")
         version_label.setStyleSheet("""
             QLabel {
                 color: white;
@@ -1280,7 +1280,7 @@ class MainWindow(QMainWindow):
         version_layout.setContentsMargins(0, 10, 0, 0)
         version_layout.addStretch()
 
-        version_label = QLabel("v1.0.1")
+        version_label = QLabel("v1.1.0")
         version_label.setStyleSheet("""
             color: white;
             font-size: 13px;
@@ -1341,6 +1341,17 @@ class MainWindow(QMainWindow):
             "<li><b>Includi Generic Issues:</b> Mostra anche problemi SEO generici (non PrestaShop)</li>"
             "<li><b>User Agent:</b> Scegli browser da simulare (Desktop/Mobile/Bot/Custom)</li>"
             "<li><b>Mappa Lingue:</b> Associa URL multilingua (es: /it=/en,/fr=/en)</li>"
+            "<li><b>🤖 AI Fix Avanzati (Opzionale - v1.1.0+):</b> Genera fix SEO intelligenti con AI"
+            "<ul style='margin: 8px 0;'>"
+            "<li><b>✨ Abilita AI:</b> Attiva generazione AI per Fix Suggeriti invece di template</li>"
+            "<li><b>Provider AI:</b> Scegli tra DeepSeek (raccomandato, $0.14/1M token), OpenAI GPT-4o-mini ($0.15/1M), Claude Haiku ($0.80/1M)</li>"
+            "<li><b>API Key:</b> Inserisci chiave API ottenuta dal provider (registrazione gratuita disponibile)</li>"
+            "<li><b>💰 Costo:</b> ~$0.02 per 500 prodotti (DeepSeek) vs $240 lavoro manuale = 99.99% risparmio</li>"
+            "<li><b>🎯 Risultato:</b> Meta description contestuali con benefici prodotto e CTA naturali</li>"
+            "<li><b>🔒 Sicurezza:</b> Connessione diretta app→provider, zero dati a server PyPrestaScan</li>"
+            "<li><b>📖 Guida:</b> Vedi <a href='https://github.com/andreapianidev/pyprestascan/blob/main/AI_INTEGRATION.md'>AI_INTEGRATION.md</a> per setup dettagliato</li>"
+            "</ul>"
+            "</li>"
             "</ul>"
 
             "<h3 style='color: #764ba2; margin-top: 20px;'>2. Tab Progress & Log</h3>"
@@ -2902,14 +2913,15 @@ class MainWindow(QMainWindow):
 
     def _show_about(self):
         """Mostra dialog about"""
-        QMessageBox.about(self, "Info su PyPrestaScan", 
+        QMessageBox.about(self, "Info su PyPrestaScan",
             """
-            <h2>PyPrestaScan v1.0.1</h2>
-            <p>CLI per analisi SEO specializzata di e-commerce PrestaShop</p>
-            
+            <h2>PyPrestaScan v1.1.0</h2>
+            <p>CLI per analisi SEO specializzata di e-commerce PrestaShop con AI-powered fix</p>
+
             <p><b>Caratteristiche:</b></p>
             <ul>
             <li>🚀 Crawling asincrono scalabile</li>
+            <li>🤖 Fix AI con DeepSeek/GPT/Claude</li>
             <li>🎯 Euristiche PrestaShop specifiche</li>
             <li>📊 Report CSV, JSON e HTML</li>
             <li>🔄 Resume per sessioni lunghe</li>
