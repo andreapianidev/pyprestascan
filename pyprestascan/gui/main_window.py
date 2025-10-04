@@ -787,17 +787,98 @@ class MainWindow(QMainWindow):
         # Debug options
         debug_group = QGroupBox("🐛 Opzioni Debug")
         debug_layout = QVBoxLayout(debug_group)
-        
+
         self.debug_check = QCheckBox("Abilita output debug dettagliato")
         self.quiet_check = QCheckBox("Modalità silenziosa (solo errori)")
         self.no_color_check = QCheckBox("Disabilita colori nel log")
-        
+
         debug_layout.addWidget(self.debug_check)
         debug_layout.addWidget(self.quiet_check)
         debug_layout.addWidget(self.no_color_check)
-        
+
         scroll_layout.addWidget(debug_group)
-        
+
+        # AI Fix Avanzati (NEW!)
+        ai_group = QGroupBox("🤖 AI Fix Avanzati (Opzionale)")
+        ai_group.setStyleSheet("""
+            QGroupBox {
+                background-color: #F0F7FF;
+                border: 2px solid #667eea;
+                border-radius: 8px;
+                margin-top: 10px;
+                font-weight: bold;
+            }
+            QGroupBox::title {
+                color: #667eea;
+                subcontrol-origin: margin;
+                left: 10px;
+                padding: 0 5px;
+            }
+        """)
+        ai_layout = QGridLayout(ai_group)
+
+        # Enable AI checkbox
+        self.ai_enabled_check = QCheckBox("✨ Abilita generazione AI per Fix Suggeriti")
+        self.ai_enabled_check.setStyleSheet("font-weight: bold; color: #667eea;")
+        ai_layout.addWidget(self.ai_enabled_check, 0, 0, 1, 3)
+
+        # Provider selection
+        ai_layout.addWidget(QLabel("Provider AI:"), 1, 0)
+        self.ai_provider_combo = QComboBox()
+        self.ai_provider_combo.addItem("🏆 DeepSeek (Raccomandato - $0.14/1M token)", "deepseek")
+        self.ai_provider_combo.addItem("OpenAI GPT-4o-mini ($0.15/1M token)", "openai")
+        self.ai_provider_combo.addItem("Anthropic Claude Haiku ($0.80/1M token)", "claude")
+        self.ai_provider_combo.setEnabled(False)
+        ai_layout.addWidget(self.ai_provider_combo, 1, 1, 1, 2)
+
+        # API Key input
+        ai_layout.addWidget(QLabel("API Key:"), 2, 0)
+        self.ai_api_key_edit = QLineEdit()
+        self.ai_api_key_edit.setPlaceholderText("sk-... (inserisci la tua chiave API)")
+        self.ai_api_key_edit.setEchoMode(QLineEdit.EchoMode.Password)
+        self.ai_api_key_edit.setEnabled(False)
+        ai_layout.addWidget(self.ai_api_key_edit, 2, 1, 1, 2)
+
+        # Show/Hide API key button
+        self.ai_show_key_btn = QPushButton("👁️")
+        self.ai_show_key_btn.setMaximumWidth(40)
+        self.ai_show_key_btn.setEnabled(False)
+        self.ai_show_key_btn.clicked.connect(self._toggle_ai_key_visibility)
+        ai_layout.addWidget(self.ai_show_key_btn, 2, 3)
+
+        # Info label with cost estimation
+        self.ai_info_label = QLabel()
+        self.ai_info_label.setWordWrap(True)
+        self.ai_info_label.setStyleSheet("""
+            QLabel {
+                background-color: #E3F2FD;
+                color: #1565C0;
+                border-left: 4px solid #2196F3;
+                padding: 10px;
+                border-radius: 4px;
+                margin-top: 8px;
+                font-size: 12px;
+            }
+        """)
+        self.ai_info_label.setText(
+            "ℹ️ <b>Come funziona:</b><br>"
+            "• L'AI genera meta description <b>contestuali</b> invece di template generici<br>"
+            "• <b>Batch processing</b>: 20 prodotti in 1 chiamata (risparmio token)<br>"
+            "• <b>Costo stimato</b>: ~$0.02 per 500 prodotti (DeepSeek)<br>"
+            "• <b>Fallback automatico</b>: se AI fallisce, usa template standard<br><br>"
+            "📖 <b>Registrati gratuitamente:</b><br>"
+            "• DeepSeek: <a href='https://platform.deepseek.com'>platform.deepseek.com</a> ($5 credito iniziale)<br>"
+            "• OpenAI: <a href='https://platform.openai.com'>platform.openai.com</a><br>"
+            "• Claude: <a href='https://console.anthropic.com'>console.anthropic.com</a>"
+        )
+        self.ai_info_label.setOpenExternalLinks(True)
+        ai_layout.addWidget(self.ai_info_label, 3, 0, 1, 4)
+
+        # Connect checkbox to enable/disable fields
+        self.ai_enabled_check.toggled.connect(self._on_ai_enabled_changed)
+
+        scroll_layout.addWidget(ai_group)
+
         # Finalizza scroll area
         scroll.setWidget(scroll_widget)
         scroll.setWidgetResizable(True)
@@ -1476,17 +1557,32 @@ class MainWindow(QMainWindow):
         geometry = self.settings.value("geometry")
         if geometry:
             self.restoreGeometry(geometry)
-        
+
         # Ripristina valori form
         self.url_edit.setText(self.settings.value("url", ""))
         self.max_urls_spin.setValue(int(self.settings.value("max_urls", 10000)))
         self.concurrency_spin.setValue(int(self.settings.value("concurrency", 20)))
         # NON caricare project name - deve essere sempre nuovo con timestamp
-        
+
         # Ripristina export directory
         export_dir = self.settings.value("export_dir", "./report")
         self.export_dir_edit.setText(export_dir)
-    
+
+        # Ripristina impostazioni AI
+        ai_enabled = self.settings.value("ai_enabled", False, type=bool)
+        self.ai_enabled_check.setChecked(ai_enabled)
+
+        ai_provider = self.settings.value("ai_provider", "deepseek")
+        # Trova index del provider
+        for i in range(self.ai_provider_combo.count()):
+            if self.ai_provider_combo.itemData(i) == ai_provider:
+                self.ai_provider_combo.setCurrentIndex(i)
+                break
+
+        # API key (se salvata - per sicurezza potremmo non salvarla)
+        ai_api_key = self.settings.value("ai_api_key", "")
+        self.ai_api_key_edit.setText(ai_api_key)
+
     def _save_settings(self):
         """Salva impostazioni"""
         self.settings.setValue("geometry", self.saveGeometry())
@@ -1495,6 +1591,13 @@ class MainWindow(QMainWindow):
         self.settings.setValue("concurrency", self.concurrency_spin.value())
         # NON salvare project name - deve essere sempre nuovo
         self.settings.setValue("export_dir", self.export_dir_edit.text())
+
+        # Salva impostazioni AI
+        self.settings.setValue("ai_enabled", self.ai_enabled_check.isChecked())
+        self.settings.setValue("ai_provider", self.ai_provider_combo.currentData())
+        # Salva API key (ATTENZIONE: in chiaro nel file settings!)
+        # In futuro si potrebbe usare keyring per sicurezza
+        self.settings.setValue("ai_api_key", self.ai_api_key_edit.text())
     
     def _validate_form(self):
         """Valida form e abilita/disabilita bottoni"""
@@ -1666,6 +1769,21 @@ class MainWindow(QMainWindow):
                 # Mostra solo prime 80 caratteri
                 display_ua = ua_string[:80] + "..." if len(ua_string) > 80 else ua_string
                 self.ua_info_label.setText(f"UA: {display_ua}")
+
+    def _on_ai_enabled_changed(self, checked: bool):
+        """Abilita/disabilita campi AI"""
+        self.ai_provider_combo.setEnabled(checked)
+        self.ai_api_key_edit.setEnabled(checked)
+        self.ai_show_key_btn.setEnabled(checked)
+
+    def _toggle_ai_key_visibility(self):
+        """Mostra/nascondi API key"""
+        if self.ai_api_key_edit.echoMode() == QLineEdit.EchoMode.Password:
+            self.ai_api_key_edit.setEchoMode(QLineEdit.EchoMode.Normal)
+            self.ai_show_key_btn.setText("🙈")
+        else:
+            self.ai_api_key_edit.setEchoMode(QLineEdit.EchoMode.Password)
+            self.ai_show_key_btn.setText("👁️")
 
     def _build_config(self) -> CrawlConfig:
         """Costruisce configurazione da UI"""
@@ -2431,8 +2549,26 @@ class MainWindow(QMainWindow):
             from ..core.fixer import SEOFixer
             import asyncio
 
-            # SEOFixer vuole db_path, non db object!
-            fixer = SEOFixer(db_path)
+            # Ottieni parametri AI se abilitati
+            ai_provider = None
+            ai_api_key = None
+            if self.ai_enabled_check.isChecked():
+                ai_provider = self.ai_provider_combo.currentData()
+                ai_api_key = self.ai_api_key_edit.text().strip()
+
+                if not ai_api_key:
+                    QMessageBox.warning(
+                        self, "API Key Mancante",
+                        "Hai abilitato l'AI ma non hai inserito la API Key.\n"
+                        "Verrà usata la generazione template standard."
+                    )
+                    ai_provider = None
+                    ai_api_key = None
+                else:
+                    self._log_message("INFO", f"🤖 Generazione AI attivata con provider: {ai_provider}")
+
+            # SEOFixer con parametri AI opzionali
+            fixer = SEOFixer(db_path, ai_provider=ai_provider, ai_api_key=ai_api_key)
 
             # Genera fix
             loop = asyncio.new_event_loop()
@@ -2444,9 +2580,21 @@ class MainWindow(QMainWindow):
             finally:
                 loop.close()
 
+            # Messaggio con info AI se usata
+            ai_msg = ""
+            if ai_provider and fixes:
+                # Conta token totali se disponibile
+                total_tokens = sum(
+                    int(f.explanation.split('(')[-1].split(' token')[0])
+                    for f in fixes
+                    if 'token' in f.explanation
+                )
+                if total_tokens > 0:
+                    ai_msg = f"\n\n🤖 AI usata: {ai_provider}\n💰 Token consumati: ~{total_tokens}"
+
             QMessageBox.information(
                 self, "Completato",
-                f"Generati {len(fixes)} fix suggeriti!\nVisualizza la tabella per vederli."
+                f"Generati {len(fixes)} fix suggeriti!{ai_msg}\n\nVisualizza la tabella per vederli."
             )
 
             # Carica fix nella tabella

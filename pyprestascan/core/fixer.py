@@ -7,9 +7,17 @@ from pathlib import Path
 import re
 import hashlib
 from datetime import datetime
+import asyncio
 
 from .storage import CrawlDatabase, PageData, IssueData, FixData
 import json
+
+# Import AI providers (opzionale)
+try:
+    from pyprestascan.ai import AIProviderFactory, CostEstimator
+    AI_AVAILABLE = True
+except ImportError:
+    AI_AVAILABLE = False
 
 
 @dataclass
@@ -51,6 +59,17 @@ class FixGenerator:
 class MetaDescriptionFixer(FixGenerator):
     """Genera fix per meta description mancanti o errate"""
 
+    def __init__(self, db: CrawlDatabase, ai_provider: Optional[str] = None, ai_api_key: Optional[str] = None):
+        super().__init__(db)
+        self.ai_provider = None
+
+        # Inizializza AI se disponibile
+        if AI_AVAILABLE and ai_provider and ai_api_key:
+            try:
+                self.ai_provider = AIProviderFactory.create(ai_provider, ai_api_key)
+            except Exception as e:
+                print(f"⚠️  AI provider non disponibile: {e}. Usando generazione template.")
+
     def generate_fixes(self, issues: List[IssueData], pages: List[PageData]) -> List[FixSuggestion]:
         fixes = []
 
@@ -63,35 +82,123 @@ class MetaDescriptionFixer(FixGenerator):
         # Crea mappa pages per URL
         pages_by_url = {page.url: page for page in pages}
 
-        for page_url, issue in issues_by_page.items():
+        # Se AI è disponibile, genera in batch (molto più efficiente)
+        if self.ai_provider:
+            fixes = self._generate_fixes_with_ai(issues_by_page, pages_by_url)
+        else:
+            # Fallback a generazione template
+            for page_url, issue in issues_by_page.items():
+                page = pages_by_url.get(page_url)
+                if not page:
+                    continue
+
+                # Genera meta description suggerita
+                suggested_desc = self._generate_meta_description(page)
+
+                if suggested_desc:
+                    confidence = self._calculate_confidence(page, suggested_desc)
+
+                    fix = FixSuggestion(
+                        fix_id=self._create_fix_id(page_url, 'meta_description'),
+                        issue_code=issue.code,
+                        page_url=page_url,
+                        page_id=0,
+                        fix_type='meta_description',
+                        severity=issue.severity,
+                        current_value=page.meta_description or "(vuoto)",
+                        suggested_value=suggested_desc,
+                        confidence=confidence,
+                        automated=confidence >= 0.7,
+                        sql_query=self._generate_sql(page, suggested_desc),
+                        api_endpoint=self._get_api_endpoint(page),
+                        api_payload=self._generate_api_payload(page, suggested_desc),
+                        explanation=self._get_explanation(issue.code),
+                        created_at=datetime.now()
+                    )
+                    fixes.append(fix)
+
+        return fixes
+
+    def _generate_fixes_with_ai(self, issues_by_page: Dict, pages_by_url: Dict) -> List[FixSuggestion]:
+        """Genera fix usando AI in batch (ottimizzato per pochi token)"""
+        fixes = []
+
+        # Prepara batch items (max 20 alla volta per non esplodere i token)
+        batch_items = []
+        page_mapping = []
+
+        for page_url, issue in list(issues_by_page.items())[:20]:  # Limita a 20
             page = pages_by_url.get(page_url)
-            if not page:
+            if not page or not page.title:
                 continue
 
-            # Genera meta description suggerita
-            suggested_desc = self._generate_meta_description(page)
+            page_type = "prodotto" if page.is_product else ("categoria" if page.is_category else "cms")
 
-            if suggested_desc:
-                confidence = self._calculate_confidence(page, suggested_desc)
+            batch_items.append({
+                'title': page.title,
+                'page_type': page_type,
+                'url': page_url
+            })
+            page_mapping.append((page_url, issue, page))
 
+        if not batch_items:
+            return fixes
+
+        # Chiamata AI batch (UNA SOLA chiamata per tutti gli item!)
+        try:
+            loop = asyncio.get_event_loop()
+        except RuntimeError:
+            loop = asyncio.new_event_loop()
+            asyncio.set_event_loop(loop)
+
+        try:
+            ai_results = loop.run_until_complete(self.ai_provider.generate_batch(batch_items))
+
+            # Crea fix da risultati AI
+            for (page_url, issue, page), ai_result in zip(page_mapping, ai_results):
                 fix = FixSuggestion(
                     fix_id=self._create_fix_id(page_url, 'meta_description'),
                     issue_code=issue.code,
                     page_url=page_url,
-                    page_id=0,  # TODO: get from DB
+                    page_id=0,
                     fix_type='meta_description',
                     severity=issue.severity,
                     current_value=page.meta_description or "(vuoto)",
-                    suggested_value=suggested_desc,
-                    confidence=confidence,
-                    automated=confidence >= 0.7,
-                    sql_query=self._generate_sql(page, suggested_desc),
+                    suggested_value=ai_result.meta_description,
+                    confidence=ai_result.confidence,
+                    automated=True,  # AI è sempre automatable
+                    sql_query=self._generate_sql(page, ai_result.meta_description),
                     api_endpoint=self._get_api_endpoint(page),
-                    api_payload=self._generate_api_payload(page, suggested_desc),
-                    explanation=self._get_explanation(issue.code),
+                    api_payload=self._generate_api_payload(page, ai_result.meta_description),
+                    explanation=f"Generato da AI ({ai_result.provider}) - {ai_result.tokens_used} token. " + self._get_explanation(issue.code),
                     created_at=datetime.now()
                 )
                 fixes.append(fix)
+
+        except Exception as e:
+            print(f"⚠️  Errore AI: {e}. Fallback a generazione template.")
+            # Fallback a template per gli item falliti
+            for page_url, issue, page in page_mapping:
+                suggested_desc = self._generate_meta_description(page)
+                if suggested_desc:
+                    fix = FixSuggestion(
+                        fix_id=self._create_fix_id(page_url, 'meta_description'),
+                        issue_code=issue.code,
+                        page_url=page_url,
+                        page_id=0,
+                        fix_type='meta_description',
+                        severity=issue.severity,
+                        current_value=page.meta_description or "(vuoto)",
+                        suggested_value=suggested_desc,
+                        confidence=self._calculate_confidence(page, suggested_desc),
+                        automated=True,
+                        sql_query=self._generate_sql(page, suggested_desc),
+                        api_endpoint=self._get_api_endpoint(page),
+                        api_payload=self._generate_api_payload(page, suggested_desc),
+                        explanation=self._get_explanation(issue.code),
+                        created_at=datetime.now()
+                    )
+                    fixes.append(fix)
 
         return fixes
 
@@ -524,11 +631,15 @@ class CanonicalFixer(FixGenerator):
 class SEOFixer:
     """Classe principale per gestione fix SEO"""
 
-    def __init__(self, db_path: Path, config: Any = None):
+    def __init__(self, db_path: Path, config: Any = None, ai_provider: Optional[str] = None, ai_api_key: Optional[str] = None):
         self.db = CrawlDatabase(db_path)
         self.config = config
+        self.ai_provider = ai_provider
+        self.ai_api_key = ai_api_key
+
+        # Genera generators con AI se disponibile
         self.generators = [
-            MetaDescriptionFixer(self.db),
+            MetaDescriptionFixer(self.db, ai_provider=ai_provider, ai_api_key=ai_api_key),
             TitleFixer(self.db),
             AltTextFixer(self.db),
             CanonicalFixer(self.db)
