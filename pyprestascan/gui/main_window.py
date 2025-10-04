@@ -357,6 +357,7 @@ class MainWindow(QMainWindow):
         self.is_crawling = False
         self.last_export_dir: Optional[Path] = None
         self.all_issues_data = []  # Dati completi per filtraggio
+        self.current_project_name: Optional[str] = None  # Nome progetto corrente per database
         
         # Setup UI
         self._setup_ui()
@@ -681,7 +682,8 @@ class MainWindow(QMainWindow):
         
         project_layout.addWidget(QLabel("Nome progetto:"), 0, 0)
         self.project_edit = QLineEdit()
-        self.project_edit.setText("default")
+        # Crea SEMPRE nuovo progetto con timestamp univoco
+        self.project_edit.setText(f"scan_{datetime.now().strftime('%Y%m%d_%H%M%S')}")
         project_layout.addWidget(self.project_edit, 0, 1)
         
         project_layout.addWidget(QLabel("Directory report:"), 1, 0)
@@ -898,91 +900,159 @@ class MainWindow(QMainWindow):
         self.tab_widget.addTab(progress_widget, "📈 Progress & Log")
     
     def _create_results_tab(self):
-        """Crea tab risultati"""
+        """Crea tab risultati - SEMPLIFICATO con solo KPI e Report HTML"""
         results_widget = QWidget()
         layout = QVBoxLayout(results_widget)
-        
-        # Summary section
-        summary_group = QGroupBox("📋 Riepilogo Risultati")
+
+        # Messaggio informativo
+        info_frame = QFrame()
+        info_frame.setStyleSheet("""
+            QFrame {
+                background: qlineargradient(x1:0, y1:0, x2:1, y2:0,
+                    stop:0 #667eea, stop:1 #764ba2);
+                border-radius: 12px;
+                padding: 20px;
+                margin: 10px;
+            }
+        """)
+        info_layout = QVBoxLayout(info_frame)
+
+        info_title = QLabel("📊 Risultati Scansione")
+        info_title.setStyleSheet("color: white; font-size: 24px; font-weight: bold; background: transparent;")
+        info_layout.addWidget(info_title)
+
+        info_text = QLabel(
+            "Visualizza i risultati completi della scansione nel <b>Report HTML interattivo</b><br>"
+            "con grafici, tabelle ordinabili e analisi dettagliate."
+        )
+        info_text.setStyleSheet("color: #E3F2FD; font-size: 14px; background: transparent;")
+        info_text.setWordWrap(True)
+        info_layout.addWidget(info_text)
+
+        layout.addWidget(info_frame)
+
+        # Summary KPI
+        summary_group = QGroupBox("📋 Riepilogo Statistiche")
         summary_layout = QGridLayout(summary_group)
-        
-        # KPI labels
-        self.total_pages_label = QLabel("Pagine totali: --")
-        self.success_rate_label = QLabel("Tasso successo: --%")
-        self.avg_score_label = QLabel("Score medio: --")
-        self.critical_issues_label = QLabel("Issues critici: --")
-        
+        summary_group.setStyleSheet("""
+            QGroupBox {
+                font-size: 16px;
+                font-weight: bold;
+                border: 2px solid #e0e0e0;
+                border-radius: 8px;
+                margin-top: 10px;
+                padding: 20px;
+            }
+        """)
+
+        # KPI labels con stile migliorato
+        self.total_pages_label = QLabel("📄 Pagine totali: --")
+        self.total_pages_label.setStyleSheet("font-size: 16px; padding: 10px;")
+
+        self.success_rate_label = QLabel("✅ Tasso successo: --%")
+        self.success_rate_label.setStyleSheet("font-size: 16px; padding: 10px;")
+
+        self.avg_score_label = QLabel("⭐ Score medio: --")
+        self.avg_score_label.setStyleSheet("font-size: 16px; padding: 10px;")
+
+        self.critical_issues_label = QLabel("🔴 Issues critici: --")
+        self.critical_issues_label.setStyleSheet("font-size: 16px; padding: 10px;")
+
         summary_layout.addWidget(self.total_pages_label, 0, 0)
         summary_layout.addWidget(self.success_rate_label, 0, 1)
         summary_layout.addWidget(self.avg_score_label, 1, 0)
         summary_layout.addWidget(self.critical_issues_label, 1, 1)
-        
+
         layout.addWidget(summary_group)
-        
-        # Results table
-        table_group = QGroupBox("📊 Issues Principali")
-        table_layout = QVBoxLayout(table_group)
-        
-        # Filtri severity
-        filters_layout = QHBoxLayout()
-        filters_layout.addWidget(QLabel("Mostra:"))
-        
-        self.show_critical_check = QCheckBox("🔴 Critical")
-        self.show_critical_check.setChecked(True)
-        self.show_critical_check.stateChanged.connect(self._filter_issues_table)
-        filters_layout.addWidget(self.show_critical_check)
-        
-        self.show_warning_check = QCheckBox("🟡 Warning") 
-        self.show_warning_check.setChecked(True)
-        self.show_warning_check.stateChanged.connect(self._filter_issues_table)
-        filters_layout.addWidget(self.show_warning_check)
-        
-        self.show_info_check = QCheckBox("🔵 Info")
-        self.show_info_check.setChecked(True)
-        self.show_info_check.stateChanged.connect(self._filter_issues_table)
-        filters_layout.addWidget(self.show_info_check)
-        
-        filters_layout.addStretch()
-        
-        # Bottone export issues
-        export_issues_btn = QPushButton("📥 Esporta Issues CSV")
-        export_issues_btn.clicked.connect(self._export_issues_csv)
-        filters_layout.addWidget(export_issues_btn)
-        
-        table_layout.addLayout(filters_layout)
-        
-        self.results_table = QTableWidget(0, 5)
-        self.results_table.setHorizontalHeaderLabels(["Severity", "Codice", "Descrizione", "Occorrenze", "Pagine Coinvolte"])
-        self.results_table.horizontalHeader().setStretchLastSection(True)
-        self.results_table.setSortingEnabled(True)
-        self.results_table.setAlternatingRowColors(True)
-        self.results_table.setSelectionBehavior(QTableWidget.SelectRows)
-        self.results_table.itemDoubleClicked.connect(self._show_issue_details)
-        table_layout.addWidget(self.results_table)
-        
-        # Label con suggerimento
-        hint_label = QLabel("💡 Doppio click su un issue per vedere le pagine coinvolte")
-        hint_label.setStyleSheet("color: #666; font-style: italic; padding: 5px;")
-        table_layout.addWidget(hint_label)
-        
-        layout.addWidget(table_group)
-        
-        # Export buttons
-        export_layout = QHBoxLayout()
-        export_layout.addStretch()
-        
-        self.view_report_btn = QPushButton("📊 Visualizza Report HTML")
+
+        # Spacer
+        layout.addStretch()
+
+        # Action buttons - GRANDI e VISIBILI
+        actions_group = QGroupBox("🎯 Azioni Disponibili")
+        actions_layout = QVBoxLayout(actions_group)
+        actions_group.setStyleSheet("""
+            QGroupBox {
+                font-size: 16px;
+                font-weight: bold;
+                border: 2px solid #e0e0e0;
+                border-radius: 8px;
+                margin-top: 10px;
+                padding: 20px;
+            }
+        """)
+
+        # Bottone report HTML - PRINCIPALE
+        self.view_report_btn = QPushButton("📊 Visualizza Report HTML Completo")
         self.view_report_btn.setEnabled(False)
         self.view_report_btn.clicked.connect(self._open_report)
-        export_layout.addWidget(self.view_report_btn)
-        
+        self.view_report_btn.setStyleSheet("""
+            QPushButton {
+                background-color: #667eea;
+                color: white;
+                font-size: 18px;
+                font-weight: bold;
+                padding: 20px;
+                border-radius: 8px;
+                border: none;
+            }
+            QPushButton:hover {
+                background-color: #764ba2;
+            }
+            QPushButton:disabled {
+                background-color: #cccccc;
+            }
+        """)
+        actions_layout.addWidget(self.view_report_btn)
+
+        # Bottoni secondari
+        secondary_layout = QHBoxLayout()
+
         self.open_export_dir_btn = QPushButton("📁 Apri Cartella Report")
         self.open_export_dir_btn.setEnabled(False)
         self.open_export_dir_btn.clicked.connect(self._open_export_dir)
-        export_layout.addWidget(self.open_export_dir_btn)
-        
-        layout.addLayout(export_layout)
-        
+        self.open_export_dir_btn.setStyleSheet("""
+            QPushButton {
+                background-color: #2196F3;
+                color: white;
+                font-size: 14px;
+                padding: 15px;
+                border-radius: 6px;
+                border: none;
+            }
+            QPushButton:hover {
+                background-color: #1976D2;
+            }
+            QPushButton:disabled {
+                background-color: #cccccc;
+            }
+        """)
+        secondary_layout.addWidget(self.open_export_dir_btn)
+
+        export_csv_btn = QPushButton("📥 Esporta Issues CSV")
+        export_csv_btn.clicked.connect(self._export_issues_csv)
+        export_csv_btn.setStyleSheet("""
+            QPushButton {
+                background-color: #4CAF50;
+                color: white;
+                font-size: 14px;
+                padding: 15px;
+                border-radius: 6px;
+                border: none;
+            }
+            QPushButton:hover {
+                background-color: #45a049;
+            }
+        """)
+        secondary_layout.addWidget(export_csv_btn)
+
+        actions_layout.addLayout(secondary_layout)
+
+        layout.addWidget(actions_group)
+
+        # Spacer finale
+        layout.addStretch()
+
         self.tab_widget.addTab(results_widget, "📊 Risultati")
 
     def _create_fixes_tab(self):
@@ -1089,10 +1159,12 @@ class MainWindow(QMainWindow):
         info_label.setStyleSheet("""
             QLabel {
                 background-color: #E3F2FD;
+                color: #1565C0;
                 border-left: 4px solid #2196F3;
                 padding: 12px;
                 border-radius: 4px;
                 margin-top: 8px;
+                font-size: 13px;
             }
         """)
         layout.addWidget(info_label)
@@ -1156,41 +1228,126 @@ class MainWindow(QMainWindow):
         scroll_layout.addWidget(header_frame)
 
         # Sezione Come Usare
-        usage_group = QGroupBox("📖 Come Usare PyPrestaScan")
+        usage_group = QGroupBox("Come Usare PyPrestaScan")
+        usage_group.setStyleSheet("""
+            QGroupBox {
+                font-size: 16px;
+                font-weight: bold;
+                color: #2b2b2b;
+                border: 2px solid #e0e0e0;
+                border-radius: 8px;
+                margin-top: 10px;
+                padding-top: 15px;
+            }
+            QGroupBox::title {
+                subcontrol-origin: margin;
+                left: 15px;
+                padding: 0 8px;
+                background-color: white;
+            }
+        """)
         usage_layout = QVBoxLayout(usage_group)
 
         usage_text = QLabel(
-            "<h3>1️⃣ Configurazione</h3>"
-            "<ul>"
-            "<li><b>Inserisci l'URL</b> del tuo sito PrestaShop (es: https://tuosito.com)</li>"
-            "<li><b>Scegli una modalità</b> di scansione predefinita o personalizza i parametri</li>"
-            "<li><b>Modalità disponibili:</b>"
-            "<ul>"
-            "<li>⚡ <b>Scansione Veloce</b>: 500 pagine, ideale per test rapidi</li>"
-            "<li>🔍 <b>Scansione Approfondita</b>: 10000 pagine, analisi completa</li>"
-            "<li>🖼️ <b>Solo ALT Immagini</b>: 1000 pagine, focus su immagini</li>"
+            "<h3 style='color: #667eea;'>1. Tab Configurazione</h3>"
+            "<ul style='line-height: 1.8;'>"
+            "<li><b>URL Sito:</b> Inserisci l'URL completo del tuo PrestaShop (es: https://tuosito.com)</li>"
+            "<li><b>Nome Progetto:</b> Identificativo univoco per la scansione (autogenerato con timestamp)</li>"
+            "<li><b>Directory Export:</b> Cartella dove salvare i report HTML/CSV/JSON</li>"
+            "<li><b>Preset Scansione:</b> Menu dropdown con configurazioni predefinite"
+            "<ul style='margin: 8px 0;'>"
+            "<li><b>Veloce (50 pagine)</b>: Test rapido, 10 connessioni, 0.1s delay</li>"
+            "<li><b>Media (500 pagine)</b>: Analisi bilanciata, 10 connessioni, 0.2s delay</li>"
+            "<li><b>Approfondita (10000 pagine)</b>: Scansione completa, 15 connessioni, 0.3s delay</li>"
+            "<li><b>Solo Immagini ALT (1000 pagine)</b>: Focus su tag ALT, 10 connessioni</li>"
+            "<li><b>Personalizzato</b>: Configura manualmente tutti i parametri</li>"
+            "</ul>"
+            "</li>"
+            "<li><b>Max Pagine:</b> Numero massimo di URL da scansionare (0 = illimitato)</li>"
+            "<li><b>Concorrenza:</b> Numero di richieste HTTP parallele (5-20 consigliato)</li>"
+            "<li><b>Delay (secondi):</b> Pausa tra richieste per non sovraccaricare il server</li>"
+            "<li><b>Profondità Crawling:</b> Livello massimo di link da seguire (0 = nessun limite)</li>"
+            "<li><b>Modalità PrestaShop:</b> Abilita regole SEO specifiche per PrestaShop</li>"
+            "<li><b>Includi Sottodomini:</b> Scansiona anche sottodomini (es: blog.tuosito.com)</li>"
+            "<li><b>Resume:</b> Riprendi scansione interrotta usando stesso progetto</li>"
+            "<li><b>Includi Generic Issues:</b> Mostra anche problemi SEO generici (non PrestaShop)</li>"
+            "<li><b>User Agent:</b> Scegli browser da simulare (Desktop/Mobile/Bot/Custom)</li>"
+            "<li><b>Mappa Lingue:</b> Associa URL multilingua (es: /it=/en,/fr=/en)</li>"
+            "</ul>"
+
+            "<h3 style='color: #764ba2; margin-top: 20px;'>2. Tab Progress & Log</h3>"
+            "<ul style='line-height: 1.8;'>"
+            "<li><b>Statistiche Real-Time:</b> Contatori live di pagine, issues, immagini senza ALT</li>"
+            "<li><b>Timer Elapsed:</b> Tempo trascorso dall'inizio della scansione</li>"
+            "<li><b>Barra Progresso:</b> Avanzamento percentuale rispetto a Max Pagine</li>"
+            "<li><b>Lista URL Scansionati:</b> Elenco in tempo reale delle ultime 100 pagine crawlate</li>"
+            "<li><b>Log Dettagliato:</b> Tutti gli eventi con timestamp e livelli (DEBUG/INFO/WARNING/ERROR)</li>"
+            "<li><b>Pulsante Ferma:</b> Interrompi scansione in corso (salvataggio automatico dati)</li>"
+            "<li><b>Salva Log:</b> Esporta log completo in file TXT per analisi offline</li>"
+            "</ul>"
+
+            "<h3 style='color: #667eea; margin-top: 20px;'>3. Tab Risultati</h3>"
+            "<ul style='line-height: 1.8;'>"
+            "<li><b>KPI Dashboard:</b> Pannello con metriche chiave"
+            "<ul style='margin: 8px 0;'>"
+            "<li>Pagine Totali scansionate</li>"
+            "<li>Tasso Successo (% pagine 2xx)</li>"
+            "<li>Score Medio SEO (0-100)</li>"
+            "<li>Issues Critici totali</li>"
+            "</ul>"
+            "</li>"
+            "<li><b>Tabella Issues:</b> Elenco completo problemi SEO rilevati con:"
+            "<ul style='margin: 8px 0;'>"
+            "<li><b>Severity</b>: CRITICAL (rosso), WARNING (arancione), INFO (blu)</li>"
+            "<li><b>Codice</b>: Identificatore univoco issue (es: MISSING_H1, DUPLICATE_TITLE)</li>"
+            "<li><b>Descrizione</b>: Spiegazione dettagliata del problema</li>"
+            "<li><b>Occorrenze</b>: Numero totale di volte che appare</li>"
+            "<li><b>Pagine Coinvolte</b>: Quante pagine diverse hanno questo issue</li>"
+            "</ul>"
+            "</li>"
+            "<li><b>Filtri Severity:</b> Pulsanti per filtrare CRITICAL/WARNING/INFO</li>"
+            "<li><b>Barra Ricerca:</b> Cerca per codice o descrizione issue</li>"
+            "<li><b>Click su Issue:</b> Doppio click per vedere lista pagine coinvolte</li>"
+            "<li><b>Esporta CSV:</b> Salva tutti gli issues in formato CSV per Excel/Google Sheets</li>"
+            "<li><b>Visualizza Report HTML:</b> Apri report interattivo con grafici e tabelle</li>"
+            "<li><b>Apri Directory Export:</b> Accesso rapido alla cartella con tutti i file generati</li>"
+            "</ul>"
+
+            "<h3 style='color: #f093fb; margin-top: 20px;'>4. Tab Fix Suggeriti</h3>"
+            "<ul style='line-height: 1.8;'>"
+            "<li><b>Genera Fix Suggeriti:</b> Analizza issues e crea correzioni automatiche intelligenti</li>"
+            "<li><b>Tabella Fix:</b> Elenco modifiche proposte con:"
+            "<ul style='margin: 8px 0;'>"
+            "<li><b>Issue Code</b>: Problema da risolvere</li>"
+            "<li><b>Pagina</b>: URL interessato</li>"
+            "<li><b>Campo</b>: Elemento da modificare (title, h1, meta_description, alt)</li>"
+            "<li><b>Valore Attuale</b>: Contenuto esistente (problematico)</li>"
+            "<li><b>Valore Suggerito</b>: Nuova proposta corretta</li>"
+            "<li><b>Confidence</b>: Punteggio affidabilità (0-100%)</li>"
+            "</ul>"
+            "</li>"
+            "<li><b>Filtro Confidence:</b> Slider per mostrare solo fix con confidence >= X%</li>"
+            "<li><b>Statistiche Fix:</b> Contatori totali e per tipologia (title, h1, meta, alt)</li>"
+            "<li><b>Esporta CSV Fix:</b> Salva suggerimenti in CSV per revisione manuale</li>"
+            "<li><b>Esporta SQL Fix:</b> Genera query SQL UPDATE per applicare modifiche al DB PrestaShop"
+            "<ul style='margin: 8px 0;'>"
+            "<li style='color: #ff6b6b;'><b>ATTENZIONE:</b> Fai SEMPRE backup database prima di eseguire SQL!</li>"
+            "<li>Le query UPDATE sono generate automaticamente per tabelle ps_meta/ps_product_lang</li>"
+            "<li>Testa su ambiente staging prima di applicare in produzione</li>"
             "</ul>"
             "</li>"
             "</ul>"
-            "<h3>2️⃣ Avvio Scansione</h3>"
-            "<ul>"
-            "<li>Clicca su <b>▶️ Avvia Scansione</b></li>"
-            "<li>Monitora il progresso in tempo reale nel tab <b>Progress & Log</b></li>"
-            "<li>Vedrai: pagine scansionate, issues trovati, immagini senza ALT, timer</li>"
-            "</ul>"
-            "<h3>3️⃣ Analisi Risultati</h3>"
-            "<ul>"
-            "<li>Vai al tab <b>📊 Risultati</b> per vedere gli issues rilevati</li>"
-            "<li>Filtra per severità: <b>Critical</b>, <b>Warning</b>, <b>Info</b></li>"
-            "<li>Esporta in <b>CSV</b> per analisi dettagliate</li>"
-            "</ul>"
-            "<h3>4️⃣ Fix Automatici</h3>"
-            "<ul>"
-            "<li>Vai al tab <b>🔧 Fix Suggeriti</b></li>"
-            "<li>Clicca su <b>Genera Fix Suggeriti</b></li>"
-            "<li>Visualizza i fix con confidence score</li>"
-            "<li>Esporta <b>SQL</b> per applicarli al database PrestaShop</li>"
-            "<li>⚠️ <b>Fai sempre un backup prima di applicare le query SQL!</b></li>"
+
+            "<h3 style='color: #28a745; margin-top: 20px;'>5. Funzionalità Avanzate</h3>"
+            "<ul style='line-height: 1.8;'>"
+            "<li><b>Nuovo Progetto:</b> Crea nuova scansione con nome progetto timestamp autogenerato</li>"
+            "<li><b>Carica Progetto:</b> Apri database esistente per vedere risultati passati</li>"
+            "<li><b>Cancella Progetto:</b> Elimina database e report di un progetto</li>"
+            "<li><b>Resume Scansione:</b> Riprendi scansione interrotta dal punto esatto di stop</li>"
+            "<li><b>Export Multipli:</b> Report disponibili in HTML, CSV, JSON per ogni scansione</li>"
+            "<li><b>Database SQLite:</b> Tutti i dati salvati in ~/.pyprestascan/[progetto]/crawl.db</li>"
+            "<li><b>Log Colorati:</b> Livelli visivi per identificare rapidamente problemi</li>"
+            "<li><b>Autosave:</b> Salvataggio automatico progressivo durante crawling</li>"
             "</ul>"
         )
         usage_text.setWordWrap(True)
@@ -1200,7 +1357,24 @@ class MainWindow(QMainWindow):
         scroll_layout.addWidget(usage_group)
 
         # Sezione Sviluppatore
-        dev_group = QGroupBox("👨‍💻 Sviluppatore")
+        dev_group = QGroupBox("Sviluppatore")
+        dev_group.setStyleSheet("""
+            QGroupBox {
+                font-size: 16px;
+                font-weight: bold;
+                color: #2b2b2b;
+                border: 2px solid #e0e0e0;
+                border-radius: 8px;
+                margin-top: 10px;
+                padding-top: 15px;
+            }
+            QGroupBox::title {
+                subcontrol-origin: margin;
+                left: 15px;
+                padding: 0 8px;
+                background-color: white;
+            }
+        """)
         dev_layout = QVBoxLayout(dev_group)
 
         dev_frame = QFrame()
@@ -1215,7 +1389,7 @@ class MainWindow(QMainWindow):
         dev_title.setStyleSheet("color: #666; font-size: 14px;")
         dev_inner_layout.addWidget(dev_title)
 
-        dev_website = QLabel('<a href="https://www.andreapiani.com" style="color: #2196F3; font-size: 14px;">🌐 www.andreapiani.com</a>')
+        dev_website = QLabel('<a href="https://www.andreapiani.com" style="color: #667eea; font-size: 14px; text-decoration: none; font-weight: 600;">www.andreapiani.com</a>')
         dev_website.setTextFormat(Qt.RichText)
         dev_website.setOpenExternalLinks(True)
         dev_inner_layout.addWidget(dev_website)
@@ -1224,28 +1398,45 @@ class MainWindow(QMainWindow):
         scroll_layout.addWidget(dev_group)
 
         # Sezione Open Source
-        opensource_group = QGroupBox("💎 Progetto Open Source")
+        opensource_group = QGroupBox("Progetto Open Source")
+        opensource_group.setStyleSheet("""
+            QGroupBox {
+                font-size: 16px;
+                font-weight: bold;
+                color: #2b2b2b;
+                border: 2px solid #e0e0e0;
+                border-radius: 8px;
+                margin-top: 10px;
+                padding-top: 15px;
+            }
+            QGroupBox::title {
+                subcontrol-origin: margin;
+                left: 15px;
+                padding: 0 8px;
+                background-color: white;
+            }
+        """)
         opensource_layout = QVBoxLayout(opensource_group)
 
         opensource_text = QLabel(
-            "<p style='font-size: 14px;'>"
+            "<p style='font-size: 14px; line-height: 1.6;'>"
             "PyPrestaScan è un progetto <b>open-source gratuito</b> rilasciato su GitHub.</p>"
-            "<p style='font-size: 14px;'>"
-            "🌟 <b>Contributi, feedback e segnalazioni sono sempre benvenuti!</b></p>"
+            "<p style='font-size: 14px; line-height: 1.6;'>"
+            "<b>Contributi, feedback e segnalazioni sono sempre benvenuti!</b></p>"
             "<br>"
             "<p style='font-size: 14px;'>"
-            "📦 <b>Repository GitHub:</b><br>"
-            '<a href="https://github.com/andreapianidev/pyprestascan" style="color: #2196F3;">'
+            "<b>Repository GitHub:</b><br>"
+            '<a href="https://github.com/andreapianidev/pyprestascan" style="color: #667eea; text-decoration: none; font-weight: 600;">'
             'github.com/andreapianidev/pyprestascan</a>'
             "</p>"
             "<br>"
             "<p style='font-size: 14px;'>"
-            "🐛 <b>Segnala bug o richiedi funzionalità:</b><br>"
-            '<a href="https://github.com/andreapianidev/pyprestascan/issues" style="color: #2196F3;">'
+            "<b>Segnala bug o richiedi funzionalità:</b><br>"
+            '<a href="https://github.com/andreapianidev/pyprestascan/issues" style="color: #764ba2; text-decoration: none; font-weight: 600;">'
             'github.com/andreapianidev/pyprestascan/issues</a>'
             "</p>"
             "<br>"
-            "<p style='font-size: 12px; color: #666;'>"
+            "<p style='font-size: 12px; color: #999;'>"
             "Licenza: MIT - Libero per uso commerciale e personale"
             "</p>"
         )
@@ -1290,7 +1481,7 @@ class MainWindow(QMainWindow):
         self.url_edit.setText(self.settings.value("url", ""))
         self.max_urls_spin.setValue(int(self.settings.value("max_urls", 10000)))
         self.concurrency_spin.setValue(int(self.settings.value("concurrency", 20)))
-        self.project_edit.setText(self.settings.value("project", "default"))
+        # NON caricare project name - deve essere sempre nuovo con timestamp
         
         # Ripristina export directory
         export_dir = self.settings.value("export_dir", "./report")
@@ -1302,7 +1493,7 @@ class MainWindow(QMainWindow):
         self.settings.setValue("url", self.url_edit.text())
         self.settings.setValue("max_urls", self.max_urls_spin.value())
         self.settings.setValue("concurrency", self.concurrency_spin.value())
-        self.settings.setValue("project", self.project_edit.text())
+        # NON salvare project name - deve essere sempre nuovo
         self.settings.setValue("export_dir", self.export_dir_edit.text())
     
     def _validate_form(self):
@@ -1421,7 +1612,10 @@ class MainWindow(QMainWindow):
             # Valida configurazione
             config = self._build_config()
             cli_context = self._build_cli_context()
-            
+
+            # Salva project name per _load_results()
+            self.current_project_name = config.project
+
             # Aggiorna UI
             self.is_crawling = True
             self._update_crawling_ui(True)
@@ -1595,11 +1789,11 @@ class MainWindow(QMainWindow):
             # Passa a tab risultati
             self.tab_widget.setCurrentIndex(2)
 
-            # Carica risultati con QTimer per evitare problemi event loop
-            QTimer.singleShot(500, self._load_results)
-
             # Mostra notifica successo
             QMessageBox.information(self, "Completato", "Scansione completata con successo!")
+
+            # Carica risultati DOPO il dialog per evitare problemi UI
+            self._load_results()
         else:
             QMessageBox.warning(self, "Errore", f"Scansione terminata con errori:\n{message}")
     
@@ -1633,54 +1827,88 @@ class MainWindow(QMainWindow):
             from ..core.storage import CrawlDatabase
             from pathlib import Path
             import asyncio
-            
-            # Path database dal progetto corrente (usa la stessa logica di ProjectManager)
-            project_name = self.project_edit.text()
+            import traceback
+
+            self._log_message("DEBUG", "🔍 Inizio caricamento risultati...")
+
+            # Path database dal progetto corrente (usa nome progetto salvato durante scan)
+            project_name = getattr(self, 'current_project_name', None) or self.project_edit.text()
             db_path = Path.home() / ".pyprestascan" / project_name / "crawl.db"
 
+            self._log_message("DEBUG", f"📂 Cerco database in: {db_path}")
+
+            # Se non esiste, cerca il database più recente in .pyprestascan
             if not db_path.exists():
-                self._log_message("WARNING", f"Database non trovato in {db_path} - esegui prima una scansione")
-                return
-            
+                self._log_message("DEBUG", "⚠️ Database non trovato, cerco il più recente...")
+                base_dir = Path.home() / ".pyprestascan"
+                if base_dir.exists():
+                    # Trova tutti i database esistenti
+                    all_dbs = list(base_dir.glob("*/crawl.db"))
+                    if all_dbs:
+                        # Ordina per data modifica (più recente prima)
+                        db_path = max(all_dbs, key=lambda p: p.stat().st_mtime)
+                        self.current_project_name = db_path.parent.name
+                        self._log_message("INFO", f"✅ Carico database più recente: {db_path.parent.name}")
+                    else:
+                        self._log_message("WARNING", f"❌ Nessun database trovato - esegui prima una scansione")
+                        return
+                else:
+                    self._log_message("WARNING", f"❌ Directory .pyprestascan non trovata - esegui prima una scansione")
+                    return
+            else:
+                self._log_message("DEBUG", f"✅ Database trovato: {db_path}")
+
             # Carica risultati reali dal database
+            self._log_message("DEBUG", "📊 Apertura database...")
             db = CrawlDatabase(db_path)
-            
+
             # Crea nuovo event loop dedicato per evitare conflitti
+            self._log_message("DEBUG", "🔄 Creo event loop...")
             loop = asyncio.new_event_loop()
             asyncio.set_event_loop(loop)
 
             try:
                 # Esegui queries async in modo sincrono per GUI
+                self._log_message("DEBUG", "📈 Carico statistiche...")
                 stats = loop.run_until_complete(db.get_crawl_stats())
+                self._log_message("DEBUG", "📄 Carico pagine...")
                 pages = loop.run_until_complete(db.export_pages())
+                self._log_message("DEBUG", "🐛 Carico issues...")
                 issues = loop.run_until_complete(db.export_issues())
+                self._log_message("DEBUG", f"✅ Caricate {len(issues)} issues dal database")
             finally:
                 loop.close()
-            
+
             # Aggiorna KPI
+            self._log_message("DEBUG", "📊 Aggiorno KPI...")
             general = stats.get('general', {})
             status_stats = stats.get('status', {})
             issue_stats = stats.get('issues', {})
-            
+
             total_pages = general.get('total_pages', 0)
             success_pages = status_stats.get('2xx', 0)
             success_rate = round((success_pages / total_pages * 100) if total_pages > 0 else 0, 1)
             avg_score = round(general.get('avg_score', 0) or 0, 1)
             critical_issues = issue_stats.get('CRITICAL', 0)
-            
+
             self.total_pages_label.setText(f"Pagine totali: {total_pages}")
             self.success_rate_label.setText(f"Tasso successo: {success_rate}%")
             self.avg_score_label.setText(f"Score medio: {avg_score}")
             self.critical_issues_label.setText(f"Issues critici: {critical_issues}")
-            
+
             # Raggruppa issues per criticità
+            self._log_message("DEBUG", "📋 Raggruppo issues per severity...")
             issues_by_severity = self._group_issues_by_severity(issues)
-            
+            self._log_message("DEBUG", f"✅ Raggruppati {len(issues_by_severity)} issues unici")
+
             # Popola tabella con issues reali
+            self._log_message("DEBUG", "📝 Popolo tabella issues...")
             self._populate_issues_table(issues_by_severity)
-            
+            self._log_message("INFO", f"✅ Caricamento completato: {len(issues_by_severity)} issues visualizzati")
+
         except Exception as e:
-            self._log_message("ERROR", f"Errore caricamento risultati: {str(e)}")
+            self._log_message("ERROR", f"❌ Errore caricamento risultati: {str(e)}")
+            self._log_message("DEBUG", f"Stack trace: {traceback.format_exc()}")
     
     def _group_issues_by_severity(self, issues):
         """Raggruppa issues per severity e codice"""
@@ -1717,13 +1945,21 @@ class MainWindow(QMainWindow):
         result.sort(key=lambda x: (x['sort_key'], -x['count']))
         return result
     
-    def _populate_issues_table(self, issues_data):
+    def _populate_issues_table(self, issues_data, save_to_all=True):
         """Popola tabella con issues categorizzati per criticità"""
+        self._log_message("DEBUG", f"📝 Popolo tabella con {len(issues_data)} issues...")
+
         self.results_table.setRowCount(len(issues_data))
-        
+
         for row, issue in enumerate(issues_data):
             severity = issue['severity']
-            
+            code = issue.get('code', 'UNKNOWN')
+            message = issue.get('message', 'Nessuna descrizione')
+            count = issue.get('count', 0)
+            affected_pages = issue.get('affected_pages', 0)
+
+            self._log_message("DEBUG", f"  Row {row}: {severity} - {code} - {count} occorrenze")
+
             # Severity con colori
             severity_item = QTableWidgetItem(severity)
             if severity == "CRITICAL":
@@ -1738,47 +1974,51 @@ class MainWindow(QMainWindow):
                 severity_item.setBackground(QColor("#e3f2fd"))
                 severity_item.setForeground(QColor("#1976d2"))
                 severity_item.setText("🔵 INFO")
-            
+
             # Code item
-            code_item = QTableWidgetItem(issue['code'])
+            code_item = QTableWidgetItem(code)
             code_item.setFont(QFont("Monaco", 9))
-            
+
             # Altri item
-            desc_item = QTableWidgetItem(issue['message'])
-            count_item = QTableWidgetItem(str(issue['count']))
-            pages_item = QTableWidgetItem(str(issue['affected_pages']))
-            
+            desc_item = QTableWidgetItem(message)
+            count_item = QTableWidgetItem(str(count))
+            pages_item = QTableWidgetItem(str(affected_pages))
+
             # Evidenzia conteggi alti
-            if issue['count'] >= 10:
+            if count >= 10:
                 count_item.setBackground(QColor("#ffebee"))
                 count_item.setForeground(QColor("#c62828"))
-            elif issue['count'] >= 5:
+            elif count >= 5:
                 count_item.setBackground(QColor("#fff3e0"))
                 count_item.setForeground(QColor("#ef6c00"))
-            
+
             self.results_table.setItem(row, 0, severity_item)
             self.results_table.setItem(row, 1, code_item)
             self.results_table.setItem(row, 2, desc_item)
             self.results_table.setItem(row, 3, count_item)
             self.results_table.setItem(row, 4, pages_item)
-        
+
         # Ridimensiona colonne
         self.results_table.resizeColumnsToContents()
         self.results_table.horizontalHeader().setStretchLastSection(True)
-        
-        # Salva dati per filtraggio
-        self.all_issues_data = issues_data
+
+        # Salva dati per filtraggio solo se richiesto (non quando si filtra)
+        if save_to_all:
+            self.all_issues_data = issues_data
+            self._log_message("DEBUG", f"✅ Salvati {len(issues_data)} issues in all_issues_data")
+
+        self._log_message("DEBUG", f"✅ Tabella popolata con {len(issues_data)} righe")
     
     def _filter_issues_table(self):
         """Filtra tabella issues per severity"""
         if not hasattr(self, 'all_issues_data'):
             return
-        
+
         # Ottieni severity selezionate
         show_critical = self.show_critical_check.isChecked()
         show_warning = self.show_warning_check.isChecked()
         show_info = self.show_info_check.isChecked()
-        
+
         # Filtra dati
         filtered_data = []
         for issue in self.all_issues_data:
@@ -1787,9 +2027,9 @@ class MainWindow(QMainWindow):
                 (severity == 'WARNING' and show_warning) or
                 (severity == 'INFO' and show_info)):
                 filtered_data.append(issue)
-        
-        # Ripopola tabella
-        self._populate_issues_table(filtered_data)
+
+        # Ripopola tabella SENZA sovrascrivere all_issues_data
+        self._populate_issues_table(filtered_data, save_to_all=False)
     
     def _export_issues_csv(self):
         """Esporta issues correnti in CSV"""
@@ -2163,14 +2403,24 @@ class MainWindow(QMainWindow):
     def _generate_fixes(self):
         """Genera fix suggeriti per gli issues rilevati"""
         try:
-            # Verifica che ci sia un database
-            db_path = Path(self.export_dir_edit.text()) / self.project_edit.text() / "crawl.db"
+            # Verifica che ci sia un database (usa stesso path di _load_results)
+            project_name = getattr(self, 'current_project_name', None) or self.project_edit.text()
+            db_path = Path.home() / ".pyprestascan" / project_name / "crawl.db"
+
+            # Se non esiste, cerca il più recente
             if not db_path.exists():
-                QMessageBox.warning(
-                    self, "Errore",
-                    "Nessun database trovato. Esegui prima una scansione."
-                )
-                return
+                base_dir = Path.home() / ".pyprestascan"
+                if base_dir.exists():
+                    all_dbs = list(base_dir.glob("*/crawl.db"))
+                    if all_dbs:
+                        db_path = max(all_dbs, key=lambda p: p.stat().st_mtime)
+                        self.current_project_name = db_path.parent.name
+                    else:
+                        QMessageBox.warning(self, "Errore", "Nessun database trovato. Esegui prima una scansione.")
+                        return
+                else:
+                    QMessageBox.warning(self, "Errore", "Nessun database trovato. Esegui prima una scansione.")
+                    return
 
             QMessageBox.information(
                 self, "Generazione Fix",
@@ -2179,11 +2429,10 @@ class MainWindow(QMainWindow):
 
             # Genera fix in modo sincrono per GUI
             from ..core.fixer import SEOFixer
-            from ..core.storage import CrawlDatabase
             import asyncio
 
-            db = CrawlDatabase(db_path)
-            fixer = SEOFixer(db)
+            # SEOFixer vuole db_path, non db object!
+            fixer = SEOFixer(db_path)
 
             # Genera fix
             loop = asyncio.new_event_loop()
@@ -2209,9 +2458,21 @@ class MainWindow(QMainWindow):
     def _load_fixes(self):
         """Carica fix dal database e popola tabella"""
         try:
-            db_path = Path(self.export_dir_edit.text()) / self.project_edit.text() / "crawl.db"
+            # Usa stesso path di _generate_fixes
+            project_name = getattr(self, 'current_project_name', None) or self.project_edit.text()
+            db_path = Path.home() / ".pyprestascan" / project_name / "crawl.db"
+
+            # Se non esiste, cerca il più recente
             if not db_path.exists():
-                return
+                base_dir = Path.home() / ".pyprestascan"
+                if base_dir.exists():
+                    all_dbs = list(base_dir.glob("*/crawl.db"))
+                    if all_dbs:
+                        db_path = max(all_dbs, key=lambda p: p.stat().st_mtime)
+                    else:
+                        return
+                else:
+                    return
 
             from ..core.storage import CrawlDatabase
             import asyncio
