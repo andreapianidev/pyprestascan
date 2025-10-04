@@ -806,6 +806,7 @@ class MainWindow(QMainWindow):
                 border: 2px solid #667eea;
                 border-radius: 8px;
                 margin-top: 10px;
+                padding: 15px;
                 font-weight: bold;
             }
             QGroupBox::title {
@@ -815,36 +816,44 @@ class MainWindow(QMainWindow):
                 padding: 0 5px;
             }
         """)
-        ai_layout = QGridLayout(ai_group)
+        ai_layout = QVBoxLayout(ai_group)
+        ai_layout.setSpacing(12)
 
         # Enable AI checkbox
         self.ai_enabled_check = QCheckBox("✨ Abilita generazione AI per Fix Suggeriti")
-        self.ai_enabled_check.setStyleSheet("font-weight: bold; color: #667eea;")
-        ai_layout.addWidget(self.ai_enabled_check, 0, 0, 1, 3)
+        self.ai_enabled_check.setStyleSheet("font-weight: bold; color: #667eea; font-size: 13px;")
+        ai_layout.addWidget(self.ai_enabled_check)
 
         # Provider selection
-        ai_layout.addWidget(QLabel("Provider AI:"), 1, 0)
+        provider_layout = QHBoxLayout()
+        provider_layout.addWidget(QLabel("Provider AI:"))
         self.ai_provider_combo = QComboBox()
-        self.ai_provider_combo.addItem("🏆 DeepSeek (Raccomandato - $0.14/1M token)", "deepseek")
-        self.ai_provider_combo.addItem("OpenAI GPT-4o-mini ($0.15/1M token)", "openai")
-        self.ai_provider_combo.addItem("Anthropic Claude Haiku ($0.80/1M token)", "claude")
+        self.ai_provider_combo.addItem("🏆 DeepSeek (Raccomandato)", "deepseek")
+        self.ai_provider_combo.addItem("OpenAI GPT-4o-mini", "openai")
+        self.ai_provider_combo.addItem("Claude Haiku", "claude")
         self.ai_provider_combo.setEnabled(False)
-        ai_layout.addWidget(self.ai_provider_combo, 1, 1, 1, 2)
+        provider_layout.addWidget(self.ai_provider_combo)
+        provider_layout.addStretch()
+        ai_layout.addLayout(provider_layout)
 
         # API Key input
-        ai_layout.addWidget(QLabel("API Key:"), 2, 0)
+        key_layout = QHBoxLayout()
+        key_layout.addWidget(QLabel("API Key:"))
         self.ai_api_key_edit = QLineEdit()
         self.ai_api_key_edit.setPlaceholderText("sk-... (inserisci la tua chiave API)")
         self.ai_api_key_edit.setEchoMode(QLineEdit.EchoMode.Password)
         self.ai_api_key_edit.setEnabled(False)
-        ai_layout.addWidget(self.ai_api_key_edit, 2, 1, 1, 2)
+        self.ai_api_key_edit.setMinimumWidth(300)
+        key_layout.addWidget(self.ai_api_key_edit)
 
         # Show/Hide API key button
         self.ai_show_key_btn = QPushButton("👁️")
         self.ai_show_key_btn.setMaximumWidth(40)
         self.ai_show_key_btn.setEnabled(False)
         self.ai_show_key_btn.clicked.connect(self._toggle_ai_key_visibility)
-        ai_layout.addWidget(self.ai_show_key_btn, 2, 3)
+        key_layout.addWidget(self.ai_show_key_btn)
+        key_layout.addStretch()
+        ai_layout.addLayout(key_layout)
 
         # Info label with cost estimation
         self.ai_info_label = QLabel()
@@ -854,25 +863,26 @@ class MainWindow(QMainWindow):
                 background-color: #E3F2FD;
                 color: #1565C0;
                 border-left: 4px solid #2196F3;
-                padding: 10px;
+                padding: 12px;
                 border-radius: 4px;
                 margin-top: 8px;
-                font-size: 12px;
+                font-size: 11px;
+                line-height: 1.6;
             }
         """)
         self.ai_info_label.setText(
-            "ℹ️ <b>Come funziona:</b><br>"
-            "• L'AI genera meta description <b>contestuali</b> invece di template generici<br>"
-            "• <b>Batch processing</b>: 20 prodotti in 1 chiamata (risparmio token)<br>"
-            "• <b>Costo stimato</b>: ~$0.02 per 500 prodotti (DeepSeek)<br>"
-            "• <b>Fallback automatico</b>: se AI fallisce, usa template standard<br><br>"
-            "📖 <b>Registrati gratuitamente:</b><br>"
-            "• DeepSeek: <a href='https://platform.deepseek.com'>platform.deepseek.com</a> ($5 credito iniziale)<br>"
-            "• OpenAI: <a href='https://platform.openai.com'>platform.openai.com</a><br>"
-            "• Claude: <a href='https://console.anthropic.com'>console.anthropic.com</a>"
+            "<b>💡 Come funziona:</b><br>"
+            "• Genera meta description <b>contestuali</b> con AI (vs template generici)<br>"
+            "• Batch processing: 20 prodotti/chiamata = <b>risparmio 30% token</b><br>"
+            "• Costo: ~<b>$0.02 per 500 prodotti</b> (DeepSeek)<br>"
+            "• Fallback automatico se AI non disponibile<br><br>"
+            "<b>📖 Registrati:</b> "
+            "<a href='https://platform.deepseek.com'>DeepSeek</a> ($5 gratis) | "
+            "<a href='https://platform.openai.com'>OpenAI</a> | "
+            "<a href='https://console.anthropic.com'>Claude</a>"
         )
         self.ai_info_label.setOpenExternalLinks(True)
-        ai_layout.addWidget(self.ai_info_label, 3, 0, 1, 4)
+        ai_layout.addWidget(self.ai_info_label)
 
         # Connect checkbox to enable/disable fields
         self.ai_enabled_check.toggled.connect(self._on_ai_enabled_changed)
