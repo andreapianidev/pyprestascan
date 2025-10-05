@@ -1091,7 +1091,7 @@ class MainWindow(QMainWindow):
         self.view_report_btn.setStyleSheet("""
             QPushButton {
                 background-color: #667eea;
-                color: white;
+                color: #FFFFFF;
                 font-size: 18px;
                 font-weight: bold;
                 padding: 20px;
@@ -1100,9 +1100,11 @@ class MainWindow(QMainWindow):
             }
             QPushButton:hover {
                 background-color: #764ba2;
+                color: #FFFFFF;
             }
             QPushButton:disabled {
-                background-color: #cccccc;
+                background-color: #555555;
+                color: #AAAAAA;
             }
         """)
         actions_layout.addWidget(self.view_report_btn)
@@ -1116,7 +1118,7 @@ class MainWindow(QMainWindow):
         self.open_export_dir_btn.setStyleSheet("""
             QPushButton {
                 background-color: #2196F3;
-                color: white;
+                color: #FFFFFF;
                 font-size: 14px;
                 padding: 15px;
                 border-radius: 6px;
@@ -1124,9 +1126,11 @@ class MainWindow(QMainWindow):
             }
             QPushButton:hover {
                 background-color: #1976D2;
+                color: #FFFFFF;
             }
             QPushButton:disabled {
-                background-color: #cccccc;
+                background-color: #555555;
+                color: #AAAAAA;
             }
         """)
         secondary_layout.addWidget(self.open_export_dir_btn)
@@ -1154,7 +1158,7 @@ class MainWindow(QMainWindow):
         self.export_excel_btn.setStyleSheet("""
             QPushButton {
                 background-color: #FF6B6B;
-                color: white;
+                color: #FFFFFF;
                 font-size: 14px;
                 padding: 15px;
                 border-radius: 6px;
@@ -1162,9 +1166,11 @@ class MainWindow(QMainWindow):
             }
             QPushButton:hover {
                 background-color: #EE5A5A;
+                color: #FFFFFF;
             }
             QPushButton:disabled {
-                background-color: #cccccc;
+                background-color: #555555;
+                color: #AAAAAA;
             }
         """)
         secondary_layout.addWidget(self.export_excel_btn)
