@@ -4,8 +4,8 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "pyprestascan"
-version = "1.1.0"
-description = "Scanner SEO professionale per PrestaShop con fix AI-powered (DeepSeek/GPT/Claude) - GUI e CLI"
+version = "1.2.0"
+description = "Scanner SEO professionale per PrestaShop con fix AI-powered (DeepSeek/GPT/Claude), export Excel e API integration - GUI e CLI"
 authors = [{name = "Andrea Piani", email = "info@andreapiani.com"}]
 readme = "README.md"
 license = {text = "MIT"}
@@ -34,7 +34,8 @@ dependencies = [
     "pydantic>=2.5.0",
     "pandas>=2.1.0",
     "aiosqlite>=0.19.0",
-    "click>=8.1.7"
+    "click>=8.1.7",
+    "xlsxwriter>=3.0.0"
 ]
 
 [project.optional-dependencies]

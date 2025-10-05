@@ -28,6 +28,7 @@ from PySide6.QtGui import (
 from ..cli import CrawlConfig, CliContext
 from ..core.crawler import PyPrestaScanner
 from ..core.utils import RichLogger
+from ..integrations.excel_exporter import ExcelReportExporter
 
 
 class CrawlerWorker(QObject):
@@ -471,7 +472,7 @@ class MainWindow(QMainWindow):
         header_layout.addStretch()
         
         # Badge versione
-        version_label = QLabel("v1.1.0")
+        version_label = QLabel("v1.2.0")
         version_label.setStyleSheet("""
             QLabel {
                 color: white;
@@ -1114,6 +1115,27 @@ class MainWindow(QMainWindow):
         """)
         secondary_layout.addWidget(export_csv_btn)
 
+        self.export_excel_btn = QPushButton("📊 Esporta Report Excel")
+        self.export_excel_btn.setEnabled(False)
+        self.export_excel_btn.clicked.connect(self._export_excel)
+        self.export_excel_btn.setStyleSheet("""
+            QPushButton {
+                background-color: #FF6B6B;
+                color: white;
+                font-size: 14px;
+                padding: 15px;
+                border-radius: 6px;
+                border: none;
+            }
+            QPushButton:hover {
+                background-color: #EE5A5A;
+            }
+            QPushButton:disabled {
+                background-color: #cccccc;
+            }
+        """)
+        secondary_layout.addWidget(self.export_excel_btn)
+
         actions_layout.addLayout(secondary_layout)
 
         layout.addWidget(actions_group)
@@ -1280,7 +1302,7 @@ class MainWindow(QMainWindow):
         version_layout.setContentsMargins(0, 10, 0, 0)
         version_layout.addStretch()
 
-        version_label = QLabel("v1.1.0")
+        version_label = QLabel("v1.2.0")
         version_label.setStyleSheet("""
             color: white;
             font-size: 13px;
@@ -1901,6 +1923,7 @@ class MainWindow(QMainWindow):
             # Abilita bottoni report
             self.view_report_btn.setEnabled(True)
             self.open_export_dir_btn.setEnabled(True)
+            self.export_excel_btn.setEnabled(True)
 
             # Passa a tab risultati
             self.tab_widget.setCurrentIndex(2)
@@ -2198,10 +2221,86 @@ class MainWindow(QMainWindow):
                     ])
             
             QMessageBox.information(self, "Export completato", f"Issues esportati in: {filename}")
-            
+
         except Exception as e:
             QMessageBox.critical(self, "Errore export", f"Errore durante l'export: {str(e)}")
-    
+
+    def _export_excel(self):
+        """Esporta report completo in formato Excel"""
+        try:
+            from ..core.storage import CrawlDatabase
+            from pathlib import Path
+            import asyncio
+
+            # Path database
+            project_name = getattr(self, 'current_project_name', None) or self.project_edit.text()
+            db_path = Path.home() / ".pyprestascan" / project_name / "crawl.db"
+
+            if not db_path.exists():
+                QMessageBox.warning(self, "Database non trovato", "Esegui prima una scansione")
+                return
+
+            # Scegli file di destinazione
+            filename, _ = QFileDialog.getSaveFileName(
+                self,
+                "Esporta Report Excel",
+                f"report_{project_name}_{datetime.now().strftime('%Y%m%d_%H%M%S')}.xlsx",
+                "File Excel (*.xlsx)"
+            )
+
+            if not filename:
+                return
+
+            # Carica dati dal database
+            db = CrawlDatabase(db_path)
+            loop = asyncio.new_event_loop()
+            asyncio.set_event_loop(loop)
+
+            try:
+                stats = loop.run_until_complete(db.get_crawl_stats())
+                pages = loop.run_until_complete(db.export_pages())
+                issues = loop.run_until_complete(db.export_issues())
+
+                # Carica fix se disponibili
+                fixes = []
+                try:
+                    fixes = loop.run_until_complete(db.get_all_fixes())
+                except:
+                    pass
+
+            finally:
+                loop.close()
+
+            # Prepara dati per exporter
+            scan_results = {
+                'stats': stats,
+                'pages': pages,
+                'issues': issues,
+                'fixes': fixes,
+                'project_name': project_name,
+                'scan_date': datetime.now().isoformat()
+            }
+
+            # Crea report Excel
+            exporter = ExcelReportExporter(scan_results)
+            output_path = exporter.export(Path(filename))
+
+            # Conferma e apri
+            reply = QMessageBox.question(
+                self,
+                "Export completato",
+                f"Report Excel creato:\n{output_path}\n\nVuoi aprirlo ora?",
+                QMessageBox.Yes | QMessageBox.No
+            )
+
+            if reply == QMessageBox.Yes:
+                QDesktopServices.openUrl(f"file://{output_path}")
+
+        except Exception as e:
+            import traceback
+            error_msg = f"Errore durante l'export Excel:\n{str(e)}\n\n{traceback.format_exc()}"
+            QMessageBox.critical(self, "Errore export", error_msg)
+
     def _show_issue_details(self, item):
         """Mostra dettagli di un issue selezionato"""
         row = item.row()
