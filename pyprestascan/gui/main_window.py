@@ -29,6 +29,8 @@ from ..cli import CrawlConfig, CliContext
 from ..core.crawler import PyPrestaScanner
 from ..core.utils import RichLogger
 from ..integrations.excel_exporter import ExcelReportExporter
+from ..integrations.webhook_client import WebhookClient, ScanNotification, WebhookType
+from .themes import ThemeManager
 
 
 class CrawlerWorker(QObject):
@@ -341,30 +343,37 @@ class ConfigDialog(QDialog):
 
 class MainWindow(QMainWindow):
     """Finestra principale PyPrestaScan GUI"""
-    
-    def __init__(self):
+
+    def __init__(self, app: QApplication):
         super().__init__()
         self.setWindowTitle("PyPrestaScan - Analisi SEO PrestaShop")
         self.setMinimumSize(900, 700)
-        
+
+        # Theme Manager
+        self.app = app
+        self.theme_manager = ThemeManager(app)
+
         # Settings
         self.settings = QSettings("PyPrestaScan", "PyPrestaScanGUI")
-        
+
         # Worker thread
         self.crawler_thread: Optional[QThread] = None
         self.crawler_worker: Optional[CrawlerWorker] = None
-        
+
         # Stato applicazione
         self.is_crawling = False
         self.last_export_dir: Optional[Path] = None
         self.all_issues_data = []  # Dati completi per filtraggio
         self.current_project_name: Optional[str] = None  # Nome progetto corrente per database
-        
+
         # Setup UI
         self._setup_ui()
         self._setup_connections()
         self._load_settings()
-        
+
+        # Applica tema salvato o auto-rilevato
+        self.theme_manager.apply_theme(self.theme_manager.get_current_theme())
+
         # Timer per aggiornamenti
         self.update_timer = QTimer()
         self.update_timer.timeout.connect(self._update_ui_state)
@@ -484,7 +493,31 @@ class MainWindow(QMainWindow):
             }
         """)
         header_layout.addWidget(version_label)
-        
+
+        # Toggle Dark/Light mode
+        self.theme_toggle_btn = QPushButton(self.theme_manager.get_icon_for_theme())
+        self.theme_toggle_btn.setFixedSize(40, 40)
+        self.theme_toggle_btn.setToolTip("Cambia tema (Light/Dark)")
+        self.theme_toggle_btn.setStyleSheet("""
+            QPushButton {
+                color: white;
+                font-size: 20px;
+                background: rgba(255,255,255,0.2);
+                border-radius: 20px;
+                margin: 0;
+                margin-left: 10px;
+                border: none;
+            }
+            QPushButton:hover {
+                background: rgba(255,255,255,0.3);
+            }
+            QPushButton:pressed {
+                background: rgba(255,255,255,0.4);
+            }
+        """)
+        self.theme_toggle_btn.clicked.connect(self._toggle_theme)
+        header_layout.addWidget(self.theme_toggle_btn)
+
         main_layout.addWidget(header_widget)
     
     def _create_toolbar(self):
@@ -3036,7 +3069,13 @@ class MainWindow(QMainWindow):
     def _open_docs(self):
         """Apre documentazione online"""
         webbrowser.open("https://github.com/pyprestascan/pyprestascan")
-    
+
+    def _toggle_theme(self):
+        """Toggle tra Light e Dark mode"""
+        new_theme = self.theme_manager.toggle_theme()
+        self.theme_toggle_btn.setText(self.theme_manager.get_icon_for_theme())
+        self._log_message("INFO", f"🎨 Tema cambiato in: {new_theme.capitalize()} Mode")
+
     def closeEvent(self, event):
         """Gestisce chiusura applicazione"""
         # Ferma crawling se in corso
@@ -3074,9 +3113,9 @@ def main():
     
     # Stile applicazione
     app.setStyle("Fusion")
-    
+
     # Crea e mostra finestra principale
-    window = MainWindow()
+    window = MainWindow(app)
     window.show()
     
     return app.exec()
