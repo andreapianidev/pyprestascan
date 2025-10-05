@@ -24,6 +24,9 @@ Full-Stack Developer & SEO Specialist
 
 > **Progetto open-source in continuo miglioramento!** Contributi, feedback e segnalazioni sono sempre benvenuti. 🚀
 
+📋 **Roadmap**: [ROADMAP.md](ROADMAP.md) - Piano sviluppo v1.2.0 → v2.0.0
+🤝 **Contributing**: [CONTRIBUTING.md](CONTRIBUTING.md) - Guida per contributor
+
 ---
 
 ## 🎯 Caratteristiche Principali
