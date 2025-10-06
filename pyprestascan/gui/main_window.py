@@ -954,12 +954,12 @@ class MainWindow(QMainWindow):
         button_layout = QHBoxLayout()
         button_layout.addStretch()
         
-        self.start_btn = QPushButton("▶️ Avvia Scansione")
+        self.start_btn = QPushButton(self.translation_manager.t("btn_start_scan"))
         self.start_btn.setStyleSheet("QPushButton { background-color: #4CAF50; color: white; font-weight: bold; padding: 10px; }")
         self.start_btn.clicked.connect(self._start_crawl)
         button_layout.addWidget(self.start_btn)
-        
-        self.stop_btn = QPushButton("⏹️ Ferma Scansione")
+
+        self.stop_btn = QPushButton(self.translation_manager.t("btn_stop_scan"))
         self.stop_btn.setStyleSheet("QPushButton { background-color: #f44336; color: white; font-weight: bold; padding: 10px; }")
         self.stop_btn.setEnabled(False)
         self.stop_btn.clicked.connect(self._stop_crawl)
@@ -967,7 +967,7 @@ class MainWindow(QMainWindow):
         
         layout.addLayout(button_layout)
         
-        self.tab_widget.addTab(config_widget, "⚙️ Configurazione")
+        self.tab_widget.addTab(config_widget, self.translation_manager.t("tab_config"))
     
     def _create_progress_tab(self):
         """Crea tab progress e log"""
@@ -1044,7 +1044,7 @@ class MainWindow(QMainWindow):
         
         layout.addWidget(log_group)
         
-        self.tab_widget.addTab(progress_widget, "📈 Progress & Log")
+        self.tab_widget.addTab(progress_widget, self.translation_manager.t("tab_progress"))
     
     def _create_results_tab(self):
         """Crea tab risultati - SEMPLIFICATO con solo KPI e Report HTML"""
@@ -1130,7 +1130,7 @@ class MainWindow(QMainWindow):
         """)
 
         # Bottone report HTML - PRINCIPALE
-        self.view_report_btn = QPushButton("📊 Visualizza Report HTML Completo")
+        self.view_report_btn = QPushButton(self.translation_manager.t("btn_view_report"))
         self.view_report_btn.setEnabled(False)
         self.view_report_btn.clicked.connect(self._open_report)
         self.view_report_btn.setStyleSheet("""
@@ -1157,7 +1157,7 @@ class MainWindow(QMainWindow):
         # Bottoni secondari
         secondary_layout = QHBoxLayout()
 
-        self.open_export_dir_btn = QPushButton("📁 Apri Cartella Report")
+        self.open_export_dir_btn = QPushButton(self.translation_manager.t("btn_open_folder"))
         self.open_export_dir_btn.setEnabled(False)
         self.open_export_dir_btn.clicked.connect(self._open_export_dir)
         self.open_export_dir_btn.setStyleSheet("""
@@ -1180,7 +1180,7 @@ class MainWindow(QMainWindow):
         """)
         secondary_layout.addWidget(self.open_export_dir_btn)
 
-        export_csv_btn = QPushButton("📥 Esporta Issues CSV")
+        export_csv_btn = QPushButton(self.translation_manager.t("btn_export_csv"))
         export_csv_btn.clicked.connect(self._export_issues_csv)
         export_csv_btn.setStyleSheet("""
             QPushButton {
@@ -1197,7 +1197,7 @@ class MainWindow(QMainWindow):
         """)
         secondary_layout.addWidget(export_csv_btn)
 
-        self.export_excel_btn = QPushButton("📊 Esporta Report Excel")
+        self.export_excel_btn = QPushButton(self.translation_manager.t("btn_export_excel"))
         self.export_excel_btn.setEnabled(False)
         self.export_excel_btn.clicked.connect(self._export_excel)
         self.export_excel_btn.setStyleSheet("""
@@ -1227,7 +1227,7 @@ class MainWindow(QMainWindow):
         # Spacer finale
         layout.addStretch()
 
-        self.tab_widget.addTab(results_widget, "📊 Risultati")
+        self.tab_widget.addTab(results_widget, self.translation_manager.t("tab_results"))
 
     def _create_fixes_tab(self):
         """Crea tab per gestione fix"""
@@ -1237,7 +1237,7 @@ class MainWindow(QMainWindow):
         # Header con pulsanti azione
         actions_layout = QHBoxLayout()
 
-        generate_fixes_btn = QPushButton("🔧 Genera Fix Suggeriti")
+        generate_fixes_btn = QPushButton(self.translation_manager.t("btn_generate_fixes"))
         generate_fixes_btn.setToolTip("Analizza gli issues e genera suggerimenti automatici per risolverli")
         generate_fixes_btn.clicked.connect(self._generate_fixes)
         actions_layout.addWidget(generate_fixes_btn)
@@ -1343,7 +1343,7 @@ class MainWindow(QMainWindow):
         """)
         layout.addWidget(info_label)
 
-        self.tab_widget.addTab(fixes_widget, "🔧 Fix Suggeriti")
+        self.tab_widget.addTab(fixes_widget, self.translation_manager.t("tab_fixes"))
 
     def _create_help_tab(self):
         """Crea tab aiuto con istruzioni"""
@@ -1647,7 +1647,7 @@ class MainWindow(QMainWindow):
         scroll.setWidget(scroll_widget)
         layout.addWidget(scroll)
 
-        self.tab_widget.addTab(help_widget, "❓ Aiuto")
+        self.tab_widget.addTab(help_widget, self.translation_manager.t("tab_help"))
 
     def _setup_connections(self):
         """Configura connessioni segnali"""
