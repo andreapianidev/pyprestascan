@@ -347,15 +347,16 @@ class MainWindow(QMainWindow):
 
     def __init__(self, app: QApplication):
         super().__init__()
-        self.setWindowTitle("PyPrestaScan - Analisi SEO PrestaShop")
+
+        # Translation Manager (i18n) - inizializza PRIMA
+        self.translation_manager = TranslationManager()
+
+        self.setWindowTitle(self.translation_manager.t("app_title"))
         self.setMinimumSize(900, 700)
 
         # Theme Manager
         self.app = app
         self.theme_manager = ThemeManager(app)
-
-        # Translation Manager (i18n)
-        self.translation_manager = TranslationManager()
 
         # Settings
         self.settings = QSettings("PyPrestaScan", "PyPrestaScanGUI")
@@ -521,6 +522,46 @@ class MainWindow(QMainWindow):
         """)
         self.theme_toggle_btn.clicked.connect(self._toggle_theme)
         header_layout.addWidget(self.theme_toggle_btn)
+
+        # Language selector
+        self.language_combo = QComboBox()
+        self.language_combo.setFixedSize(120, 35)
+        self.language_combo.setToolTip("Select language / Seleziona lingua")
+        available_langs = self.translation_manager.get_available_languages()
+        for lang_code, lang_name in available_langs.items():
+            self.language_combo.addItem(lang_name, lang_code)
+        # Set current language
+        current_lang = self.translation_manager.get_current_language()
+        for i in range(self.language_combo.count()):
+            if self.language_combo.itemData(i) == current_lang:
+                self.language_combo.setCurrentIndex(i)
+                break
+        self.language_combo.currentIndexChanged.connect(self._change_language)
+        self.language_combo.setStyleSheet("""
+            QComboBox {
+                color: white;
+                background: rgba(255,255,255,0.2);
+                border: none;
+                border-radius: 6px;
+                padding: 5px 10px;
+                margin-left: 10px;
+                font-size: 12px;
+                font-weight: bold;
+            }
+            QComboBox:hover {
+                background: rgba(255,255,255,0.3);
+            }
+            QComboBox::drop-down {
+                border: none;
+            }
+            QComboBox QAbstractItemView {
+                background-color: #2D2D2D;
+                color: white;
+                selection-background-color: #667eea;
+                border: 1px solid #667eea;
+            }
+        """)
+        header_layout.addWidget(self.language_combo)
 
         main_layout.addWidget(header_widget)
     
@@ -3085,6 +3126,31 @@ class MainWindow(QMainWindow):
         new_theme = self.theme_manager.toggle_theme()
         self.theme_toggle_btn.setText(self.theme_manager.get_icon_for_theme())
         self._log_message("INFO", f"🎨 Tema cambiato in: {new_theme.capitalize()} Mode")
+
+    def _change_language(self, index):
+        """Cambia lingua interfaccia"""
+        if index < 0:
+            return
+
+        lang_code = self.language_combo.itemData(index)
+        if lang_code == self.translation_manager.get_current_language():
+            return  # Stessa lingua, non fare nulla
+
+        # Cambia lingua
+        self.translation_manager.set_language(lang_code)
+
+        # Log cambio lingua
+        lang_name = self.translation_manager.get_language_name(lang_code)
+        self._log_message("INFO", f"🌐 Language changed to: {lang_name}")
+
+        # Mostra dialog per riavvio
+        QMessageBox.information(
+            self,
+            "Language Changed / Lingua Cambiata",
+            "Please restart the application to apply the new language.\n"
+            "Riavvia l'applicazione per applicare la nuova lingua.\n\n"
+            "Por favor, reinicia la aplicación para aplicar el nuevo idioma."
+        )
 
     def closeEvent(self, event):
         """Gestisce chiusura applicazione"""
