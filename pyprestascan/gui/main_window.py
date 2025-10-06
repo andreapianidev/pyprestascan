@@ -31,6 +31,7 @@ from ..core.utils import RichLogger
 from ..integrations.excel_exporter import ExcelReportExporter
 from ..integrations.webhook_client import WebhookClient, ScanNotification, WebhookType
 from .themes import ThemeManager
+from .i18n import TranslationManager, t
 
 
 class CrawlerWorker(QObject):
@@ -352,6 +353,9 @@ class MainWindow(QMainWindow):
         # Theme Manager
         self.app = app
         self.theme_manager = ThemeManager(app)
+
+        # Translation Manager (i18n)
+        self.translation_manager = TranslationManager()
 
         # Settings
         self.settings = QSettings("PyPrestaScan", "PyPrestaScanGUI")
