@@ -9,6 +9,7 @@ from urllib.parse import urlparse
 import json
 import signal
 import sys
+import re
 
 from .utils import URLNormalizer, ProjectManager, RichLogger, create_progress
 from .storage import CrawlDatabase, CrawlState, QueueEntry, PageData, ImageData, IssueData
