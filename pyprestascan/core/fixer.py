@@ -651,9 +651,38 @@ class SEOFixer:
         issues = await self.db.export_issues()
         pages = await self.db.export_pages()
 
-        # Converti a oggetti
-        issue_objects = [IssueData(**issue) for issue in issues]
-        page_objects = [PageData(**page) for page in pages]
+        # Converti a oggetti - rimuovi 'id' dai dict perché PageData/IssueData non hanno campo id
+        import json
+        issue_objects = []
+        for issue in issues:
+            issue_copy = {k: v for k, v in issue.items() if k != 'id'}
+            # Converti meta da JSON string a dict se necessario
+            if 'meta' in issue_copy and isinstance(issue_copy['meta'], str):
+                try:
+                    issue_copy['meta'] = json.loads(issue_copy['meta'])
+                except:
+                    issue_copy['meta'] = {}
+            issue_objects.append(IssueData(**issue_copy))
+
+        page_objects = []
+        for page in pages:
+            page_copy = {k: v for k, v in page.items() if k != 'id'}
+            # Converti campi JSON da string a dict/list se necessario
+            json_fields = ['headings_map', 'hreflang_map', 'jsonld_types']
+            for field in json_fields:
+                if field in page_copy and isinstance(page_copy[field], str):
+                    try:
+                        page_copy[field] = json.loads(page_copy[field])
+                    except:
+                        page_copy[field] = {} if field.endswith('_map') else []
+            # Converti crawled_at da string a datetime se necessario
+            if 'crawled_at' in page_copy and isinstance(page_copy['crawled_at'], str):
+                from datetime import datetime
+                try:
+                    page_copy['crawled_at'] = datetime.fromisoformat(page_copy['crawled_at'])
+                except:
+                    page_copy['crawled_at'] = datetime.now()
+            page_objects.append(PageData(**page_copy))
 
         all_fixes = []
 

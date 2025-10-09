@@ -261,7 +261,10 @@ class ReportExporter:
         
         # Distribuzione score
         score_distribution = self._get_score_distribution(pages_data)
-        
+
+        # Immagini senza ALT
+        images_issues = await self.db.export_images_issues(include_generic=self.include_generic_alt)
+
         # Estrai nome sito dall'URL
         from urllib.parse import urlparse
         site_url = self.base_url or "Unknown"
@@ -278,7 +281,7 @@ class ReportExporter:
             'site_name': site_name,
             'site_url': site_url,
             'generated_at': datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
-            'tool_version': '1.0.0',
+            'tool_version': '1.5.0',
 
             # KPI
             'total_pages': total_pages,
@@ -305,6 +308,7 @@ class ReportExporter:
             'top_issues': top_issues[:10],  # Top 10
             'low_score_pages': low_score_pages[:20],  # Top 20
             'score_distribution': score_distribution,
+            'images_issues': images_issues[:100],  # Top 100 immagini problematiche
             
             # Dati per grafici (JSON encoded)
             'chart_data': {

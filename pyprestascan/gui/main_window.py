@@ -486,7 +486,7 @@ class MainWindow(QMainWindow):
         header_layout.addStretch()
         
         # Badge versione
-        version_label = QLabel("v1.2.0")
+        version_label = QLabel("v1.5.0")
         version_label.setStyleSheet("""
             QLabel {
                 color: white;
@@ -1306,17 +1306,21 @@ class MainWindow(QMainWindow):
             "Confidence", "Auto", "Azioni"
         ])
 
-        # Ridimensionamento colonne
+        # Ridimensionamento colonne - TUTTE ridimensionabili manualmente con mouse
         header = self.fixes_table.horizontalHeader()
-        header.setSectionResizeMode(0, QHeaderView.ResizeToContents)  # ID
-        header.setSectionResizeMode(1, QHeaderView.Stretch)  # Pagina
-        header.setSectionResizeMode(2, QHeaderView.ResizeToContents)  # Tipo
-        header.setSectionResizeMode(3, QHeaderView.ResizeToContents)  # Severity
-        header.setSectionResizeMode(4, QHeaderView.Interactive)  # Valore Attuale
-        header.setSectionResizeMode(5, QHeaderView.Interactive)  # Valore Suggerito
-        header.setSectionResizeMode(6, QHeaderView.ResizeToContents)  # Confidence
-        header.setSectionResizeMode(7, QHeaderView.ResizeToContents)  # Auto
-        header.setSectionResizeMode(8, QHeaderView.ResizeToContents)  # Azioni
+        header.setSectionResizeMode(QHeaderView.Interactive)  # Tutte le colonne ridimensionabili
+        header.setStretchLastSection(False)
+
+        # Larghezze iniziali ottimali (px)
+        header.resizeSection(0, 80)   # ID
+        header.resizeSection(1, 300)  # Pagina
+        header.resizeSection(2, 150)  # Tipo
+        header.resizeSection(3, 120)  # Severity
+        header.resizeSection(4, 250)  # Valore Attuale
+        header.resizeSection(5, 250)  # Valore Suggerito
+        header.resizeSection(6, 100)  # Confidence
+        header.resizeSection(7, 80)   # Auto
+        header.resizeSection(8, 100)  # Azioni
 
         self.fixes_table.setAlternatingRowColors(True)
         self.fixes_table.setSelectionBehavior(QTableWidget.SelectRows)
@@ -1386,7 +1390,7 @@ class MainWindow(QMainWindow):
         version_layout.setContentsMargins(0, 10, 0, 0)
         version_layout.addStretch()
 
-        version_label = QLabel("v1.2.0")
+        version_label = QLabel("v1.5.0")
         version_label.setStyleSheet("""
             color: white;
             font-size: 13px;
@@ -1447,7 +1451,7 @@ class MainWindow(QMainWindow):
             "<li><b>Includi Generic Issues:</b> Mostra anche problemi SEO generici (non PrestaShop)</li>"
             "<li><b>User Agent:</b> Scegli browser da simulare (Desktop/Mobile/Bot/Custom)</li>"
             "<li><b>Mappa Lingue:</b> Associa URL multilingua (es: /it=/en,/fr=/en)</li>"
-            "<li><b>🤖 AI Fix Avanzati (Opzionale - v1.1.0+):</b> Genera fix SEO intelligenti con AI"
+            "<li><b>🤖 AI Fix Avanzati (Opzionale - v1.5.0+):</b> Genera fix SEO intelligenti con AI"
             "<ul style='margin: 8px 0;'>"
             "<li><b>✨ Abilita AI:</b> Attiva generazione AI per Fix Suggeriti invece di template</li>"
             "<li><b>Provider AI:</b> Scegli tra DeepSeek (raccomandato, $0.14/1M token), OpenAI GPT-4o-mini ($0.15/1M), Claude Haiku ($0.80/1M)</li>"
@@ -2721,15 +2725,6 @@ class MainWindow(QMainWindow):
                     QMessageBox.warning(self, "Errore", "Nessun database trovato. Esegui prima una scansione.")
                     return
 
-            QMessageBox.information(
-                self, "Generazione Fix",
-                "Sto generando i fix suggeriti. Questa operazione può richiedere alcuni secondi..."
-            )
-
-            # Genera fix in modo sincrono per GUI
-            from ..core.fixer import SEOFixer
-            import asyncio
-
             # Ottieni parametri AI se abilitati
             ai_provider = None
             ai_api_key = None
@@ -2748,18 +2743,78 @@ class MainWindow(QMainWindow):
                 else:
                     self._log_message("INFO", f"🤖 Generazione AI attivata con provider: {ai_provider}")
 
-            # SEOFixer con parametri AI opzionali
-            fixer = SEOFixer(db_path, ai_provider=ai_provider, ai_api_key=ai_api_key)
+            # Crea dialog progress con cancel
+            from PySide6.QtWidgets import QProgressDialog
+            progress = QProgressDialog("Generazione fix in corso...", "Annulla", 0, 0, self)
+            progress.setWindowTitle("Generazione Fix Suggeriti")
+            progress.setWindowModality(Qt.WindowModal)
+            progress.setMinimumDuration(0)
+            progress.setValue(0)
 
-            # Genera fix
-            loop = asyncio.new_event_loop()
-            asyncio.set_event_loop(loop)
-            try:
-                fixes = loop.run_until_complete(fixer.generate_all_fixes())
-                # Salva nel database
-                loop.run_until_complete(fixer.save_fixes_to_db(fixes))
-            finally:
-                loop.close()
+            # Thread per generazione asincrona
+            from PySide6.QtCore import QThread
+
+            class FixGeneratorThread(QThread):
+                def __init__(self, db_path, ai_provider, ai_api_key):
+                    super().__init__()
+                    self.db_path = db_path
+                    self.ai_provider = ai_provider
+                    self.ai_api_key = ai_api_key
+                    self.fixes = []
+                    self.error = None
+
+                def run(self):
+                    try:
+                        from ..core.fixer import SEOFixer
+                        import asyncio
+
+                        fixer = SEOFixer(self.db_path, ai_provider=self.ai_provider, ai_api_key=self.ai_api_key)
+
+                        loop = asyncio.new_event_loop()
+                        asyncio.set_event_loop(loop)
+                        try:
+                            self.fixes = loop.run_until_complete(fixer.generate_all_fixes())
+                            loop.run_until_complete(fixer.save_fixes_to_db(self.fixes))
+                        finally:
+                            loop.close()
+                    except Exception as e:
+                        self.error = str(e)
+
+            thread = FixGeneratorThread(db_path, ai_provider, ai_api_key)
+
+            # Update progress message periodically
+            def update_progress():
+                if thread.isRunning():
+                    dots = "." * ((progress.value() % 3) + 1)
+                    progress.setLabelText(f"Generazione fix in corso{dots}\n\n"
+                                        f"Questa operazione può richiedere alcuni secondi...")
+                    progress.setValue(progress.value() + 1)
+
+            from PySide6.QtCore import QTimer
+            timer = QTimer()
+            timer.timeout.connect(update_progress)
+            timer.start(500)  # Update ogni 500ms
+
+            thread.start()
+
+            # Wait for thread con progress
+            while thread.isRunning():
+                QApplication.processEvents()
+                if progress.wasCanceled():
+                    thread.terminate()
+                    thread.wait()
+                    timer.stop()
+                    return
+
+            timer.stop()
+            progress.close()
+
+            # Check errori
+            if thread.error:
+                QMessageBox.critical(self, "Errore", f"Errore durante generazione fix: {thread.error}")
+                return
+
+            fixes = thread.fixes
 
             # Messaggio con info AI se usata
             ai_msg = ""
@@ -2775,11 +2830,14 @@ class MainWindow(QMainWindow):
 
             QMessageBox.information(
                 self, "Completato",
-                f"Generati {len(fixes)} fix suggeriti!{ai_msg}\n\nVisualizza la tabella per vederli."
+                f"✅ Generati {len(fixes)} fix suggeriti!{ai_msg}\n\nVisualizza la tabella nella tab 'Fix Suggeriti'."
             )
 
             # Carica fix nella tabella
             self._load_fixes()
+
+            # Switch to fixes tab
+            self.tab_widget.setCurrentIndex(3)  # Tab Fix Suggeriti
 
         except Exception as e:
             QMessageBox.critical(self, "Errore", f"Errore durante generazione fix: {str(e)}")
@@ -3098,7 +3156,7 @@ class MainWindow(QMainWindow):
         """Mostra dialog about"""
         QMessageBox.about(self, "Info su PyPrestaScan",
             """
-            <h2>PyPrestaScan v1.1.0</h2>
+            <h2>PyPrestaScan v1.5.0</h2>
             <p>CLI per analisi SEO specializzata di e-commerce PrestaShop con AI-powered fix</p>
 
             <p><b>Caratteristiche:</b></p>
