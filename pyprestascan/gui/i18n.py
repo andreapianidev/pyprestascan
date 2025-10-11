@@ -1,16 +1,13 @@
 """
-Sistema di internazionalizzazione (i18n) per PyPrestaScan GUI
-Supporto per Italiano, Inglese, Spagnolo
+Sistema di testi per PyPrestaScan GUI - SOLO ITALIANO
 """
 from typing import Dict
-from PySide6.QtCore import QSettings
-import locale
 
 
 class TranslationManager:
-    """Gestione traduzioni multi-lingua"""
+    """Testi interfaccia - SOLO ITALIANO"""
 
-    # Dizionario completo traduzioni IT/EN/ES
+    # Dizionario testi SOLO ITALIANO
     TRANSLATIONS = {
         # === HEADER ===
         "app_title": {
@@ -354,24 +351,8 @@ class TranslationManager:
         return self._detect_system_language()
 
     def _detect_system_language(self) -> str:
-        """Rileva lingua di sistema"""
-        try:
-            system_locale = locale.getdefaultlocale()[0]
-
-            if system_locale:
-                lang_code = system_locale.split('_')[0].lower()
-
-                # Mappa codici lingua
-                if lang_code == 'it':
-                    return 'it'
-                elif lang_code == 'es':
-                    return 'es'
-                else:
-                    return 'en'  # Default English
-        except:
-            pass
-
-        return 'en'  # Default fallback
+        """SEMPRE ITALIANO"""
+        return 'it'  # HARDCODED ITALIANO
 
     def get_current_language(self) -> str:
         """Restituisce lingua corrente"""
@@ -392,19 +373,19 @@ class TranslationManager:
 
     def t(self, key: str) -> str:
         """
-        Translate - ottieni traduzione per chiave
+        Ottieni testo italiano per chiave
 
         Args:
-            key: Chiave traduzione (es. "app_title")
+            key: Chiave testo (es. "app_title")
 
         Returns:
-            str: Stringa tradotta nella lingua corrente
+            str: Stringa in ITALIANO
         """
         if key not in self.TRANSLATIONS:
             return f"[{key}]"  # Fallback se chiave non esiste
 
         translations = self.TRANSLATIONS[key]
-        return translations.get(self.current_language, translations.get('en', key))
+        return translations.get('it', key)  # SEMPRE ITALIANO
 
     def get_language_name(self, lang_code: str) -> str:
         """Ottieni nome lingua da codice"""
