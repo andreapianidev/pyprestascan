@@ -1,0 +1,27 @@
+# robots.txt for PyPrestaScan Website
+
+User-agent: *
+Allow: /
+
+# Sitemap
+Sitemap: https://github.com/andreapianidev/pyprestascan/sitemap.xml
+
+# Crawl-delay (optional, in seconds)
+Crawl-delay: 1
+
+# Specific rules for common bots
+User-agent: Googlebot
+Allow: /
+
+User-agent: Bingbot
+Allow: /
+
+User-agent: Slurp
+Allow: /
+
+# Block AI scrapers if needed (optional)
+# User-agent: GPTBot
+# Disallow: /
+
+# User-agent: ChatGPT-User
+# Disallow: /
