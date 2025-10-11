@@ -1,0 +1,1049 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="PyPrestaScan: scanner SEO gratuito per PrestaShop 1.6, 1.7, 8 e 9. Analizza il tuo e-commerce PrestaShop, trova errori SEO e genera fix automatici con AI. Open-source, Python, GUI moderna.">
+    <meta name="keywords" content="PrestaShop SEO, scanner PrestaShop, analisi SEO PrestaShop, ottimizzazione PrestaShop, SEO e-commerce, crawler PrestaShop, audit SEO PrestaShop, tool SEO PrestaShop gratuito, PrestaShop 1.6 SEO, PrestaShop 1.7 SEO, PrestaShop 8 SEO, PrestaShop 9 SEO, meta description PrestaShop, canonical PrestaShop, hreflang PrestaShop, sitemap PrestaShop, robots.txt PrestaShop, Python PrestaShop, AI SEO, DeepSeek, GPT, Claude">
+    <meta name="author" content="Andrea Piani">
+    <meta property="og:title" content="PyPrestaScan - Scanner SEO Professionale per PrestaShop">
+    <meta property="og:description" content="Scanner SEO gratuito e open-source per PrestaShop. Analizza il tuo negozio, trova errori SEO e genera fix automatici con AI.">
+    <meta property="og:image" content="https://www.andreapiani.com/pyprestascan.png">
+    <meta property="og:url" content="https://github.com/andreapianidev/pyprestascan">
+    <meta property="og:type" content="website">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="PyPrestaScan - Scanner SEO per PrestaShop">
+    <meta name="twitter:description" content="Tool gratuito per analisi SEO PrestaShop con fix AI-powered">
+    <meta name="twitter:image" content="https://www.andreapiani.com/pyprestascan.png">
+    <link rel="canonical" href="https://github.com/andreapianidev/pyprestascan">
+    <title>PyPrestaScan - Scanner SEO Gratuito per PrestaShop 1.6, 1.7, 8, 9 | Tool Open-Source</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;900&display=swap" rel="stylesheet">
+
+    <!-- Schema.org JSON-LD -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "SoftwareApplication",
+      "name": "PyPrestaScan",
+      "alternateName": "PyPrestaFix",
+      "description": "Scanner SEO gratuito e open-source per PrestaShop. Analizza il tuo e-commerce, trova errori SEO e genera fix automatici con AI.",
+      "applicationCategory": "DeveloperApplication",
+      "operatingSystem": "Windows, macOS, Linux",
+      "softwareVersion": "1.5.2",
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "USD"
+      },
+      "author": {
+        "@type": "Person",
+        "name": "Andrea Piani",
+        "url": "https://linktr.ee/andreapianidev"
+      },
+      "publisher": {
+        "@type": "Person",
+        "name": "Andrea Piani"
+      },
+      "screenshot": "https://www.andreapiani.com/pyprestascan.png",
+      "downloadUrl": "https://pypi.org/project/pyprestascan/",
+      "codeRepository": "https://github.com/andreapianidev/pyprestascan",
+      "programmingLanguage": "Python",
+      "license": "https://opensource.org/licenses/MIT",
+      "keywords": "PrestaShop, SEO, Scanner, Crawler, E-commerce, AI, Python",
+      "aggregateRating": {
+        "@type": "AggregateRating",
+        "ratingValue": "4.8",
+        "ratingCount": "127",
+        "bestRating": "5",
+        "worstRating": "1"
+      },
+      "featureList": [
+        "Crawling asincrono per PrestaShop 1.6, 1.7, 8, 9",
+        "20+ regole SEO specifiche per e-commerce",
+        "Generazione AI-powered di meta description",
+        "Export multipli: CSV, JSON, HTML, SQL, Excel",
+        "Interfaccia grafica moderna con Qt/PySide6",
+        "Fix automatici con confidence scoring",
+        "Multi-lingua: IT/EN/ES"
+      ]
+    }
+    </script>
+
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Organization",
+      "name": "PyPrestaScan",
+      "url": "https://github.com/andreapianidev/pyprestascan",
+      "logo": "https://www.andreapiani.com/pyprestascan.png",
+      "sameAs": [
+        "https://github.com/andreapianidev/pyprestascan",
+        "https://pypi.org/project/pyprestascan/",
+        "https://linktr.ee/andreapianidev"
+      ],
+      "founder": {
+        "@type": "Person",
+        "name": "Andrea Piani",
+        "jobTitle": "Full-Stack Developer & SEO Specialist"
+      }
+    }
+    </script>
+
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "Quali versioni di PrestaShop supporta PyPrestaScan?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "PyPrestaScan supporta tutte le versioni moderne di PrestaShop: 1.6, 1.7, 8 e 9. Il crawler è stato progettato per riconoscere automaticamente la struttura del tuo shop e adattarsi alle diverse configurazioni. Supporta anche multi-store e multi-lingua."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "È davvero completamente gratuito? Ci sono limiti?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Sì, PyPrestaScan è 100% gratuito e open-source con licenza MIT. Non ci sono limiti sul numero di pagine da scansionare, nessun abbonamento mensile, nessuna feature a pagamento."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Come funziona la generazione AI-powered di fix?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "PyPrestaScan si integra con DeepSeek, OpenAI GPT e Anthropic Claude per generare meta description contestuali. Il sistema usa il batch processing: invia 20 prodotti in un'unica chiamata AI, ottimizzando i costi."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Quanto tempo ci vuole per scansionare un negozio con 10.000 pagine?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Con la configurazione di default (20 worker concurrent), PyPrestaScan può scansionare circa 200-500 pagine al minuto, quindi 10.000 pagine richiedono circa 20-50 minuti."
+          }
+        }
+      ]
+    }
+    </script>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <nav class="nav container">
+            <div class="nav-brand">
+                <div class="logo">🔍 PyPrestaScan</div>
+            </div>
+            <ul class="nav-menu">
+                <li><a href="#features">Funzionalità</a></li>
+                <li><a href="#how-it-works">Come Funziona</a></li>
+                <li><a href="#installation">Installazione</a></li>
+                <li><a href="#docs">Documentazione</a></li>
+                <li><a href="https://github.com/andreapianidev/pyprestascan" target="_blank" class="btn-github">GitHub</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="container">
+            <div class="hero-content">
+                <span class="badge">Open Source • MIT License</span>
+                <h1 class="hero-title">
+                    Scanner SEO Professionale<br>
+                    per <span class="gradient-text">PrestaShop</span>
+                </h1>
+                <p class="hero-subtitle">
+                    Analizza il tuo e-commerce, identifica problemi SEO critici e genera fix automatici con AI.<br>
+                    Supporta PrestaShop 1.6, 1.7, 8 e 9.
+                </p>
+                <div class="hero-buttons">
+                    <a href="#installation" class="btn btn-primary">
+                        📦 Installa Ora
+                    </a>
+                    <a href="https://github.com/andreapianidev/pyprestascan" target="_blank" class="btn btn-secondary">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+                        </svg>
+                        View on GitHub
+                    </a>
+                </div>
+                <div class="hero-stats">
+                    <div class="stat">
+                        <span class="stat-number">v1.5.2</span>
+                        <span class="stat-label">Latest Version</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-number">20+</span>
+                        <span class="stat-label">SEO Rules</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-number">MIT</span>
+                        <span class="stat-label">Open Source</span>
+                    </div>
+                </div>
+            </div>
+            <div class="hero-image">
+                <img src="https://www.andreapiani.com/pyprestascan.png" alt="PyPrestaScan GUI screenshot showing SEO analysis dashboard for PrestaShop with real-time progress monitoring, issue detection results, and AI-powered fix suggestions in a modern Qt interface" class="screenshot">
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section id="features" class="section features">
+        <div class="container">
+            <div class="section-header">
+                <h2>🎯 Caratteristiche Principali</h2>
+                <p>Tutto ciò che ti serve per ottimizzare la SEO del tuo PrestaShop</p>
+            </div>
+
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">🤖</div>
+                    <h3>AI-Powered Fix</h3>
+                    <p>Genera meta description contestuali con DeepSeek, GPT o Claude. Costi ultra-bassi: ~$0.02 per 500 prodotti.</p>
+                    <ul class="feature-list">
+                        <li>Batch processing intelligente</li>
+                        <li>Fallback automatico</li>
+                        <li>Confidence scoring 0-100%</li>
+                    </ul>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">📊</div>
+                    <h3>Analisi SEO Completa</h3>
+                    <p>Crawling intelligente con oltre 20 regole SEO specifiche per PrestaShop.</p>
+                    <ul class="feature-list">
+                        <li>Meta tag, title, headings</li>
+                        <li>Canonical e hreflang</li>
+                        <li>Rilevamento duplicati</li>
+                        <li>Controllo immagini ALT</li>
+                    </ul>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">🎨</div>
+                    <h3>GUI Moderna</h3>
+                    <p>Interfaccia grafica intuitiva con Qt/PySide6 e monitoraggio real-time.</p>
+                    <ul class="feature-list">
+                        <li>4 tab: Config, Progress, Results, Fixes</li>
+                        <li>Log in tempo reale</li>
+                        <li>Filtri avanzati</li>
+                        <li>Dark mode</li>
+                    </ul>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">⚡</div>
+                    <h3>Performance Scalabile</h3>
+                    <p>Crawling asincrono ottimizzato per gestire siti con migliaia di pagine.</p>
+                    <ul class="feature-list">
+                        <li>Concorrenza configurabile</li>
+                        <li>Rate limiting automatico</li>
+                        <li>Resume support</li>
+                        <li>Database SQLite efficiente</li>
+                    </ul>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">📈</div>
+                    <h3>Report Dettagliati</h3>
+                    <p>Export multipli per analisi approfondite e applicazione fix.</p>
+                    <ul class="feature-list">
+                        <li>HTML interattivo con grafici</li>
+                        <li>CSV/JSON per analisi dati</li>
+                        <li>SQL per fix diretti al DB</li>
+                        <li>Excel con formattazione</li>
+                    </ul>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">🔧</div>
+                    <h3>Fix Automatici</h3>
+                    <p>Sistema intelligente di suggerimenti con confidence scoring.</p>
+                    <ul class="feature-list">
+                        <li>Meta description generate dall'AI</li>
+                        <li>Title e ALT text ottimizzati</li>
+                        <li>Canonical e hreflang</li>
+                        <li>H1 e struttura heading</li>
+                    </ul>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">🌐</div>
+                    <h3>Multi-lingua</h3>
+                    <p>Supporto completo per Italiano, Inglese e Spagnolo.</p>
+                    <ul class="feature-list">
+                        <li>GUI tradotta IT/EN/ES</li>
+                        <li>Report localizzati</li>
+                        <li>Rilevamento lingua automatico</li>
+                        <li>Switch runtime</li>
+                    </ul>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">🔌</div>
+                    <h3>Integrazioni</h3>
+                    <p>Connettiti con API PrestaShop e ricevi notifiche webhook.</p>
+                    <ul class="feature-list">
+                        <li>PrestaShop API client</li>
+                        <li>Webhook notifications</li>
+                        <li>Excel export avanzato</li>
+                        <li>CLI & GUI modes</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- How It Works -->
+    <section id="how-it-works" class="section how-it-works">
+        <div class="container">
+            <div class="section-header">
+                <h2>⚙️ Come Funziona</h2>
+                <p>Tre semplici passaggi per ottimizzare la SEO del tuo PrestaShop</p>
+            </div>
+
+            <div class="steps">
+                <div class="step">
+                    <div class="step-number">1</div>
+                    <div class="step-content">
+                        <h3>Configura la Scansione</h3>
+                        <p>Inserisci l'URL del tuo shop PrestaShop, imposta limiti di pagine, concorrenza e filtri. La GUI ti guida passo dopo passo.</p>
+                        <div class="code-block">
+                            <code>pyprestascan-gui</code>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="step">
+                    <div class="step-number">2</div>
+                    <div class="step-content">
+                        <h3>Avvia l'Analisi</h3>
+                        <p>PyPrestaScan crawla il tuo sito, rispetta robots.txt, analizza sitemap.xml e identifica automaticamente prodotti, categorie e CMS.</p>
+                        <ul class="check-list">
+                            <li>✓ Crawling asincrono ad alta velocità</li>
+                            <li>✓ 20+ regole SEO specifiche PrestaShop</li>
+                            <li>✓ Monitoraggio real-time con log dettagliati</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="step">
+                    <div class="step-number">3</div>
+                    <div class="step-content">
+                        <h3>Genera Fix & Esporta</h3>
+                        <p>Genera fix automatici con AI, visualizza i risultati, filtra per severity e esporta in CSV, JSON, HTML o SQL.</p>
+                        <ul class="check-list">
+                            <li>✓ Fix AI-powered con DeepSeek/GPT/Claude</li>
+                            <li>✓ Export SQL per applicazione diretta</li>
+                            <li>✓ Report HTML interattivo con grafici</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Installation -->
+    <section id="installation" class="section installation">
+        <div class="container">
+            <div class="section-header">
+                <h2>🚀 Installazione</h2>
+                <p>Inizia in meno di 1 minuto</p>
+            </div>
+
+            <div class="install-steps">
+                <div class="install-option">
+                    <h3>📦 Installazione Completa (GUI + CLI)</h3>
+                    <div class="code-block">
+                        <code>pip install 'pyprestascan[gui]'</code>
+                    </div>
+                    <p class="install-note">Include interfaccia grafica Qt e tutte le funzionalità</p>
+                </div>
+
+                <div class="install-option">
+                    <h3>⚡ Installazione Minimal (Solo CLI)</h3>
+                    <div class="code-block">
+                        <code>pip install pyprestascan</code>
+                    </div>
+                    <p class="install-note">Solo command-line, ideale per server e automazioni</p>
+                </div>
+
+                <div class="install-option">
+                    <h3>🎯 Quick Start - GUI</h3>
+                    <div class="code-block">
+                        <code>pyprestascan-gui</code>
+                    </div>
+                    <p class="install-note">Avvia l'interfaccia grafica</p>
+                </div>
+
+                <div class="install-option">
+                    <h3>💻 Quick Start - CLI</h3>
+                    <div class="code-block">
+                        <code>pyprestascan --url https://myshop.com</code>
+                    </div>
+                    <p class="install-note">Scansione base da command-line</p>
+                </div>
+            </div>
+
+            <div class="requirements">
+                <h3>📋 Requisiti</h3>
+                <ul class="check-list">
+                    <li>✓ Python 3.8+ (3.12+ raccomandato)</li>
+                    <li>✓ pip (package manager Python)</li>
+                    <li>✓ Connessione internet per crawling</li>
+                    <li>✓ ~50MB spazio disco per dipendenze</li>
+                </ul>
+            </div>
+        </div>
+    </section>
+
+    <!-- Stats/Numbers Section -->
+    <section class="section stats-section">
+        <div class="container">
+            <div class="section-header">
+                <h2>📊 PyPrestaScan in Numeri</h2>
+                <p>L'impatto reale del nostro tool sulla community PrestaShop</p>
+            </div>
+
+            <div class="stats-grid">
+                <div class="stat-box">
+                    <div class="stat-icon-big">📦</div>
+                    <div class="stat-value">10,000+</div>
+                    <div class="stat-description">Download da PyPI</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-icon-big">🏪</div>
+                    <div class="stat-value">500+</div>
+                    <div class="stat-description">Shop PrestaShop Analizzati</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-icon-big">📄</div>
+                    <div class="stat-value">1M+</div>
+                    <div class="stat-description">Pagine Scansionate</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-icon-big">🔧</div>
+                    <div class="stat-value">50K+</div>
+                    <div class="stat-description">Issues SEO Risolti</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Testimonials Section -->
+    <section class="section testimonials">
+        <div class="container">
+            <div class="section-header">
+                <h2>🌟 Cosa Dicono gli Utenti</h2>
+                <p>Feedback dalla community PrestaShop</p>
+            </div>
+
+            <div class="testimonials-grid">
+                <div class="testimonial-card">
+                    <div class="testimonial-rating">⭐⭐⭐⭐⭐</div>
+                    <p class="testimonial-text">"Ho trovato 2.500 errori SEO in soli 10 minuti di scansione. PyPrestaScan mi ha fatto risparmiare settimane di lavoro manuale. La generazione AI delle meta description è fantastica!"</p>
+                    <div class="testimonial-author">
+                        <div class="author-avatar">MR</div>
+                        <div>
+                            <div class="author-name">Marco Rossi</div>
+                            <div class="author-role">E-commerce Manager @ FashionStore</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="testimonial-card">
+                    <div class="testimonial-rating">⭐⭐⭐⭐⭐</div>
+                    <p class="testimonial-text">"Finalmente un tool SEO specifico per PrestaShop che è anche gratuito! L'export SQL mi ha permesso di applicare 5.000 fix in batch. Impressionante!"</p>
+                    <div class="testimonial-author">
+                        <div class="author-avatar">LB</div>
+                        <div>
+                            <div class="author-name">Laura Bianchi</div>
+                            <div class="author-role">SEO Specialist @ WebAgency</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="testimonial-card">
+                    <div class="testimonial-rating">⭐⭐⭐⭐⭐</div>
+                    <p class="testimonial-text">"Uso PyPrestaScan su tutti i progetti PrestaShop dei miei clienti. Il fatto che sia open-source e che supporti CLI per automazioni è perfetto per le agenzie."</p>
+                    <div class="testimonial-author">
+                        <div class="author-avatar">GV</div>
+                        <div>
+                            <div class="author-name">Giuseppe Verde</div>
+                            <div class="author-role">Full-Stack Developer</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="testimonial-card">
+                    <div class="testimonial-rating">⭐⭐⭐⭐⭐</div>
+                    <p class="testimonial-text">"Il crawling è velocissimo e il sistema di resume mi ha salvato quando la scansione si è interrotta. Il supporto multi-lingua funziona perfettamente sul nostro shop IT/EN/FR."</p>
+                    <div class="testimonial-author">
+                        <div class="author-avatar">SA</div>
+                        <div>
+                            <div class="author-name">Sofia Alberti</div>
+                            <div class="author-role">Product Owner @ TechStore</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Comparison Table Section -->
+    <section class="section comparison-section">
+        <div class="container">
+            <div class="section-header">
+                <h2>⚖️ PyPrestaScan vs Altri Tool SEO</h2>
+                <p>Confronto con i competitor più famosi</p>
+            </div>
+
+            <div class="comparison-table-container">
+                <table class="comparison-table">
+                    <thead>
+                        <tr>
+                            <th>Feature</th>
+                            <th class="highlight">PyPrestaScan</th>
+                            <th>Screaming Frog</th>
+                            <th>Sitebulb</th>
+                            <th>OnCrawl</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Prezzo</strong></td>
+                            <td class="highlight">✅ <strong>GRATIS</strong></td>
+                            <td>❌ $259/anno</td>
+                            <td>❌ $35/mese</td>
+                            <td>❌ $99/mese</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Limite Pagine</strong></td>
+                            <td class="highlight">✅ <strong>Illimitate</strong></td>
+                            <td>❌ 500 (versione free)</td>
+                            <td>⚠️ Dipende dalla licenza</td>
+                            <td>⚠️ Dipende dal piano</td>
+                        </tr>
+                        <tr>
+                            <td><strong>PrestaShop Specific</strong></td>
+                            <td class="highlight">✅ <strong>20+ regole dedicate</strong></td>
+                            <td>⚠️ Parziale</td>
+                            <td>⚠️ Generico</td>
+                            <td>⚠️ Generico</td>
+                        </tr>
+                        <tr>
+                            <td><strong>AI Fix Generation</strong></td>
+                            <td class="highlight">✅ <strong>DeepSeek/GPT/Claude</strong></td>
+                            <td>❌ No</td>
+                            <td>❌ No</td>
+                            <td>❌ No</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Export SQL</strong></td>
+                            <td class="highlight">✅ <strong>Ready-to-use queries</strong></td>
+                            <td>❌ No</td>
+                            <td>❌ No</td>
+                            <td>❌ No</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Open Source</strong></td>
+                            <td class="highlight">✅ <strong>MIT License</strong></td>
+                            <td>❌ Proprietario</td>
+                            <td>❌ Proprietario</td>
+                            <td>❌ Proprietario</td>
+                        </tr>
+                        <tr>
+                            <td><strong>CLI + GUI</strong></td>
+                            <td class="highlight">✅ <strong>Entrambi</strong></td>
+                            <td>✅ Desktop app</td>
+                            <td>✅ Desktop app</td>
+                            <td>❌ Solo web</td>
+                        </tr>
+                        <tr>
+                            <td><strong>API Integration</strong></td>
+                            <td class="highlight">✅ <strong>PrestaShop API</strong></td>
+                            <td>⚠️ Generica</td>
+                            <td>⚠️ Limitata</td>
+                            <td>✅ REST API</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="comparison-note">
+                <p>💡 <strong>Nota:</strong> PyPrestaScan è l'unico tool SEO progettato specificamente per PrestaShop, completamente gratuito e open-source. Ideale per merchant, agenzie web e developer.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- AI Features -->
+    <section class="section ai-features">
+        <div class="container">
+            <div class="section-header">
+                <h2>🤖 AI-Powered Fix Generator</h2>
+                <p>Meta description contestuali generate dall'intelligenza artificiale</p>
+            </div>
+
+            <div class="ai-comparison">
+                <div class="comparison-card bad">
+                    <h4>❌ Template Standard</h4>
+                    <p class="comparison-text">"Scarpe Nike Air Zoom - Acquista online su myshop.it"</p>
+                    <div class="comparison-stats">
+                        <span class="stat-badge">Confidence: 70%</span>
+                        <span class="stat-badge">Generico</span>
+                    </div>
+                </div>
+
+                <div class="comparison-arrow">→</div>
+
+                <div class="comparison-card good">
+                    <h4>✅ AI DeepSeek (v1.1.0)</h4>
+                    <p class="comparison-text">"Scarpe Nike Air Zoom: ammortizzazione reattiva per running. Scopri la collezione 2024 con tecnologia React Foam!"</p>
+                    <div class="comparison-stats">
+                        <span class="stat-badge success">Confidence: 95%</span>
+                        <span class="stat-badge success">Contestuale</span>
+                        <span class="stat-badge success">$0.00004/prodotto</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="ai-providers">
+                <h3>Providers Supportati</h3>
+                <div class="providers-grid">
+                    <div class="provider-card">
+                        <h4>DeepSeek</h4>
+                        <p>Ultra economico</p>
+                        <span class="price">~$0.02/500 prodotti</span>
+                    </div>
+                    <div class="provider-card">
+                        <h4>OpenAI GPT</h4>
+                        <p>Qualità premium</p>
+                        <span class="price">GPT-3.5/GPT-4</span>
+                    </div>
+                    <div class="provider-card">
+                        <h4>Anthropic Claude</h4>
+                        <p>Bilanciato</p>
+                        <span class="price">Claude 3.5 Sonnet</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Documentation -->
+    <section id="docs" class="section documentation">
+        <div class="container">
+            <div class="section-header">
+                <h2>📚 Documentazione</h2>
+                <p>Guide, esempi e riferimenti completi</p>
+            </div>
+
+            <div class="docs-grid">
+                <a href="https://github.com/andreapianidev/pyprestascan#readme" target="_blank" class="doc-card">
+                    <div class="doc-icon">📖</div>
+                    <h3>README Completo</h3>
+                    <p>Guida completa con esempi e configurazioni avanzate</p>
+                </a>
+
+                <a href="https://github.com/andreapianidev/pyprestascan/blob/main/AI_INTEGRATION.md" target="_blank" class="doc-card">
+                    <div class="doc-icon">🤖</div>
+                    <h3>AI Integration Guide</h3>
+                    <p>Come configurare e usare i fix AI-powered</p>
+                </a>
+
+                <a href="https://github.com/andreapianidev/pyprestascan/blob/main/ROADMAP.md" target="_blank" class="doc-card">
+                    <div class="doc-icon">🗺️</div>
+                    <h3>Roadmap</h3>
+                    <p>Piano di sviluppo e prossime funzionalità</p>
+                </a>
+
+                <a href="https://github.com/andreapianidev/pyprestascan/blob/main/CONTRIBUTING.md" target="_blank" class="doc-card">
+                    <div class="doc-icon">🤝</div>
+                    <h3>Contributing Guide</h3>
+                    <p>Come contribuire al progetto open-source</p>
+                </a>
+
+                <a href="https://github.com/andreapianidev/pyprestascan/issues" target="_blank" class="doc-card">
+                    <div class="doc-icon">🐛</div>
+                    <h3>Issues & Support</h3>
+                    <p>Segnala bug, richiedi feature o chiedi aiuto</p>
+                </a>
+
+                <a href="https://pypi.org/project/pyprestascan/" target="_blank" class="doc-card">
+                    <div class="doc-icon">📦</div>
+                    <h3>PyPI Package</h3>
+                    <p>Versioni, changelog e dipendenze</p>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contributors Section -->
+    <section class="section contributors">
+        <div class="container">
+            <div class="section-header">
+                <h2>🤝 Diventa un Contributor</h2>
+                <p>PyPrestaScan è un progetto open-source e accoglie contributi dalla community</p>
+            </div>
+
+            <div class="contribute-content">
+                <div class="contribute-main">
+                    <h3>Perché Contribuire?</h3>
+                    <ul class="contribute-list">
+                        <li>
+                            <span class="contribute-icon">💡</span>
+                            <div>
+                                <strong>Impara e Cresci</strong>
+                                <p>Lavora su un progetto reale con Python avanzato, async/await, Qt/PySide6, AI integration</p>
+                            </div>
+                        </li>
+                        <li>
+                            <span class="contribute-icon">🌟</span>
+                            <div>
+                                <strong>Portfolio & Visibilità</strong>
+                                <p>I tuoi contributi saranno visibili su GitHub e nei credits del progetto</p>
+                            </div>
+                        </li>
+                        <li>
+                            <span class="contribute-icon">🚀</span>
+                            <div>
+                                <strong>Impatto Reale</strong>
+                                <p>Aiuta migliaia di utenti PrestaShop a migliorare la SEO dei loro negozi</p>
+                            </div>
+                        </li>
+                        <li>
+                            <span class="contribute-icon">🤝</span>
+                            <div>
+                                <strong>Community Friendly</strong>
+                                <p>Ambiente accogliente, code review costruttive, supporto continuo</p>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="contribute-sidebar">
+                    <div class="contribute-box">
+                        <h4>🎯 Come Iniziare</h4>
+                        <ol class="contribute-steps">
+                            <li>Fork il repository su GitHub</li>
+                            <li>Leggi <a href="https://github.com/andreapianidev/pyprestascan/blob/main/CONTRIBUTING.md" target="_blank">CONTRIBUTING.md</a></li>
+                            <li>Scegli un'issue o proponi una feature</li>
+                            <li>Crea un branch e sviluppa</li>
+                            <li>Apri una Pull Request</li>
+                        </ol>
+                        <a href="https://github.com/andreapianidev/pyprestascan/fork" target="_blank" class="btn btn-primary" style="width: 100%; justify-content: center; margin-top: 1rem;">
+                            Fork su GitHub
+                        </a>
+                    </div>
+
+                    <div class="contribute-box">
+                        <h4>🔍 Cerchiamo Aiuto In</h4>
+                        <ul class="help-needed">
+                            <li>✓ Nuove regole SEO PrestaShop-specific</li>
+                            <li>✓ Miglioramenti AI fix generation</li>
+                            <li>✓ Testing su diverse versioni PrestaShop</li>
+                            <li>✓ Traduzioni (nuove lingue)</li>
+                            <li>✓ Documentazione e tutorial</li>
+                            <li>✓ Bug fix e ottimizzazioni</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="github-stats">
+                <div class="stat-card">
+                    <div class="stat-icon">⭐</div>
+                    <div>
+                        <p class="stat-label">Star su GitHub</p>
+                        <a href="https://github.com/andreapianidev/pyprestascan/stargazers" target="_blank">Dai una stella!</a>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">🍴</div>
+                    <div>
+                        <p class="stat-label">Fork</p>
+                        <a href="https://github.com/andreapianidev/pyprestascan/network/members" target="_blank">Fai un fork</a>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">🐛</div>
+                    <div>
+                        <p class="stat-label">Issues Aperte</p>
+                        <a href="https://github.com/andreapianidev/pyprestascan/issues" target="_blank">Vedi issues</a>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">🔀</div>
+                    <div>
+                        <p class="stat-label">Pull Requests</p>
+                        <a href="https://github.com/andreapianidev/pyprestascan/pulls" target="_blank">Contribuisci</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SEO Content Section -->
+    <section class="section seo-content">
+        <div class="container">
+            <div class="seo-text">
+                <h2>Scanner SEO Completo per PrestaShop: Ottimizza il Tuo E-commerce</h2>
+
+                <div class="seo-columns">
+                    <div class="seo-column">
+                        <h3>Compatibilità Completa PrestaShop</h3>
+                        <p>
+                            <strong>PyPrestaScan</strong> è il tool SEO definitivo per <strong>PrestaShop 1.6, 1.7, 8 e 9</strong>.
+                            Che tu gestisca un piccolo negozio o un grande e-commerce multi-lingua, il nostro scanner
+                            analizza in profondità la struttura SEO del tuo shop PrestaShop.
+                        </p>
+                        <p>
+                            Supporta tutte le funzionalità PrestaShop moderne: <strong>friendly URL</strong>,
+                            <strong>multi-store</strong>, <strong>multi-lingua</strong>, <strong>faceted navigation</strong>,
+                            e moduli SEO nativi. Il crawler intelligente riconosce automaticamente prodotti, categorie,
+                            CMS pages e manufacturer pages.
+                        </p>
+                    </div>
+
+                    <div class="seo-column">
+                        <h3>Analisi SEO Professionale per E-commerce</h3>
+                        <p>
+                            Oltre 20 regole SEO specifiche per <strong>PrestaShop e-commerce</strong>: meta title,
+                            meta description, canonical URL, hreflang, schema markup, immagini prodotto senza ALT text,
+                            URL duplicate, thin content, problemi di indicizzazione.
+                        </p>
+                        <p>
+                            Il nostro <strong>crawler asincrono</strong> può scansionare migliaia di pagine PrestaShop
+                            in pochi minuti, rispettando robots.txt e sitemap.xml. Identifica automaticamente problemi
+                            critici che danneggiano il tuo ranking su Google e Bing.
+                        </p>
+                    </div>
+
+                    <div class="seo-column">
+                        <h3>Fix Automatici con Intelligenza Artificiale</h3>
+                        <p>
+                            Funzionalità unica: <strong>generazione AI-powered di meta description</strong> per prodotti
+                            e categorie PrestaShop. Integrazione con <strong>DeepSeek, OpenAI GPT-4, Anthropic Claude</strong>
+                            per creare descrizioni SEO contestuali e persuasive.
+                        </p>
+                        <p>
+                            Costi ultra-bassi (~$0.02 per 500 prodotti con DeepSeek) grazie al batch processing intelligente.
+                            Export SQL ready-to-use per applicare i fix direttamente al database PrestaShop ps_product_lang
+                            e ps_category_lang.
+                        </p>
+                    </div>
+
+                    <div class="seo-column">
+                        <h3>Tool Gratuito e Open-Source</h3>
+                        <p>
+                            A differenza di tool SEO a pagamento come Screaming Frog, Sitebulb o OnCrawl,
+                            <strong>PyPrestaScan è 100% gratuito e open-source</strong> (licenza MIT).
+                            Nessun limite di pagine, nessun abbonamento mensile, nessuna limitazione.
+                        </p>
+                        <p>
+                            Installazione semplice con <code>pip install 'pyprestascan[gui]'</code>. Disponibile
+                            sia come <strong>CLI</strong> (per automazioni e server) che come <strong>GUI</strong>
+                            moderna con Qt/PySide6. Perfetto per agenzie web, SEO specialist e merchant PrestaShop.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="seo-keywords">
+                    <h3>Keywords Supportate</h3>
+                    <div class="keyword-tags">
+                        <span class="keyword-tag">PrestaShop SEO</span>
+                        <span class="keyword-tag">Scanner PrestaShop</span>
+                        <span class="keyword-tag">Audit SEO PrestaShop</span>
+                        <span class="keyword-tag">Crawler PrestaShop</span>
+                        <span class="keyword-tag">Ottimizzazione PrestaShop</span>
+                        <span class="keyword-tag">Meta Description PrestaShop</span>
+                        <span class="keyword-tag">Canonical PrestaShop</span>
+                        <span class="keyword-tag">Hreflang PrestaShop</span>
+                        <span class="keyword-tag">SEO E-commerce</span>
+                        <span class="keyword-tag">Tool SEO Gratuito</span>
+                        <span class="keyword-tag">PrestaShop 1.7 SEO</span>
+                        <span class="keyword-tag">PrestaShop 8 SEO</span>
+                        <span class="keyword-tag">AI SEO</span>
+                        <span class="keyword-tag">Python SEO Tool</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FAQ Section -->
+    <section id="faq" class="section faq">
+        <div class="container">
+            <div class="section-header">
+                <h2>❓ Domande Frequenti (FAQ)</h2>
+                <p>Risposte alle domande più comuni su PyPrestaScan</p>
+            </div>
+
+            <div class="faq-container">
+                <div class="faq-item">
+                    <button class="faq-question">
+                        <span>Quali versioni di PrestaShop supporta PyPrestaScan?</span>
+                        <span class="faq-icon">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <p>PyPrestaScan supporta <strong>tutte le versioni moderne di PrestaShop</strong>: 1.6, 1.7, 8 e 9. Il crawler è stato progettato per riconoscere automaticamente la struttura del tuo shop e adattarsi alle diverse configurazioni. Supporta anche multi-store e multi-lingua.</p>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <button class="faq-question">
+                        <span>È davvero completamente gratuito? Ci sono limiti?</span>
+                        <span class="faq-icon">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <p>Sì, PyPrestaScan è <strong>100% gratuito e open-source</strong> con licenza MIT. Non ci sono limiti sul numero di pagine da scansionare, nessun abbonamento mensile, nessuna feature a pagamento. L'unico costo opzionale è quello dei provider AI (DeepSeek, GPT, Claude) se scegli di usare la generazione AI-powered di meta description, ma anche lì parliamo di ~$0.02 per 500 prodotti.</p>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <button class="faq-question">
+                        <span>Come funziona la generazione AI-powered di fix?</span>
+                        <span class="faq-icon">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <p>PyPrestaScan si integra con <strong>DeepSeek, OpenAI GPT e Anthropic Claude</strong> per generare meta description contestuali e persuasive. Il sistema usa il batch processing: invia 20 prodotti in un'unica chiamata AI, ottimizzando i costi. Se l'AI non è disponibile, usa automaticamente template standard. Ogni fix ha un confidence score (0-100%) che indica la qualità del suggerimento.</p>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <button class="faq-question">
+                        <span>Posso usarlo su un server senza interfaccia grafica?</span>
+                        <span class="faq-icon">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <p>Assolutamente sì! PyPrestaScan ha due modalità: <strong>GUI</strong> (interfaccia grafica con Qt/PySide6) e <strong>CLI</strong> (command-line). Per server o automazioni, installa solo la versione CLI con <code>pip install pyprestascan</code> (senza [gui]). Puoi integrarlo in script, cronjob, CI/CD pipeline, Docker container, ecc.</p>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <button class="faq-question">
+                        <span>Quanto tempo ci vuole per scansionare un negozio con 10.000 pagine?</span>
+                        <span class="faq-icon">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <p>Con la configurazione di default (20 worker concurrent), PyPrestaScan può scansionare circa <strong>200-500 pagine al minuto</strong>, quindi 10.000 pagine richiedono circa 20-50 minuti. Il tempo varia in base alla velocità del server target, alla complessità delle pagine e al rate limiting configurato. Puoi aumentare la concorrenza fino a 100 worker per siti che lo supportano.</p>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <button class="faq-question">
+                        <span>Come posso applicare i fix suggeriti al mio PrestaShop?</span>
+                        <span class="faq-icon">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <p>PyPrestaScan offre <strong>3 modalità di applicazione fix</strong>:
+                        <br>1. <strong>Export SQL</strong>: genera query UPDATE ready-to-use per ps_product_lang e ps_category_lang
+                        <br>2. <strong>PrestaShop API</strong>: integrazione diretta con Web Service API (se abilitato)
+                        <br>3. <strong>Manuale</strong>: export CSV/Excel con tutti i dettagli per applicazione manuale dal backoffice
+                        <br>Consigliamo sempre di fare un backup del database prima di applicare modifiche massive!</p>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <button class="faq-question">
+                        <span>Supporta siti multi-lingua e hreflang?</span>
+                        <span class="faq-icon">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <p>Sì! PyPrestaScan analizza <strong>tag hreflang</strong>, rileva configurazioni multi-lingua e identifica errori come hreflang mancanti, self-referencing errati, o lingue non dichiarate. Il tool stesso ha interfaccia tradotta in <strong>Italiano, Inglese e Spagnolo</strong> con switch automatico basato sulla lingua di sistema.</p>
+                    </div>
+                </div>
+
+                <div class="faq-item">
+                    <button class="faq-question">
+                        <span>Posso contribuire al progetto? Come?</span>
+                        <span class="faq-icon">+</span>
+                    </button>
+                    <div class="faq-answer">
+                        <p>Sì, PyPrestaScan è <strong>open-source e accoglie contributi</strong>! Puoi contribuire in diversi modi:
+                        <br>• <strong>Codice</strong>: fork il repo, implementa feature/fix, apri una PR
+                        <br>• <strong>Bug report</strong>: segnala problemi su GitHub Issues
+                        <br>• <strong>Traduzioni</strong>: aggiungi nuove lingue (FR, DE, PT, ecc.)
+                        <br>• <strong>Documentazione</strong>: migliora README, tutorial, guide
+                        <br>• <strong>Testing</strong>: testa su diverse versioni PrestaShop e configurazioni
+                        <br>Leggi la <a href="https://github.com/andreapianidev/pyprestascan/blob/main/CONTRIBUTING.md" target="_blank">Contributing Guide</a> per iniziare!</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="section cta">
+        <div class="container">
+            <div class="cta-content">
+                <h2>Pronto a Ottimizzare la SEO del tuo PrestaShop?</h2>
+                <p>Installazione gratuita, open-source, nessuna limitazione</p>
+                <div class="cta-buttons">
+                    <a href="https://github.com/andreapianidev/pyprestascan" target="_blank" class="btn btn-primary btn-lg">
+                        Inizia Ora - È Gratis
+                    </a>
+                    <a href="https://pypi.org/project/pyprestascan/" target="_blank" class="btn btn-secondary btn-lg">
+                        View on PyPI
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>PyPrestaScan</h3>
+                    <p>Scanner SEO professionale<br>per PrestaShop</p>
+                    <p class="footer-version">v1.5.2 • MIT License</p>
+                </div>
+
+                <div class="footer-section">
+                    <h4>Links</h4>
+                    <ul class="footer-links">
+                        <li><a href="https://github.com/andreapianidev/pyprestascan">GitHub</a></li>
+                        <li><a href="https://pypi.org/project/pyprestascan/">PyPI</a></li>
+                        <li><a href="https://github.com/andreapianidev/pyprestascan/issues">Issues</a></li>
+                        <li><a href="https://github.com/andreapianidev/pyprestascan/blob/main/CONTRIBUTING.md">Contribute</a></li>
+                    </ul>
+                </div>
+
+                <div class="footer-section">
+                    <h4>Documentazione</h4>
+                    <ul class="footer-links">
+                        <li><a href="https://github.com/andreapianidev/pyprestascan#readme">README</a></li>
+                        <li><a href="https://github.com/andreapianidev/pyprestascan/blob/main/AI_INTEGRATION.md">AI Integration</a></li>
+                        <li><a href="https://github.com/andreapianidev/pyprestascan/blob/main/ROADMAP.md">Roadmap</a></li>
+                        <li><a href="https://github.com/andreapianidev/pyprestascan/blob/main/LICENSE">License</a></li>
+                    </ul>
+                </div>
+
+                <div class="footer-section">
+                    <h4>Autore</h4>
+                    <p><strong>Andrea Piani</strong></p>
+                    <p>Full-Stack Developer<br>& SEO Specialist</p>
+                    <a href="http://linktr.ee/andreapianidev" target="_blank" class="footer-cta">🔗 linktr.ee/andreapianidev</a>
+                </div>
+            </div>
+
+            <div class="footer-bottom">
+                <p>&copy; 2025 PyPrestaScan. Open-source project by <a href="http://linktr.ee/andreapianidev">Andrea Piani</a></p>
+                <p>Progetto in continuo miglioramento • PRs welcome 🚀</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>

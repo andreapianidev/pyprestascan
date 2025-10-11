@@ -11,7 +11,7 @@
 
 PyPrestaScan è uno strumento open-source avanzato per l'analisi SEO completa di siti PrestaShop. Scansiona il tuo e-commerce, identifica problemi SEO critici e genera suggerimenti automatici per risolverli.
 
-📦 **Installazione rapida:** `pip install pyprestascan[gui]`
+📦 **Installazione rapida:** `pip install 'pyprestascan[gui]'`
 
 ---
 
@@ -105,8 +105,8 @@ Full-Stack Developer & SEO Specialist
 # Installazione base (CLI)
 pip install pyprestascan
 
-# Con interfaccia grafica
-pip install pyprestascan[gui]
+# Con interfaccia grafica (NOTA: su zsh/macOS usa le virgolette)
+pip install 'pyprestascan[gui]'
 
 # Avvia la GUI
 pyprestascan-gui
@@ -122,8 +122,8 @@ pyprestascan scan https://tuosito.com/it/ --max-urls 1000
 git clone https://github.com/andreapianidev/pyprestascan.git
 cd pyprestascan
 
-# Installa in modalità development
-pip install -e ".[gui]"
+# Installa in modalità development (NOTA: su zsh/macOS usa le virgolette)
+pip install -e '.[gui]'
 
 # Avvia l'interfaccia grafica
 python -m pyprestascan.gui.main_window

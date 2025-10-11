@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "pyprestascan"
-version = "1.5.1"
+version = "1.5.2"
 description = "Scanner SEO professionale per PrestaShop con fix AI-powered (DeepSeek/GPT/Claude), export Excel e API integration - GUI e CLI"
 authors = [{name = "Andrea Piani", email = "info@andreapiani.com"}]
 readme = "README.md"
