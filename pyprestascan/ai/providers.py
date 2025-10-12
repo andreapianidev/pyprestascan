@@ -24,7 +24,20 @@ class AIProvider(ABC):
 
     def __init__(self, api_key: str):
         self.api_key = api_key
-        self.client = httpx.AsyncClient(timeout=30.0)
+        self.client: Optional[httpx.AsyncClient] = None
+        self._timeout = httpx.Timeout(30.0, read=60.0, write=10.0, connect=10.0)
+
+    async def __aenter__(self):
+        """Async context manager entry"""
+        if self.client is None:
+            self.client = httpx.AsyncClient(timeout=self._timeout)
+        return self
+
+    async def __aexit__(self, exc_type, exc_val, exc_tb):
+        """Async context manager exit"""
+        if self.client:
+            await self.client.aclose()
+            self.client = None
 
     @abstractmethod
     async def generate_meta_description(
@@ -46,8 +59,10 @@ class AIProvider(ABC):
         pass
 
     async def close(self):
-        """Chiude connessione HTTP"""
-        await self.client.aclose()
+        """Chiude connessione HTTP (deprecato: usare async with)"""
+        if self.client:
+            await self.client.aclose()
+            self.client = None
 
 
 class DeepSeekProvider(AIProvider):
@@ -64,6 +79,10 @@ class DeepSeekProvider(AIProvider):
         context: Optional[str] = None
     ) -> AIGeneratedContent:
         """Genera singola meta description"""
+
+        # Inizializza client se non presente
+        if self.client is None:
+            self.client = httpx.AsyncClient(timeout=self._timeout)
 
         # Prompt ottimizzato per ridurre token
         prompt = self._build_prompt(title, url, page_type, context)

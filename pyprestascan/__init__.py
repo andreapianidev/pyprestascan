@@ -1,7 +1,8 @@
 """
-PyPrestaScan - CLI per analisi SEO specializzata di e-commerce PrestaShop
+PyPrestaScan - Scanner SEO professionale per PrestaShop
 """
 
-__version__ = "1.0.0"
-__author__ = "PyPrestaScan Team"
-__email__ = "pyprestascan@example.com"
+__version__ = "1.6.0"
+__author__ = "Andrea Piani"
+__email__ = "info@andreapiani.com"
+__all__ = ["__version__", "__author__", "__email__"]

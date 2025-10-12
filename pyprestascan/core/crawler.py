@@ -2,6 +2,7 @@
 Crawler principale PyPrestaScan - Orchestrazione crawling asincrono
 """
 import asyncio
+import sqlite3
 from pathlib import Path
 from typing import List, Dict, Any, Optional
 from datetime import datetime
@@ -10,6 +11,9 @@ import json
 import signal
 import sys
 import re
+
+import aiosqlite
+import httpx
 
 from .utils import URLNormalizer, ProjectManager, RichLogger, create_progress
 from .storage import CrawlDatabase, CrawlState, QueueEntry, PageData, ImageData, IssueData
@@ -161,11 +165,36 @@ class PyPrestaScanner:
         except KeyboardInterrupt:
             self.logger.warning("🛑 Crawling interrotto dall'utente")
             return 1
+        except asyncio.TimeoutError:
+            self.logger.error("⏱️ Timeout durante il crawling. Aumentare --timeout o ridurre --concurrency")
+            return 1
+        except httpx.HTTPError as e:
+            self.logger.error(f"🌐 Errore HTTP durante crawling: {e}")
+            if self.cli_context.debug:
+                import traceback
+                self.logger.debug(f"Traceback:\n{traceback.format_exc()}")
+            return 1
+        except (sqlite3.Error, aiosqlite.Error) as e:
+            self.logger.error(f"💾 Errore database durante crawling: {e}")
+            self.logger.error("Verificare permessi di scrittura e spazio disco disponibile")
+            if self.cli_context.debug:
+                import traceback
+                self.logger.debug(f"Traceback:\n{traceback.format_exc()}")
+            return 1
+        except MemoryError:
+            self.logger.error("💥 Memoria esaurita. Ridurre --max-urls o --concurrency")
+            return 1
+        except OSError as e:
+            self.logger.error(f"📁 Errore I/O durante crawling: {e}")
+            if self.cli_context.debug:
+                import traceback
+                self.logger.debug(f"Traceback:\n{traceback.format_exc()}")
+            return 1
         except Exception as e:
+            self.logger.critical(f"❌ Errore imprevisto durante crawling: {e.__class__.__name__}: {e}")
             import traceback
             error_details = traceback.format_exc()
-            self.logger.error(f"Errore durante crawling: {e}")
-            self.logger.error(f"Traceback:\n{error_details}")
+            self.logger.critical(f"Traceback completo:\n{error_details}")
             if self.cli_context.debug:
                 raise
             return 1

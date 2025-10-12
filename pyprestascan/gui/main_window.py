@@ -132,6 +132,10 @@ class CrawlerWorker(QObject):
     def _monitor_progress(self):
         """Monitora progress in background thread"""
         import time
+        import threading
+
+        # Lock per evitare race conditions
+        self._progress_lock = threading.Lock()
 
         # Attendi che scanner e db siano inizializzati
         for _ in range(50):  # Max 5 secondi
@@ -142,10 +146,15 @@ class CrawlerWorker(QObject):
         while not self._stop_requested:
             time.sleep(0.5)  # Aggiorna ogni mezzo secondo per più reattività
 
+            # Usa lock per verificare stato scanner in modo thread-safe
+            with self._progress_lock:
+                scanner_running = self.scanner and self.scanner.is_running
+
             # Esci se scanner è terminato
-            if self.scanner and not self.scanner.is_running:
+            if not scanner_running:
                 # Ultimo update prima di uscire
-                self._do_progress_update()
+                with self._progress_lock:
+                    self._do_progress_update()
                 break
 
             if self.scanner and self.scanner.db:

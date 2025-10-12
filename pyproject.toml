@@ -79,4 +79,5 @@ disallow_untyped_defs = true
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 asyncio_mode = "auto"
-addopts = "--cov=pyprestascan --cov-report=term-missing"
+# Coverage disabilitato temporaneamente - installare pytest-cov per abilitare
+# addopts = "--cov=pyprestascan --cov-report=term-missing"

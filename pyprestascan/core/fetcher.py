@@ -39,18 +39,25 @@ class RobotsInfo:
 
 class HttpFetcher:
     """Client HTTP asincrono con gestione robots.txt e rate limiting"""
-    
-    def __init__(self, 
+
+    def __init__(self,
                  concurrency: int = 20,
                  delay_ms: int = 0,
                  timeout: int = 15,
-                 user_agent: str = "PyPrestaScan/1.0",
+                 user_agent: Optional[str] = None,
                  auth: Optional[Tuple[str, str]] = None,
                  logger: Optional[RichLogger] = None):
         
         self.concurrency = concurrency
         self.delay_ms = delay_ms
         self.timeout = timeout
+        # User agent dinamico con versione package
+        if user_agent is None:
+            try:
+                from .. import __version__
+                user_agent = f"PyPrestaScan/{__version__}"
+            except ImportError:
+                user_agent = "PyPrestaScan/1.6.0"
         self.user_agent = user_agent
         self.auth = auth
         self.logger = logger or RichLogger()
