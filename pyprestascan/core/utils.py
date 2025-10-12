@@ -12,6 +12,8 @@ from rich.console import Console
 from rich.logging import RichHandler
 from rich.progress import Progress, SpinnerColumn, TextColumn, BarColumn, TaskProgressColumn, TimeElapsedColumn
 
+from .cache import url_cache, prestashop_cache
+
 
 # Pattern URL rumorosi PrestaShop
 PRESTASHOP_NOISY_PARAMS = {
@@ -70,13 +72,25 @@ class URLNormalizer:
             self._parsed_base = urlparse(f"https://{self.base_domain}")
     
     def normalize(self, url: str, remove_noisy_params: bool = True) -> str:
-        """Normalizza URL rimuovendo fragment, parametri rumorosi, etc."""
+        """
+        Normalizza URL rimuovendo fragment, parametri rumorosi, etc.
+
+        Usa caching LRU per performance (chiamata molto frequente)
+        """
         if not url or not url.strip():
             return ""
-        
+
+        # Genera cache key (url + remove_noisy_params flag)
+        cache_key = f"{url.strip()}:{remove_noisy_params}"
+
+        # Check cache
+        cached_result = url_cache.get(cache_key)
+        if cached_result is not None:
+            return cached_result
+
         # Parse URL
         parsed = urlparse(url.strip())
-        
+
         # Normalizza scheme (forza HTTPS se possibile)
         scheme = parsed.scheme.lower()
         if not scheme:
@@ -84,12 +98,12 @@ class URLNormalizer:
         elif scheme == 'http':
             # Mantieni HTTP se specificato esplicitamente
             pass
-        
+
         # Normalizza host
         netloc = parsed.netloc.lower()
         if not netloc:
             return ""
-        
+
         # Normalizza path
         path = parsed.path
         if not path or path == '/':
@@ -100,7 +114,7 @@ class URLNormalizer:
                 path = path.rstrip('/')
             # Normalizza doppi slash
             path = re.sub(r'/+', '/', path)
-        
+
         # Gestione parametri query
         query = ""
         if parsed.query and not remove_noisy_params:
@@ -112,13 +126,16 @@ class URLNormalizer:
             for key, values in params.items():
                 if key.lower() not in PRESTASHOP_NOISY_PARAMS:
                     clean_params[key] = values
-            
+
             if clean_params:
                 query = urlencode(clean_params, doseq=True)
-        
+
         # Ricostruisci URL (senza fragment)
         normalized = urlunparse((scheme, netloc, path, '', query, ''))
-        
+
+        # Cache result
+        url_cache.set(cache_key, normalized)
+
         return normalized
     
     def is_same_domain(self, url: str) -> bool:
@@ -175,7 +192,20 @@ class PrestaShopDetector:
     
     @staticmethod
     def detect_page_type(url: str, html_content: str = "") -> Dict[str, bool]:
-        """Rileva tipo di pagina PrestaShop"""
+        """
+        Rileva tipo di pagina PrestaShop
+
+        Usa caching per rilevamento basato su URL (molto frequente)
+        """
+        # Cache key basata solo su URL (html_content è troppo grande per cache key)
+        cache_key = url.lower()
+
+        # Se non c'è html_content, usa cache completa
+        if not html_content:
+            cached_result = prestashop_cache.get(cache_key)
+            if cached_result is not None:
+                return cached_result
+
         result = {
             'is_product': False,
             'is_category': False,
@@ -184,9 +214,9 @@ class PrestaShopDetector:
             'is_cart_or_checkout': False,
             'is_account': False
         }
-        
+
         url_lower = url.lower()
-        
+
         # Rilevamento da URL
         if re.search(r'-p\d+\.html|\?id_product=', url_lower):
             result['is_product'] = True
@@ -200,11 +230,11 @@ class PrestaShopDetector:
             result['is_cart_or_checkout'] = True
         elif re.search(r'/my-account|/authentication|/login', url_lower):
             result['is_account'] = True
-        
+
         # Rilevamento da contenuto HTML se disponibile
         if html_content:
             content_lower = html_content.lower()
-            
+
             # Cerca meta generator
             if 'prestashop' in content_lower:
                 # Affina rilevamento basandosi su classi/ID tipici
@@ -212,7 +242,10 @@ class PrestaShopDetector:
                     result['is_product'] = True
                 elif 'id="category"' in content_lower or 'class="category"' in content_lower:
                     result['is_category'] = True
-        
+        else:
+            # Salva in cache solo se non c'è html_content (pattern da URL puro)
+            prestashop_cache.set(cache_key, result)
+
         return result
 
 

@@ -1994,24 +1994,44 @@ class MainWindow(QMainWindow):
             QMessageBox.warning(self, "Errore", f"Scansione terminata con errori:\n{message}")
     
     def _log_message(self, level: str, message: str):
-        """Aggiunge messaggio al log"""
+        """Aggiunge messaggio al log con memory management"""
+        # Memory management: limita numero righe log per evitare OOM
+        MAX_LOG_LINES = 10000
+        TRIM_TO_LINES = 8000
+
+        # Conta righe attuali
+        current_lines = self.log_text.document().blockCount()
+
+        # Se supera limite, rimuovi vecchie righe
+        if current_lines > MAX_LOG_LINES:
+            cursor = self.log_text.textCursor()
+            cursor.movePosition(QTextCursor.Start)
+            cursor.movePosition(
+                QTextCursor.Down,
+                QTextCursor.KeepAnchor,
+                current_lines - TRIM_TO_LINES
+            )
+            cursor.removeSelectedText()
+            cursor.insertText("[... Log precedenti rimossi per gestione memoria ...]\n\n")
+
         timestamp = datetime.now().strftime("%H:%M:%S")
-        
+
         # Colore per livello
         color_map = {
             "DEBUG": "#888888",
             "INFO": "#00D4FF",  # Cyan chiaro per INFO
             "WARNING": "#FF8C00",
             "ERROR": "#FF0000",
-            "SUCCESS": "#00FF00"
+            "SUCCESS": "#00FF00",
+            "CRITICAL": "#D32F2F"
         }
-        
+
         color = color_map.get(level, "#000000")
-        
+
         formatted_message = f'<span style="color: {color};">[{timestamp}] {level}: {message}</span>'
-        
+
         self.log_text.append(formatted_message)
-        
+
         # Auto-scroll
         cursor = self.log_text.textCursor()
         cursor.movePosition(QTextCursor.End)
