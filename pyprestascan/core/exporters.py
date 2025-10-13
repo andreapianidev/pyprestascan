@@ -190,7 +190,7 @@ class ReportExporter:
             'metadata': {
                 'generated_at': datetime.now().isoformat(),
                 'tool': 'PyPrestaScan',
-                'version': '1.7.1',
+                'version': '1.7.2',
                 'total_pages': len(pages_data),
                 'total_issues': len(issues_data),
                 'total_duplicates': len(duplicates_data),
@@ -281,7 +281,7 @@ class ReportExporter:
             'site_name': site_name,
             'site_url': site_url,
             'generated_at': datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
-            'tool_version': '1.7.1',
+            'tool_version': '1.7.2',
 
             # KPI
             'total_pages': total_pages,

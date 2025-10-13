@@ -57,7 +57,7 @@ class HttpFetcher:
                 from .. import __version__
                 user_agent = f"PyPrestaScan/{__version__}"
             except ImportError:
-                user_agent = "PyPrestaScan/1.7.1"
+                user_agent = "PyPrestaScan/1.7.2"
         self.user_agent = user_agent
         self.auth = auth
         self.logger = logger or RichLogger()

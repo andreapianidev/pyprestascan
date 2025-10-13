@@ -1,5 +1,40 @@
 # Claude Code - Note per lo Sviluppo
 
+## Avvio Applicazione in Locale per Test
+
+### GUI (Interfaccia Grafica)
+
+**Comando per avviare la GUI:**
+```bash
+/Library/Frameworks/Python.framework/Versions/3.12/bin/python3.12 -m pyprestascan.gui.app
+```
+
+**Note:**
+- La GUI richiede PySide6 (già installato in Python 3.12 globale, versione 6.6.1)
+- Si apre una finestra Qt con 4 tab: Configurazione, Progress & Log, Risultati, Fix Suggeriti
+- Ignorare il warning sui font (`qt.qpa.fonts: Populating font family aliases...`) - è normale
+
+**Comandi alternativi:**
+```bash
+# Via __main__.py
+/Library/Frameworks/Python.framework/Versions/3.12/bin/python3.12 -m pyprestascan.gui
+
+# Script diretto
+/Library/Frameworks/Python.framework/Versions/3.12/bin/python3.12 pyprestascan/gui/app.py
+```
+
+### CLI (Command Line)
+
+```bash
+# Scansione base
+python3.12 -m pyprestascan scan https://example.com/it/
+
+# Con opzioni
+python3.12 -m pyprestascan scan https://example.com/it/ --max-urls 1000 --concurrency 20
+```
+
+---
+
 ## Deployment su GitHub e PyPI
 
 ### Processo Automatico tramite GitHub Actions
