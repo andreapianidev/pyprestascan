@@ -361,7 +361,8 @@ class MainWindow(QMainWindow):
         self.translation_manager = TranslationManager()
 
         self.setWindowTitle(self.translation_manager.t("app_title"))
-        self.setMinimumSize(900, 700)
+        self.setMinimumSize(1200, 900)  # Dimensioni più grandi per migliore leggibilità
+        self.resize(1400, 1000)  # Dimensione iniziale
 
         # Theme Manager
         self.app = app
@@ -495,7 +496,7 @@ class MainWindow(QMainWindow):
         header_layout.addStretch()
         
         # Badge versione
-        version_label = QLabel("v1.5.0")
+        version_label = QLabel("v1.7.1")
         version_label.setStyleSheet("""
             QLabel {
                 color: white;
@@ -1359,7 +1360,7 @@ class MainWindow(QMainWindow):
         version_layout.setContentsMargins(0, 10, 0, 0)
         version_layout.addStretch()
 
-        version_label = QLabel("v1.5.0")
+        version_label = QLabel("v1.7.1")
         version_label.setStyleSheet("""
             color: white;
             font-size: 13px;
@@ -1420,7 +1421,7 @@ class MainWindow(QMainWindow):
             "<li><b>Includi Generic Issues:</b> Mostra anche problemi SEO generici (non PrestaShop)</li>"
             "<li><b>User Agent:</b> Scegli browser da simulare (Desktop/Mobile/Bot/Custom)</li>"
             "<li><b>Mappa Lingue:</b> Associa URL multilingua (es: /it=/en,/fr=/en)</li>"
-            "<li><b>🤖 AI Fix Avanzati (Opzionale - v1.5.0+):</b> Genera fix SEO intelligenti con AI"
+            "<li><b>🤖 AI Fix Avanzati (Opzionale - v1.7.1+):</b> Genera fix SEO intelligenti con AI"
             "<ul style='margin: 8px 0;'>"
             "<li><b>✨ Abilita AI:</b> Attiva generazione AI per Fix Suggeriti invece di template</li>"
             "<li><b>Provider AI:</b> Scegli tra DeepSeek (raccomandato, $0.14/1M token), OpenAI GPT-4o-mini ($0.15/1M), Claude Haiku ($0.80/1M)</li>"
@@ -3145,7 +3146,7 @@ class MainWindow(QMainWindow):
         """Mostra dialog about"""
         QMessageBox.about(self, "Info su PyPrestaScan",
             """
-            <h2>PyPrestaScan v1.5.0</h2>
+            <h2>PyPrestaScan v1.7.1</h2>
             <p>CLI per analisi SEO specializzata di e-commerce PrestaShop con AI-powered fix</p>
 
             <p><b>Caratteristiche:</b></p>
@@ -3203,12 +3204,17 @@ class MainWindow(QMainWindow):
 def main():
     """Entry point GUI"""
     app = QApplication(sys.argv)
-    
+
     # Configura applicazione
     app.setApplicationName("PyPrestaScan")
-    app.setApplicationVersion("1.0.0")
+    app.setApplicationVersion("1.7.1")
     app.setOrganizationName("PyPrestaScan")
-    
+
+    # Fix font warning su macOS - usa font di sistema valido
+    if sys.platform == 'darwin':
+        font = QFont(".AppleSystemUIFont", 13)
+        app.setFont(font)
+
     # Stile applicazione
     app.setStyle("Fusion")
 

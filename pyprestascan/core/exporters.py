@@ -190,7 +190,7 @@ class ReportExporter:
             'metadata': {
                 'generated_at': datetime.now().isoformat(),
                 'tool': 'PyPrestaScan',
-                'version': '1.0.0',
+                'version': '1.7.1',
                 'total_pages': len(pages_data),
                 'total_issues': len(issues_data),
                 'total_duplicates': len(duplicates_data),
@@ -281,7 +281,7 @@ class ReportExporter:
             'site_name': site_name,
             'site_url': site_url,
             'generated_at': datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
-            'tool_version': '1.5.0',
+            'tool_version': '1.7.1',
 
             # KPI
             'total_pages': total_pages,
@@ -315,7 +315,7 @@ class ReportExporter:
                 'status': self._prepare_chart_data(status_stats),
                 'issues_by_severity': self._prepare_chart_data(issue_stats),
                 'alt_text_status': self._prepare_chart_data(alt_stats),
-                'score_distribution': score_distribution
+                'score_distribution': self._prepare_chart_data(score_distribution)
             }
         }
     
