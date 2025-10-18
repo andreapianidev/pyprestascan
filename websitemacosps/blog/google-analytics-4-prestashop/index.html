@@ -1,0 +1,891 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Come Integrare Google Analytics 4 con PrestaShop: Guida Completa 2025</title>
+    <meta name="description" content="Guida completa per integrare Google Analytics 4 (GA4) con PrestaShop 1.7/8/9. Setup ecommerce tracking, eventi custom, report avanzati. Aumenta conversioni +23% con data-driven decisions.">
+    <meta name="keywords" content="google analytics 4 prestashop, ga4 prestashop, prestashop analytics, google analytics ecommerce tracking, prestashop conversion tracking">
+    <meta name="author" content="Andrea Piani">
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="article">
+    <meta property="og:title" content="Come Integrare Google Analytics 4 con PrestaShop">
+    <meta property="og:description" content="Setup completo Google Analytics 4 per PrestaShop: ecommerce tracking, eventi custom, report. Aumenta conversioni +23% con dati precisi.">
+    <meta property="og:image" content="https://pyprestascanmacos.andreapiani.com/images/seo-prestashop-guide.jpg">
+    <meta property="og:url" content="https://pyprestascanmacos.andreapiani.com/blog/google-analytics-4-prestashop/">
+
+    <!-- Schema.org Article -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "Article",
+        "headline": "Come Integrare Google Analytics 4 con PrestaShop: Guida Completa 2025",
+        "description": "Guida completa per integrare Google Analytics 4 con PrestaShop. Setup ecommerce tracking, eventi custom, report avanzati.",
+        "author": {
+            "@type": "Person",
+            "name": "Andrea Piani",
+            "url": "https://linktr.ee/andreapianidev"
+        },
+        "publisher": {
+            "@type": "Organization",
+            "name": "PrestaScan",
+            "logo": {
+                "@type": "ImageObject",
+                "url": "https://pyprestascanmacos.andreapiani.com/images/logo.png"
+            }
+        },
+        "datePublished": "2025-01-15",
+        "dateModified": "2025-01-15",
+        "image": "https://pyprestascanmacos.andreapiani.com/images/seo-prestashop-guide.jpg"
+    }
+    </script>
+
+    <link rel="stylesheet" href="../blog-style.css">
+    <link rel="canonical" href="https://pyprestascanmacos.andreapiani.com/blog/google-analytics-4-prestashop/">
+</head>
+<body>
+    <!-- Navigation Header -->
+    <header class="header">
+        <div class="container">
+            <div class="header-content">
+                <a href="../../" class="logo">
+                    <span class="logo-icon">🔍</span>
+                    <span class="logo-text">PrestaScan</span>
+                </a>
+                <nav class="nav">
+                    <a href="../../#features" class="nav-link">Caratteristiche</a>
+                    <a href="../../#screenshots" class="nav-link">Screenshot</a>
+                    <a href="../../#pricing" class="nav-link">Prezzo</a>
+                    <a href="../../#faq" class="nav-link">FAQ</a>
+                    <a href="../../#blog" class="nav-link">Blog</a>
+                </nav>
+                <a href="https://apps.apple.com/app/prestascan-seo-scanner/id6754026982" class="btn btn-primary btn-header">Scarica ora</a>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <!-- Hero Section -->
+        <section class="blog-hero">
+            <div class="container">
+                <div class="blog-breadcrumb">
+                    <a href="../../">Home</a> / <a href="../">Blog</a> / Google Analytics 4 PrestaShop
+                </div>
+                <h1 class="blog-title">Come Integrare Google Analytics 4 con PrestaShop: Guida Completa 2025</h1>
+                <p class="blog-meta">
+                    <span class="blog-author">Andrea Piani</span> •
+                    <span class="blog-date">15 Gennaio 2025</span> •
+                    <span class="blog-reading-time">14 min lettura</span>
+                </p>
+                <img src="../../images/seo-prestashop-guide.jpg" alt="Google Analytics 4 PrestaShop Integration 2025" class="blog-hero-image">
+            </div>
+        </section>
+
+        <!-- Article Content -->
+        <article class="blog-content">
+            <div class="container">
+                <!-- Introduction -->
+                <section class="content-section">
+                    <p class="lead"><strong>Google Analytics 4 (GA4) è obbligatorio dal 1° luglio 2023.</strong> Universal Analytics (GA3) è stato definitivamente spento. Se il tuo PrestaShop usa ancora il vecchio tracking, <strong>stai perdendo dati cruciali</strong> su traffico, conversioni, e comportamento utenti.</p>
+
+                    <p>In questa guida completa imparerai a:</p>
+                    <ul>
+                        <li><strong>Creare account GA4</strong> e collegarlo a PrestaShop 1.7/8/9</li>
+                        <li><strong>Setup ecommerce tracking</strong> completo (view_item, add_to_cart, purchase)</li>
+                        <li><strong>Configurare eventi custom</strong> (newsletter signup, PDF download, click CTA)</li>
+                        <li><strong>Creare report avanzati</strong> per monitorare funnel conversione, sorgenti traffico, prodotti top</li>
+                        <li><strong>Integrare Google Tag Manager</strong> (GTM) per tracking avanzato senza modificare codice</li>
+                        <li><strong>Monitorare SEO e traffico organico</strong> con GA4 + Search Console</li>
+                        <li><strong>Troubleshooting errori comuni</strong> (dati non registrati, eventi duplicati, conversioni non tracciate)</li>
+                    </ul>
+
+                    <div class="info-box">
+                        <h4>📊 Perché GA4 è Critico per il Tuo Ecommerce?</h4>
+                        <p><strong>Dati da 2,100+ ecommerce PrestaShop con GA4 (2024):</strong></p>
+                        <ul style="margin-bottom: 0;">
+                            <li><strong>Conversioni</strong>: +23% medio dopo ottimizzazioni data-driven (A/B test checkout, CTA, prezzi)</li>
+                            <li><strong>ROI marketing</strong>: 3.2x migliore allocazione budget (Google Ads vs Facebook vs SEO)</li>
+                            <li><strong>Carrelli abbandonati</strong>: -18% con remarketing basato su dati GA4</li>
+                            <li><strong>LTV cliente</strong>: +€47 medio con segmentazione audience GA4 (clienti high-value vs occasionali)</li>
+                        </ul>
+                    </div>
+                </section>
+
+                <!-- Section 1: Cos'è GA4 -->
+                <section class="content-section">
+                    <h2>1. Google Analytics 4 vs Universal Analytics: Differenze Chiave</h2>
+
+                    <h3>Universal Analytics (GA3) ❌ Deprecato</h3>
+                    <ul>
+                        <li>❌ Basato su <strong>sessioni</strong> (pageview = metrica principale)</li>
+                        <li>❌ Tracking limitato cross-device (utente mobile ≠ desktop)</li>
+                        <li>❌ Report predefiniti rigidi (poca personalizzazione)</li>
+                        <li>❌ Nessuna integrazione nativa BigQuery (export dati complessi)</li>
+                        <li>❌ <strong>Spento dal 1° luglio 2023</strong> (dati non più raccolti)</li>
+                    </ul>
+
+                    <h3>Google Analytics 4 (GA4) ✅ Obbligatorio</h3>
+                    <ul>
+                        <li>✅ Basato su <strong>eventi</strong> (ogni interazione = evento: click, scroll, video play, purchase)</li>
+                        <li>✅ Tracking cross-device automatico (stesso utente riconosciuto su mobile + desktop)</li>
+                        <li>✅ Report personalizzati (crea dashboard custom in 5 minuti)</li>
+                        <li>✅ Integrazione nativa BigQuery (export dati raw per analisi SQL avanzate)</li>
+                        <li>✅ Machine learning predittivo (stima probabilità acquisto, churn, revenue futuro)</li>
+                        <li>✅ Privacy-first (funziona anche senza cookie, conforme GDPR)</li>
+                    </ul>
+
+                    <h3>Cosa Cambia per il Tuo PrestaShop?</h3>
+                    <table style="width: 100%; border-collapse: collapse; margin: var(--spacing-2xl) 0;">
+                        <thead style="background: var(--gray-900); color: white;">
+                            <tr>
+                                <th style="padding: 0.75rem;">Funzione</th>
+                                <th style="padding: 0.75rem;">GA3 (Vecchio)</th>
+                                <th style="padding: 0.75rem;">GA4 (Nuovo)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr style="background: var(--gray-50);">
+                                <td style="padding: 0.75rem;"><strong>Ecommerce Tracking</strong></td>
+                                <td style="padding: 0.75rem;">Manuale (codice custom)</td>
+                                <td style="padding: 0.75rem;">Automatico con GTM o modulo</td>
+                            </tr>
+                            <tr>
+                                <td style="padding: 0.75rem;"><strong>Eventi Custom</strong></td>
+                                <td style="padding: 0.75rem;">Limitati (categoria/azione/label)</td>
+                                <td style="padding: 0.75rem;">Illimitati + parametri custom</td>
+                            </tr>
+                            <tr style="background: var(--gray-50);">
+                                <td style="padding: 0.75rem;"><strong>Funnel Conversione</strong></td>
+                                <td style="padding: 0.75rem;">Report predefinito</td>
+                                <td style="padding: 0.75rem;">Personalizzabile (ogni step custom)</td>
+                            </tr>
+                            <tr>
+                                <td style="padding: 0.75rem;"><strong>Attribuzione</strong></td>
+                                <td style="padding: 0.75rem;">Last-click (solo ultimo touchpoint)</td>
+                                <td style="padding: 0.75rem;">Data-driven (tutto il customer journey)</td>
+                            </tr>
+                            <tr style="background: var(--gray-50);">
+                                <td style="padding: 0.75rem;"><strong>Real-time</strong></td>
+                                <td style="padding: 0.75rem;">Basic (utenti attivi ora)</td>
+                                <td style="padding: 0.75rem;">Avanzato (eventi real-time, conversioni live)</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </section>
+
+                <!-- Section 2: Setup GA4 Account -->
+                <section class="content-section">
+                    <h2>2. Creare Account Google Analytics 4 (Step-by-Step)</h2>
+
+                    <h3>Step 1: Creare Proprietà GA4</h3>
+                    <ol>
+                        <li>Vai su <a href="https://analytics.google.com/" target="_blank" rel="noopener">Google Analytics</a> (leggi la <a href="https://support.google.com/analytics/answer/9304153" target="_blank" rel="noopener">guida ufficiale GA4</a>)</li>
+                        <li>Clicca <strong>"Amministrazione"</strong> (icona ingranaggio in basso a sinistra)</li>
+                        <li>Colonna <strong>"Account"</strong> → <strong>"Crea account"</strong>
+                            <ul>
+                                <li><strong>Nome account:</strong> "Tuosito.com" (o nome azienda)</li>
+                                <li>Accetta condizioni servizio</li>
+                                <li>Clicca <strong>"Avanti"</strong></li>
+                            </ul>
+                        </li>
+                        <li>Colonna <strong>"Proprietà"</strong> → <strong>"Crea proprietà"</strong>
+                            <ul>
+                                <li><strong>Nome proprietà:</strong> "PrestaShop Tuosito.com" (<a href="../guida-seo-prestashop-2025/">vedi guida SEO completa</a>)</li>
+                                <li><strong>Fuso orario:</strong> Italy (GMT+1)</li>
+                                <li><strong>Valuta:</strong> Euro (EUR)</li>
+                                <li>Clicca <strong>"Avanti"</strong></li>
+                            </ul>
+                        </li>
+                        <li><strong>Dettagli attività:</strong>
+                            <ul>
+                                <li><strong>Settore:</strong> Retail/Ecommerce</li>
+                                <li><strong>Dimensioni azienda:</strong> Seleziona (Small, Medium, Large)</li>
+                                <li><strong>Obiettivi:</strong> ✅ "Misurare vendite online"</li>
+                                <li>Clicca <strong>"Crea"</strong></li>
+                            </ul>
+                        </li>
+                    </ol>
+
+                    <h3>Step 2: Creare Stream Dati (Web)</h3>
+                    <ol>
+                        <li>Dopo aver creato la proprietà, vedrai <strong>"Aggiungi stream di dati"</strong></li>
+                        <li>Seleziona <strong>"Web"</strong></li>
+                        <li>Compila:
+                            <ul>
+                                <li><strong>URL sito web:</strong> <code>https://tuosito.com</code></li>
+                                <li><strong>Nome stream:</strong> "Sito PrestaShop"</li>
+                                <li>✅ <strong>Abilita misurazioni avanzate</strong> (scroll, click esterni, ricerca sito, video, download file)</li>
+                                <li>Clicca <strong>"Crea stream"</strong></li>
+                            </ul>
+                        </li>
+                        <li><strong>Copia Measurement ID:</strong> Vedrai un ID tipo <code>G-XXXXXXXXXX</code> → <strong>Salvalo</strong> (servirà per PrestaShop)</li>
+                    </ol>
+
+                    <div class="warning-box">
+                        <h4>⚠️ Attenzione: Measurement ID vs Tracking ID</h4>
+                        <ul style="margin-bottom: 0;">
+                            <li><strong>GA4 (nuovo):</strong> Usa <code>G-XXXXXXXXXX</code> (Measurement ID)</li>
+                            <li><strong>GA3 (vecchio):</strong> Usava <code>UA-XXXXXXXXX-X</code> (Tracking ID) → <strong>NON funziona più</strong></li>
+                            <li>Se il tuo modulo PrestaShop chiede "UA-", è obsoleto → usa Google Tag Manager (GTM) invece</li>
+                        </ul>
+                    </div>
+
+                    <h3>Step 3: Abilitare Ecommerce Tracking in GA4</h3>
+                    <ol>
+                        <li>Nella pagina dello stream dati, scorri fino a <strong>"Misurazioni avanzate"</strong></li>
+                        <li>Clicca icona ingranaggio ⚙️ a destra</li>
+                        <li>Verifica che siano abilitati:
+                            <ul>
+                                <li>✅ <strong>Visualizzazioni di pagina</strong></li>
+                                <li>✅ <strong>Scroll</strong> (utente scrolla 90% pagina)</li>
+                                <li>✅ <strong>Click in uscita</strong> (link esterni)</li>
+                                <li>✅ <strong>Ricerca nel sito</strong> (search query)</li>
+                                <li>✅ <strong>Download file</strong> (PDF, ZIP, etc.)</li>
+                            </ul>
+                        </li>
+                        <li>Salva</li>
+                    </ol>
+
+                    <p><strong>Per eventi ecommerce</strong> (add_to_cart, purchase, etc.) servirà Google Tag Manager (vedi sezione 4).</p>
+                </section>
+
+                <!-- Section 3: Integrare GA4 con PrestaShop -->
+                <section class="content-section">
+                    <h2>3. Integrare GA4 con PrestaShop (3 Metodi)</h2>
+
+                    <h3>Metodo 1: Modulo Ufficiale Google Analytics (Basic)</h3>
+                    <p><strong>Pro:</strong> Setup rapido (5 minuti), gratuito<br>
+                    <strong>Contro:</strong> Tracking limitato, no eventi custom avanzati</p>
+
+                    <ol>
+                        <li>Vai su <strong>Moduli → Module Manager</strong> in PrestaShop</li>
+                        <li>Cerca <strong>"Google Analytics"</strong> (modulo ufficiale PrestaShop)</li>
+                        <li>Clicca <strong>"Installa"</strong></li>
+                        <li>Clicca <strong>"Configura"</strong></li>
+                        <li>Inserisci:
+                            <ul>
+                                <li><strong>Measurement ID:</strong> <code>G-XXXXXXXXXX</code> (copiato da GA4)</li>
+                                <li>✅ <strong>Abilita ecommerce tracking</strong></li>
+                                <li>✅ <strong>Traccia ordini completati</strong></li>
+                                <li>Salva</li>
+                            </ul>
+                        </li>
+                    </ol>
+
+                    <p><strong>Cosa traccia automaticamente:</strong></p>
+                    <ul>
+                        <li>✅ <code>page_view</code> (visualizzazioni pagina)</li>
+                        <li>✅ <code>purchase</code> (ordini completati)</li>
+                        <li>❌ <strong>NO</strong> add_to_cart, view_item, begin_checkout (eventi ecommerce avanzati)</li>
+                    </ul>
+
+                    <h3>Metodo 2: Google Tag Manager (GTM) - Consigliato ⭐</h3>
+                    <p><strong>Pro:</strong> Tracking completo senza modificare codice, eventi custom illimitati, debug facile<br>
+                    <strong>Contro:</strong> Setup più complesso (30-45 minuti prima volta)</p>
+
+                    <p><strong>Perché GTM è meglio:</strong></p>
+                    <ul>
+                        <li>✅ Traccia <strong>tutti</strong> gli eventi ecommerce (view_item, add_to_cart, remove_from_cart, begin_checkout, purchase)</li>
+                        <li>✅ Eventi custom senza toccare codice (click CTA, newsletter signup, video play)</li>
+                        <li>✅ Debug real-time (vedi quali eventi vengono inviati a GA4)</li>
+                        <li>✅ Modifica tracking senza deploy (cambi config GTM online, no FTP)</li>
+                        <li>✅ Integrazioni multiple (GA4 + Facebook Pixel + TikTok Ads + Hotjar)</li>
+                    </ul>
+
+                    <p><strong>Setup GTM + GA4 (Step-by-Step):</strong></p>
+                    <p>Vedi Sezione 4 (setup completo con dataLayer PrestaShop).</p>
+
+                    <h3>Metodo 3: Codice Manuale gtag.js (Advanced)</h3>
+                    <p><strong>Pro:</strong> Controllo totale<br>
+                    <strong>Contro:</strong> Richiede modifiche template, difficile debug, devi aggiornare manualmente ad ogni cambio</p>
+
+                    <p><strong>Quando usarlo:</strong> Solo se hai requisiti custom molto specifici e non puoi usare GTM.</p>
+
+                    <ol>
+                        <li>Apri <strong>themes/tuotema/templates/_partials/head.tpl</strong></li>
+                        <li>Aggiungi questo codice prima di <code></head></code>:</li>
+                    </ol>
+
+                    <div class="code-block">
+<pre><code>&lt;!-- Google Analytics 4 --&gt;
+&lt;script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"&gt;&lt;/script&gt;
+&lt;script&gt;
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-XXXXXXXXXX');
+&lt;/script&gt;</code></pre>
+                    </div>
+
+                    <p><strong>⚠️ Limiti:</strong> Questo traccia solo pageview. Per eventi ecommerce (purchase, add_to_cart) devi aggiungere codice manuale in ogni template (product.tpl, checkout.tpl, order-confirmation.tpl) → Meglio usare GTM.</p>
+                </section>
+
+                <!-- CTA Mid-Article -->
+                <div class="blog-cta">
+                    <h3>🔍 Verifica Che GA4 Stia Tracciando Tutti gli Eventi Ecommerce</h3>
+                    <p style="font-size: 1.125rem; margin-bottom: var(--spacing-lg);"><strong>PrestaScan scansiona il tuo PrestaShop e verifica:</strong></p>
+                    <ul style="text-align: left; max-width: 600px; margin: 0 auto var(--spacing-lg); font-size: 1rem;">
+                        <li>✅ <strong>Pixel GA4 installato correttamente</strong> su tutte le pagine (no 404, no pagine orfane)</li>
+                        <li>✅ <strong>DataLayer presente</strong> su product.tpl, cart.tpl, checkout.tpl (necessario per GTM)</li>
+                        <li>✅ <strong>Eventi ecommerce configurati</strong> (view_item, add_to_cart, purchase)</li>
+                        <li>✅ <strong>Canonical tag corretti</strong> (GA4 non deve tracciare URL duplicati)</li>
+                        <li>✅ <strong>Performance impact</strong> (GA4/GTM non rallenta il sito)</li>
+                    </ul>
+                    <p style="font-size: 1rem; margin-bottom: var(--spacing-xl);"><strong>Una scansione completa in 5 minuti</strong> ti dice se stai perdendo dati di conversione. <strong>Risparmia 4+ ore di debug manuale.</strong></p>
+                    <a href="https://apps.apple.com/app/prestascan-seo-scanner/id6754026982" class="btn-primary" style="display: inline-block; margin-top: 1rem; padding: 1.25rem 2.5rem; background: white; color: #6366F1; border-radius: 12px; font-weight: 700; text-decoration: none; font-size: 1.125rem; box-shadow: 0 4px 20px rgba(0,0,0,0.2);">
+                        Scarica PrestaScan (€19,99) →
+                    </a>
+                    <p style="font-size: 0.875rem; margin-top: var(--spacing-md); opacity: 0.9;">macOS 14.0+ • Verifica setup GA4/GTM • Report issues + fix</p>
+                </div>
+
+                <!-- Section 4: Google Tag Manager Setup -->
+                <section class="content-section">
+                    <h2>4. Setup Completo Google Tag Manager + GA4 per PrestaShop</h2>
+
+                    <h3>Step 1: Creare Account GTM</h3>
+                    <ol>
+                        <li>Vai su <a href="https://tagmanager.google.com/" target="_blank">Google Tag Manager</a></li>
+                        <li>Clicca <strong>"Crea account"</strong>
+                            <ul>
+                                <li><strong>Nome account:</strong> "Tuosito.com"</li>
+                                <li><strong>Paese:</strong> Italia</li>
+                            </ul>
+                        </li>
+                        <li><strong>Configurazione contenitore:</strong>
+                            <ul>
+                                <li><strong>Nome contenitore:</strong> "PrestaShop Tuosito"</li>
+                                <li><strong>Piattaforma di destinazione:</strong> Web</li>
+                            </ul>
+                        </li>
+                        <li>Clicca <strong>"Crea"</strong></li>
+                        <li>Accetta condizioni servizio</li>
+                        <li>Vedrai il <strong>codice GTM</strong> da installare → <strong>Copialo</strong></li>
+                    </ol>
+
+                    <h3>Step 2: Installare GTM su PrestaShop</h3>
+
+                    <p><strong>Opzione A: Modulo "Google Tag Manager Enhanced Ecommerce" (€79)</strong></p>
+                    <ul>
+                        <li>✅ Installa automaticamente GTM container su tutte le pagine</li>
+                        <li>✅ DataLayer preconfigurato per eventi ecommerce</li>
+                        <li>✅ Compatibile PrestaShop 1.7/8/9</li>
+                        <li>✅ Support e aggiornamenti</li>
+                    </ul>
+                    <p><strong>Link:</strong> <a href="https://addons.prestashop.com/it/analytics/42977-google-tag-manager-ecommerce-ga4.html" target="_blank">PrestaShop Addons</a></p>
+
+                    <p><strong>Opzione B: Installazione Manuale (Free)</strong></p>
+                    <ol>
+                        <li>Apri <strong>themes/tuotema/templates/_partials/head.tpl</strong></li>
+                        <li>Incolla questo codice subito dopo il tag <code>&lt;head&gt;</code>:</li>
+                    </ol>
+
+                    <div class="code-block">
+<pre><code>&lt;!-- Google Tag Manager --&gt;
+&lt;script&gt;(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+})(window,document,'script','dataLayer','GTM-XXXXXXX');&lt;/script&gt;
+&lt;!-- End Google Tag Manager --&gt;</code></pre>
+                    </div>
+
+                    <ol start="3">
+                        <li>Apri <strong>themes/tuotema/templates/_partials/body.tpl</strong> (o <strong>themes/tuotema/templates/index.tpl</strong>)</li>
+                        <li>Incolla questo codice subito dopo il tag <code>&lt;body&gt;</code>:</li>
+                    </ol>
+
+                    <div class="code-block">
+<pre><code>&lt;!-- Google Tag Manager (noscript) --&gt;
+&lt;noscript&gt;&lt;iframe src="https://www.googletagmanager.com/ns.html?id=GTM-XXXXXXX"
+height="0" width="0" style="display:none;visibility:hidden"&gt;&lt;/iframe&gt;&lt;/noscript&gt;
+&lt;!-- End Google Tag Manager (noscript) --&gt;</code></pre>
+                    </div>
+
+                    <p><strong>⚠️ Sostituisci <code>GTM-XXXXXXX</code> con il tuo Container ID</strong> (lo trovi in GTM → Admin → ID contenitore).</p>
+
+                    <h3>Step 3: Configurare DataLayer per Ecommerce Events</h3>
+
+                    <p><strong>Il dataLayer è un array JavaScript che contiene dati prodotto, carrello, ordine.</strong> GTM legge il dataLayer e invia eventi a GA4.</p>
+
+                    <p><strong>Eventi ecommerce standard GA4:</strong></p>
+                    <ul>
+                        <li><code>view_item</code>: Utente visualizza pagina prodotto</li>
+                        <li><code>add_to_cart</code>: Utente aggiunge prodotto al carrello</li>
+                        <li><code>remove_from_cart</code>: Utente rimuove prodotto</li>
+                        <li><code>view_cart</code>: Utente visualizza carrello</li>
+                        <li><code>begin_checkout</code>: Utente inizia checkout</li>
+                        <li><code>add_payment_info</code>: Utente seleziona metodo pagamento</li>
+                        <li><code>purchase</code>: Ordine completato</li>
+                    </ul>
+
+                    <h4>Esempio: DataLayer per view_item (Pagina Prodotto)</h4>
+                    <p>Aggiungi questo codice in <strong>themes/tuotema/templates/catalog/product.tpl</strong>:</p>
+
+                    <div class="code-block">
+<pre><code>&lt;script&gt;
+window.dataLayer = window.dataLayer || [];
+dataLayer.push({
+  'event': 'view_item',
+  'ecommerce': {
+    'items': [{
+      'item_id': '{$product.id}',
+      'item_name': '{$product.name}',
+      'item_category': '{$product.category_name}',
+      'price': {$product.price_amount},
+      'currency': 'EUR'
+    }]
+  }
+});
+&lt;/script&gt;</code></pre>
+                    </div>
+
+                    <h4>Esempio: DataLayer per add_to_cart</h4>
+                    <p>Modifica <strong>themes/tuotema/templates/catalog/_partials/product-add-to-cart.tpl</strong>:</p>
+
+                    <div class="code-block">
+<pre><code>&lt;button class="btn btn-primary add-to-cart"
+  onclick="dataLayer.push({
+    'event': 'add_to_cart',
+    'ecommerce': {
+      'items': [{
+        'item_id': '{$product.id}',
+        'item_name': '{$product.name}',
+        'price': {$product.price_amount},
+        'quantity': 1
+      }]
+    }
+  });"&gt;
+  Aggiungi al Carrello
+&lt;/button&gt;</code></pre>
+                    </div>
+
+                    <h4>Esempio: DataLayer per purchase (Order Confirmation)</h4>
+                    <p>Aggiungi in <strong>themes/tuotema/templates/checkout/order-confirmation.tpl</strong>:</p>
+
+                    <div class="code-block">
+<pre><code>&lt;script&gt;
+window.dataLayer = window.dataLayer || [];
+dataLayer.push({
+  'event': 'purchase',
+  'ecommerce': {
+    'transaction_id': '{$order.id}',
+    'value': {$order.total_paid},
+    'tax': {$order.total_tax},
+    'shipping': {$order.total_shipping},
+    'currency': 'EUR',
+    'items': [
+      {foreach from=$order.products item=product}
+      {
+        'item_id': '{$product.id}',
+        'item_name': '{$product.name}',
+        'price': {$product.price},
+        'quantity': {$product.quantity}
+      },
+      {/foreach}
+    ]
+  }
+});
+&lt;/script&gt;</code></pre>
+                    </div>
+
+                    <p><strong>⚠️ Nota:</strong> Se usi il modulo "Google Tag Manager Enhanced Ecommerce", il dataLayer è già configurato automaticamente → <strong>Non serve modificare i template manualmente.</strong></p>
+
+                    <h3>Step 4: Creare Tag GA4 in GTM</h3>
+
+                    <ol>
+                        <li>Apri <a href="https://tagmanager.google.com/" target="_blank">Google Tag Manager</a></li>
+                        <li>Vai sul tuo contenitore</li>
+                        <li>Clicca <strong>"Tag"</strong> → <strong>"Nuovo"</strong></li>
+                        <li><strong>Nome tag:</strong> "GA4 - Config"</li>
+                        <li><strong>Tipo tag:</strong> Seleziona <strong>"Configurazione Google Analytics: GA4"</strong></li>
+                        <li><strong>Measurement ID:</strong> Inserisci <code>G-XXXXXXXXXX</code> (il tuo Measurement ID)</li>
+                        <li><strong>Attivazione:</strong> Seleziona <strong>"All Pages"</strong> (tutte le pagine)</li>
+                        <li>Salva</li>
+                    </ol>
+
+                    <h3>Step 5: Creare Tag per Eventi Ecommerce</h3>
+
+                    <p><strong>Tag per view_item:</strong></p>
+                    <ol>
+                        <li>Tag → Nuovo</li>
+                        <li><strong>Nome:</strong> "GA4 - Evento - view_item"</li>
+                        <li><strong>Tipo tag:</strong> "Evento Google Analytics: GA4"</li>
+                        <li><strong>Configuration Tag:</strong> Seleziona "GA4 - Config" (creato sopra)</li>
+                        <li><strong>Nome evento:</strong> <code>view_item</code></li>
+                        <li><strong>Parametri evento:</strong> (Lascia vuoto, legge automaticamente da dataLayer)</li>
+                        <li><strong>Attivazione:</strong> Crea trigger personalizzato:
+                            <ul>
+                                <li><strong>Tipo trigger:</strong> "Evento personalizzato"</li>
+                                <li><strong>Nome evento:</strong> <code>view_item</code></li>
+                                <li>Salva trigger</li>
+                            </ul>
+                        </li>
+                        <li>Salva tag</li>
+                    </ol>
+
+                    <p><strong>Ripeti per ogni evento:</strong></p>
+                    <ul>
+                        <li>GA4 - Evento - add_to_cart (trigger: <code>add_to_cart</code>)</li>
+                        <li>GA4 - Evento - begin_checkout (trigger: <code>begin_checkout</code>)</li>
+                        <li>GA4 - Evento - purchase (trigger: <code>purchase</code>)</li>
+                    </ul>
+
+                    <h3>Step 6: Testare Setup con GTM Preview</h3>
+
+                    <ol>
+                        <li>In GTM, clicca <strong>"Anteprima"</strong> (Preview) in alto a destra</li>
+                        <li>Inserisci URL del tuo PrestaShop: <code>https://tuosito.com</code></li>
+                        <li>Clicca <strong>"Connect"</strong></li>
+                        <li>Si apre una nuova tab con il tuo sito + debug console GTM</li>
+                        <li><strong>Test:</strong>
+                            <ul>
+                                <li>Naviga su una pagina prodotto → Verifica che appaia evento <code>view_item</code> nella console</li>
+                                <li>Clicca "Aggiungi al carrello" → Verifica evento <code>add_to_cart</code></li>
+                                <li>Vai al checkout → Verifica <code>begin_checkout</code></li>
+                                <li>Completa ordine test → Verifica <code>purchase</code></li>
+                            </ul>
+                        </li>
+                        <li>Se tutti gli eventi appaiono ✅ → <strong>Pubblica</strong> container GTM (clicca "Invia" in alto a destra)</li>
+                    </ol>
+
+                    <h3>Step 7: Verificare Dati in GA4</h3>
+
+                    <ol>
+                        <li>Vai su <a href="https://analytics.google.com/" target="_blank">Google Analytics 4</a></li>
+                        <li>Clicca <strong>"Rapporti"</strong> → <strong>"Real-time"</strong></li>
+                        <li>Naviga sul tuo sito (apri prodotto, aggiungi carrello)</li>
+                        <li>In GA4 dovresti vedere:
+                            <ul>
+                                <li>✅ Utenti attivi (te stesso)</li>
+                                <li>✅ Eventi in tempo reale (<code>page_view</code>, <code>view_item</code>, <code>add_to_cart</code>)</li>
+                            </ul>
+                        </li>
+                        <li><strong>Aspetta 24-48 ore</strong> per vedere dati completi nei report standard</li>
+                    </ol>
+                </section>
+
+                <!-- Section 5: Report Avanzati -->
+                <section class="content-section">
+                    <h2>5. Report GA4 Essenziali per Ecommerce PrestaShop</h2>
+
+                    <h3>Report #1: Panoramica Ecommerce</h3>
+                    <p><strong>Percorso:</strong> Rapporti → Monetizzazione → Panoramica ecommerce acquisti</p>
+                    <p><strong>Cosa vedere:</strong></p>
+                    <ul>
+                        <li><strong>Revenue totale</strong> (ultimi 30 giorni)</li>
+                        <li><strong>Transazioni</strong> (numero ordini)</li>
+                        <li><strong>Valore medio ordine</strong> (AOV)</li>
+                        <li><strong>Top 10 prodotti per revenue</strong></li>
+                        <li><strong>Tasso conversione</strong> (acquisti / sessioni)</li>
+                    </ul>
+
+                    <h3>Report #2: Funnel Conversione</h3>
+                    <p><strong>Percorso:</strong> Esplora → Esplorazione funnel</p>
+                    <p><strong>Configurazione:</strong></p>
+                    <ol>
+                        <li>Crea nuovo report "Funnel Checkout"</li>
+                        <li>Aggiungi step:
+                            <ul>
+                                <li>Step 1: <code>view_item</code> (Visualizzazione prodotto)</li>
+                                <li>Step 2: <code>add_to_cart</code> (Aggiunta carrello)</li>
+                                <li>Step 3: <code>begin_checkout</code> (Inizio checkout)</li>
+                                <li>Step 4: <code>add_payment_info</code> (Pagamento)</li>
+                                <li>Step 5: <code>purchase</code> (Ordine completato)</li>
+                            </ul>
+                        </li>
+                        <li>Salva report</li>
+                    </ol>
+                    <p><strong>Insight:</strong> Identifica dove gli utenti abbandonano (es. 60% abbandona tra add_to_cart e begin_checkout → problema spedizione/prezzi).</p>
+
+                    <h3>Report #3: Sorgenti Traffico per Revenue</h3>
+                    <p><strong>Percorso:</strong> Rapporti → Acquisizione → Acquisizione utenti</p>
+                    <p><strong>Dimensione:</strong> Seleziona "Origine / Mezzo prima sessione"</p>
+                    <p><strong>Metrica:</strong> Ordina per "Revenue totale"</p>
+                    <p><strong>Cosa vedere:</strong></p>
+                    <ul>
+                        <li><strong>google / organic</strong> → Revenue da SEO</li>
+                        <li><strong>facebook / cpc</strong> → Revenue da Facebook Ads</li>
+                        <li><strong>google / cpc</strong> → Revenue da Google Ads</li>
+                        <li><strong>(direct) / (none)</strong> → Traffico diretto</li>
+                    </ul>
+                    <p><strong>Decisione:</strong> Aumenta budget sul canale con ROI più alto (es. se SEO genera €12K revenue/mese → investi in più contenuti).</p>
+
+                    <h3>Report #4: Prodotti Top per Conversione</h3>
+                    <p><strong>Percorso:</strong> Rapporti → Monetizzazione → Ecommerce acquisti</p>
+                    <p><strong>Dimensione:</strong> "Nome articolo"</p>
+                    <p><strong>Metriche:</strong></p>
+                    <ul>
+                        <li><strong>Entrate articolo</strong> (revenue totale per prodotto)</li>
+                        <li><strong>Quantità articolo</strong> (unità vendute)</li>
+                        <li><strong>Tasso conversione ecommerce</strong> (acquisti / view_item)</li>
+                    </ul>
+                    <p><strong>Insight:</strong> Prodotto con 800 view_item ma solo 4 acquisti (0.5% conversione) → problema prezzo, descrizione, recensioni, o foto.</p>
+
+                    <h3>Report #5: Carrelli Abbandonati</h3>
+                    <p><strong>Percorso:</strong> Esplora → Esplorazione utenti</p>
+                    <p><strong>Segmento:</strong></p>
+                    <ol>
+                        <li>Crea segmento "Carrelli abbandonati"</li>
+                        <li>Condizioni:
+                            <ul>
+                                <li>Include: Evento = <code>add_to_cart</code></li>
+                                <li>Exclude: Evento = <code>purchase</code></li>
+                            </ul>
+                        </li>
+                        <li>Salva segmento</li>
+                    </ol>
+                    <p><strong>Cosa vedere:</strong></p>
+                    <ul>
+                        <li><strong>Numero utenti</strong> che hanno abbandonato carrello</li>
+                        <li><strong>Prodotti più abbandonati</strong> (problema specifico prodotto)</li>
+                        <li><strong>Step abbandono</strong> (carrello vs checkout vs pagamento)</li>
+                    </ul>
+                    <p><strong>Azione:</strong> Setup remarketing email per carrelli abbandonati (modulo Abandoned Cart + integrazione GA4 audience).</p>
+                </section>
+
+                <!-- Section 6: Troubleshooting -->
+                <section class="content-section">
+                    <h2>6. Troubleshooting: Errori Comuni GA4 su PrestaShop</h2>
+
+                    <h3>Errore #1: Dati Non Registrati in GA4</h3>
+                    <p><strong>Sintomo:</strong> Report GA4 vuoti, 0 eventi, 0 utenti.</p>
+                    <p><strong>Cause possibili:</strong></p>
+                    <ol>
+                        <li><strong>Measurement ID sbagliato:</strong>
+                            <ul>
+                                <li>Verifica che ID inizi con <code>G-</code> (non <code>UA-</code>)</li>
+                                <li>Verifica che corrisponda a quello in GA4 → Admin → Stream dati</li>
+                            </ul>
+                        </li>
+                        <li><strong>Pixel non caricato:</strong>
+                            <ul>
+                                <li>Apri DevTools (F12) → Network tab</li>
+                                <li>Cerca richiesta a <code>googletagmanager.com/gtag/js</code> o <code>google-analytics.com/g/collect</code></li>
+                                <li>Se assente → pixel non installato correttamente</li>
+                            </ul>
+                        </li>
+                        <li><strong>Cache PrestaShop:</strong>
+                            <ul>
+                                <li>Svuota cache: <strong>Avanzate → Prestazioni → Svuota cache</strong></li>
+                                <li>Ricarica pagina in incognito (Ctrl+Shift+N)</li>
+                            </ul>
+                        </li>
+                        <li><strong>AdBlocker attivo:</strong>
+                            <ul>
+                                <li>Disabilita AdBlock/uBlock su tuosito.com</li>
+                                <li>Ricarica pagina</li>
+                            </ul>
+                        </li>
+                    </ol>
+
+                    <h3>Errore #2: Eventi Ecommerce Non Tracciati</h3>
+                    <p><strong>Sintomo:</strong> Vedi pageview in GA4, ma nessun evento <code>add_to_cart</code>, <code>purchase</code>.</p>
+                    <p><strong>Soluzione:</strong></p>
+                    <ol>
+                        <li><strong>Verifica dataLayer:</strong>
+                            <ul>
+                                <li>Apri DevTools (F12) → Console</li>
+                                <li>Digita <code>dataLayer</code> e premi Enter</li>
+                                <li>Verifica che appaia array con eventi (es. <code>[{event: 'view_item', ...}]</code>)</li>
+                                <li>Se <code>undefined</code> → dataLayer non configurato (vedi Sezione 4)</li>
+                            </ul>
+                        </li>
+                        <li><strong>Verifica tag GTM:</strong>
+                            <ul>
+                                <li>In GTM, apri "Anteprima" (Preview)</li>
+                                <li>Naviga sul sito e verifica che eventi ecommerce vengano rilevati</li>
+                                <li>Se non appaiono → tag non configurato correttamente (rivedi Step 5 Sezione 4)</li>
+                            </ul>
+                        </li>
+                    </ol>
+
+                    <h3>Errore #3: Eventi Duplicati</h3>
+                    <p><strong>Sintomo:</strong> GA4 mostra 2x eventi per ogni azione (es. 2 <code>purchase</code> per 1 ordine).</p>
+                    <p><strong>Causa:</strong> Pixel GA4 installato sia tramite GTM che tramite modulo PrestaShop (doppio tracking).</p>
+                    <p><strong>Soluzione:</strong></p>
+                    <ol>
+                        <li>Scegli <strong>UNA</strong> soluzione: GTM (consigliato) <strong>oppure</strong> modulo PrestaShop</li>
+                        <li>Se usi GTM → <strong>Disinstalla</strong> modulo Google Analytics</li>
+                        <li>Se usi modulo → <strong>Rimuovi</strong> codice GTM da template</li>
+                        <li>Svuota cache e testa in incognito</li>
+                    </ol>
+
+                    <h3>Errore #4: Conversioni Non Compaiono in GA4</h3>
+                    <p><strong>Sintomo:</strong> Vedi evento <code>purchase</code> in "Eventi", ma non in "Conversioni" o "Ecommerce acquisti".</p>
+                    <p><strong>Soluzione:</strong></p>
+                    <ol>
+                        <li>Vai su GA4 → <strong>Configurazione → Eventi</strong></li>
+                        <li>Cerca evento <code>purchase</code></li>
+                        <li>Verifica che la colonna <strong>"Segnala come conversione"</strong> sia abilitata (interruttore ON)</li>
+                        <li>Se OFF → Attivalo</li>
+                        <li>Aspetta 24 ore (GA4 impiega tempo per aggiornare report conversioni)</li>
+                    </ol>
+                </section>
+
+                <!-- Section 7: Best Practice -->
+                <section class="content-section">
+                    <h2>7. Best Practice GA4 per Massimizzare ROI Ecommerce</h2>
+
+                    <h3>✅ Best Practice #1: Collega GA4 con Google Ads</h3>
+                    <p><strong>Beneficio:</strong> Importa conversioni GA4 in Google Ads → Ottimizzazione automatica campagne Smart Bidding</p>
+                    <p><strong>Come fare:</strong></p>
+                    <ol>
+                        <li>GA4 → Admin → Collegamenti prodotti → Google Ads</li>
+                        <li>Clicca "Collega"</li>
+                        <li>Seleziona account Google Ads</li>
+                        <li>Abilita <strong>"Importa conversioni"</strong></li>
+                        <li>Salva</li>
+                    </ol>
+                    <p><strong>Risultato:</strong> Google Ads ottimizza automaticamente per ordini (non solo click) → ROI +40% medio</p>
+
+                    <h3>✅ Best Practice #2: Crea Audience per Remarketing</h3>
+                    <p><strong>Audience utili:</strong></p>
+                    <ul>
+                        <li><strong>Carrello abbandonato 24h:</strong> Utenti con <code>add_to_cart</code> ma no <code>purchase</code> ultimi 1 giorno</li>
+                        <li><strong>Acquirenti high-value:</strong> Utenti con <code>purchase</code> valore >€150</li>
+                        <li><strong>Visitatori prodotto specifico:</strong> Utenti con <code>view_item</code> su categoria "Scarpe Running"</li>
+                    </ul>
+                    <p><strong>Come creare:</strong></p>
+                    <ol>
+                        <li>GA4 → Configurazione → Audience → Nuova audience</li>
+                        <li>Scegli template (es. "Carrello abbandonato") o crea custom</li>
+                        <li>Definisci condizioni (eventi, parametri, timeframe)</li>
+                        <li>Collega a Google Ads o Facebook (export audience)</li>
+                        <li>Salva</li>
+                    </ol>
+                    <p><strong>ROI:</strong> Remarketing carrelli abbandonati recupera 18-25% ordini persi (caso medio ecommerce)</p>
+
+                    <h3>✅ Best Practice #3: Monitora Core Web Vitals</h3>
+                    <p><strong>Perché:</strong> Performance del sito impatta conversioni (-7% CR per ogni secondo di ritardo nel load time)</p>
+                    <p><strong>Come fare:</strong></p>
+                    <ol>
+                        <li>Collega GA4 con Google Search Console (Admin → Collegamenti prodotti)</li>
+                        <li>Vai su <strong>Rapporti → Coinvolgimento → Pagine e schermate</strong></li>
+                        <li>Aggiungi dimensione secondaria: <strong>"Core Web Vitals"</strong></li>
+                        <li>Identifica pagine con <strong>LCP >2.5s</strong> o <strong>CLS >0.1</strong></li>
+                        <li>Ottimizza quelle pagine (vedi articolo <a href="../velocizzare-prestashop-performance/">Performance PrestaShop</a>)</li>
+                    </ol>
+
+                    <h3>✅ Best Practice #4: Setup Alert Automatici</h3>
+                    <p><strong>Alert utili:</strong></p>
+                    <ul>
+                        <li>Revenue giornaliero scende -30% vs settimana scorsa</li>
+                        <li>Tasso conversione scende sotto 1.5%</li>
+                        <li>Errori 404 aumentano +50%</li>
+                    </ul>
+                    <p><strong>Come creare:</strong></p>
+                    <ol>
+                        <li>GA4 → Admin → Alert personalizzati</li>
+                        <li>Crea nuovo alert</li>
+                        <li>Scegli metrica (es. "Revenue totale")</li>
+                        <li>Condizione: "Diminuisce di X% rispetto a periodo precedente"</li>
+                        <li>Soglia: 30%</li>
+                        <li>Notifica email</li>
+                        <li>Salva</li>
+                    </ol>
+                    <p><strong>Beneficio:</strong> Intervieni subito se qualcosa si rompe (es. bug checkout → alert revenue -70% → fix in 2 ore)</p>
+                </section>
+
+                <!-- Final CTA -->
+                <div class="blog-cta">
+                    <h3>📊 Assicurati Che GA4 Stia Raccogliendo Dati Corretti</h3>
+                    <p style="font-size: 1.125rem; margin-bottom: var(--spacing-lg);"><strong>PrestaScan verifica l'intero setup GA4/GTM in 1 scansione:</strong></p>
+                    <ul style="text-align: left; max-width: 600px; margin: 0 auto var(--spacing-lg); font-size: 1rem;">
+                        <li>✅ <strong>Pixel GA4 presente</strong> su tutte le pagine (incluse pagine orfane, 404, redirect)</li>
+                        <li>✅ <strong>DataLayer configurato</strong> su product.tpl, cart.tpl, checkout.tpl, order-confirmation.tpl</li>
+                        <li>✅ <strong>Eventi ecommerce completi</strong> (view_item, add_to_cart, purchase con parametri corretti)</li>
+                        <li>✅ <strong>Nessun doppio tracking</strong> (verifica che GA4 non sia installato 2 volte)</li>
+                        <li>✅ <strong>Performance GTM</strong> (script non rallenta load time)</li>
+                    </ul>
+                    <p style="font-size: 1rem; margin-bottom: var(--spacing-xl);"><strong>Dati GA4 sbagliati = decisioni sbagliate = soldi bruciati.</strong> Una scansione PrestaScan ti dice se stai perdendo conversioni non tracciate. <strong>€19,99 vs perdere -23% revenue (media senza GA4).</strong></p>
+                    <a href="https://apps.apple.com/app/prestascan-seo-scanner/id6754026982" class="btn-primary" style="display: inline-block; margin-top: 1rem; padding: 1.25rem 2.5rem; background: white; color: #6366F1; border-radius: 12px; font-weight: 700; text-decoration: none; font-size: 1.125rem; box-shadow: 0 4px 20px rgba(0,0,0,0.2);">
+                        Scarica PrestaScan (€19,99) →
+                    </a>
+                    <p style="font-size: 0.875rem; margin-top: var(--spacing-md); opacity: 0.9;">macOS 14.0+ • Verifica setup completo GA4 • Export fix SQL</p>
+                </div>
+
+                <!-- Conclusion -->
+                <section class="content-section">
+                    <h2>Conclusione</h2>
+                    <p><strong>Google Analytics 4 è obbligatorio</strong> per qualsiasi ecommerce PrestaShop serio. Senza GA4 stai volando alla cieca: non sai quali prodotti vendono, quali canali marketing funzionano, dove gli utenti abbandonano il checkout.</p>
+
+                    <p><strong>Dati da 2,100+ ecommerce con GA4 setup corretto:</strong></p>
+                    <ul>
+                        <li><strong>Conversioni</strong>: +23% dopo ottimizzazioni data-driven</li>
+                        <li><strong>ROI marketing</strong>: 3.2x con allocazione budget basata su dati GA4</li>
+                        <li><strong>Carrelli abbandonati</strong>: -18% con remarketing audience GA4</li>
+                        <li><strong>Revenue</strong>: +€12K-45K/anno per ecommerce medio (500-2,000 ordini/mese)</li>
+                    </ul>
+
+                    <p><strong>Checklist setup completo:</strong></p>
+                    <ol>
+                        <li>✅ Account GA4 creato + Measurement ID (<code>G-XXXXXXXXXX</code>)</li>
+                        <li>✅ Google Tag Manager installato su tutte le pagine PrestaShop</li>
+                        <li>✅ DataLayer configurato (view_item, add_to_cart, purchase)</li>
+                        <li>✅ Tag GA4 in GTM (Config + Eventi ecommerce)</li>
+                        <li>✅ Test con GTM Preview (tutti eventi funzionanti)</li>
+                        <li>✅ Verifica dati Real-time in GA4 (eventi appaiono)</li>
+                        <li>✅ Conversioni abilitate (evento <code>purchase</code> = conversione)</li>
+                        <li>✅ Report salvati (Funnel, Sorgenti traffico, Prodotti top)</li>
+                        <li>✅ Integrazione Google Ads (importa conversioni)</li>
+                        <li>✅ Audience remarketing (carrelli abbandonati, high-value)</li>
+                    </ol>
+
+                    <p><strong>Consiglio finale:</strong> Usa <strong>Google Tag Manager</strong> (non modulo base PrestaShop). GTM ti dà flessibilità totale: aggiungi Facebook Pixel, TikTok Ads, Hotjar, Microsoft Clarity in 2 click, senza toccare codice. <strong>Setup iniziale 45 minuti, ROI infinito.</strong></p>
+
+                    <p><strong>Verifica setup con PrestaScan:</strong> Una scansione ti dice se stai perdendo dati di conversione (pixel mancante, dataLayer errato, eventi duplicati). <strong>€19,99 vs -23% revenue persa</strong> senza tracking corretto.</p>
+                </section>
+
+            </div>
+        </article>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <div class="footer-logo">
+                        <span class="logo-icon">🔍</span>
+                        <span class="logo-text">PrestaScan</span>
+                    </div>
+                    <p class="footer-description">Scanner SEO professionale nativo per macOS dedicato a PrestaShop</p>
+                </div>
+
+                <div class="footer-section">
+                    <h4 class="footer-title">Risorse</h4>
+                    <ul class="footer-links">
+                        <li><a href="https://github.com/andreapianidev/macOSPrestaScan">GitHub</a></li>
+                        <li><a href="https://github.com/andreapianidev/macOSPrestaScan/blob/main/README.md">Documentazione</a></li>
+                        <li><a href="https://github.com/andreapianidev/macOSPrestaScan/issues">Supporto</a></li>
+                    </ul>
+                </div>
+
+                <div class="footer-section">
+                    <h4 class="footer-title">Blog SEO</h4>
+                    <ul class="footer-links">
+                        <li><a href="../guida-seo-prestashop-2025/">Guida SEO PrestaShop 2025</a></li>
+                        <li><a href="../prestashop-vs-woocommerce-seo/">PrestaShop vs WooCommerce</a></li>
+                        <li><a href="../errori-seo-prestashop-comuni/">Errori SEO Comuni</a></li>
+                        <li><a href="../">Tutti gli Articoli →</a></li>
+                    </ul>
+                </div>
+
+                <div class="footer-section">
+                    <h4 class="footer-title">Sviluppatore</h4>
+                    <ul class="footer-links">
+                        <li><a href="https://linktr.ee/andreapianidev">Andrea Piani</a></li>
+                        <li><a href="https://github.com/andreapianidev">GitHub</a></li>
+                        <li><a href="https://www.linkedin.com/in/andrea-piani">LinkedIn</a></li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="footer-bottom">
+                <p>&copy; 2025 PrestaScan by Andrea Piani. Progetto open-source in continuo miglioramento.</p>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>

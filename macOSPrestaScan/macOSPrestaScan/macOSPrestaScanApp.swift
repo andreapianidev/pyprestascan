@@ -6,27 +6,45 @@
 //
 
 import SwiftUI
-import SwiftData
 
 @main
 struct macOSPrestaScanApp: App {
-    var sharedModelContainer: ModelContainer = {
-        let schema = Schema([
-            Item.self,
-        ])
-        let modelConfiguration = ModelConfiguration(schema: schema, isStoredInMemoryOnly: false)
-
-        do {
-            return try ModelContainer(for: schema, configurations: [modelConfiguration])
-        } catch {
-            fatalError("Could not create ModelContainer: \(error)")
+    @StateObject private var scanManager = ScanManager()
+    // @StateObject private var updaterViewModel = UpdaterViewModel()
+    
+    init() {
+        // Request notification permissions on app launch
+        Task {
+            await NotificationManager.shared.requestAuthorization()
         }
-    }()
-
+    }
+    
     var body: some Scene {
         WindowGroup {
             ContentView()
+                .environmentObject(scanManager)
+                .onAppear {
+                    // Check notification status on appear
+                    NotificationManager.shared.checkAuthorizationStatus()
+                    
+                    // App a pagamento: nessuna modalità test
+                }
+                .frame(minWidth: 1200, minHeight: 800)
         }
-        .modelContainer(sharedModelContainer)
+        .windowStyle(.hiddenTitleBar)
+        .defaultSize(width: 1400, height: 900)
+        .commands {
+            CommandGroup(replacing: .newItem) {}
+            
+            // Check for Updates menu (disabled temporarily)
+            // CommandGroup(after: .appInfo) {
+            //     Button("Controlla Aggiornamenti...") {
+            //         updaterViewModel.checkForUpdates()
+            //     }
+            //     .disabled(!updaterViewModel.canCheckForUpdates || updaterViewModel.isCheckingForUpdates)
+            //     
+            //     Divider()
+            // }
+        }
     }
 }

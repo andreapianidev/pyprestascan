@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
+
+  <!-- Homepage -->
+  <url>
+    <loc>https://pyprestascanmacos.andreapiani.com/</loc>
+    <lastmod>2025-01-15</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
+
+    <!-- Image annotations for Google Images SEO -->
+    <image:image>
+      <image:loc>https://pyprestascanmacos.andreapiani.com/images/1.png</image:loc>
+      <image:title>PrestaScan macOS Dashboard - Analisi SEO PrestaShop</image:title>
+      <image:caption>Dashboard principale con score SEO 94/100, KPI real-time, analisi issues</image:caption>
+    </image:image>
+
+    <image:image>
+      <image:loc>https://pyprestascanmacos.andreapiani.com/images/2.png</image:loc>
+      <image:title>PrestaScan Configurazione Progetto PrestaShop</image:title>
+      <image:caption>Setup rapido con preset intelligenti e parametri avanzati</image:caption>
+    </image:image>
+
+    <image:image>
+      <image:loc>https://pyprestascanmacos.andreapiani.com/images/3.png</image:loc>
+      <image:title>PrestaScan Risultati Analisi SEO</image:title>
+      <image:caption>Tabella issues con filtri severity CRITICAL/WARNING/INFO</image:caption>
+    </image:image>
+
+    <image:image>
+      <image:loc>https://pyprestascanmacos.andreapiani.com/images/4.png</image:loc>
+      <image:title>PrestaScan AI Fix Generator</image:title>
+      <image:caption>Meta description generate da AI con confidence scoring</image:caption>
+    </image:image>
+
+    <image:image>
+      <image:loc>https://pyprestascanmacos.andreapiani.com/images/5.png</image:loc>
+      <image:title>PrestaScan Applica Fix API PrestaShop</image:title>
+      <image:caption>Integrazione API diretta con backup e rollback automatico</image:caption>
+    </image:image>
+  </url>
+
+  <!-- Blog Articles -->
+  <url>
+    <loc>https://pyprestascanmacos.andreapiani.com/blog/guida-seo-prestashop-2025/</loc>
+    <lastmod>2025-01-15</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <url>
+    <loc>https://pyprestascanmacos.andreapiani.com/blog/prestashop-vs-woocommerce-seo/</loc>
+    <lastmod>2025-01-15</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <url>
+    <loc>https://pyprestascanmacos.andreapiani.com/blog/errori-seo-prestashop-comuni/</loc>
+    <lastmod>2025-01-15</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <url>
+    <loc>https://pyprestascanmacos.andreapiani.com/blog/generare-meta-description-ai/</loc>
+    <lastmod>2025-01-15</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <url>
+    <loc>https://pyprestascanmacos.andreapiani.com/blog/alternative-screaming-frog/</loc>
+    <lastmod>2025-01-15</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <url>
+    <loc>https://pyprestascanmacos.andreapiani.com/blog/moduli-seo-prestashop-migliori/</loc>
+    <lastmod>2025-01-15</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <url>
+    <loc>https://pyprestascanmacos.andreapiani.com/blog/prestashop-seo-checklist-completa/</loc>
+    <lastmod>2025-01-15</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <url>
+    <loc>https://pyprestascanmacos.andreapiani.com/blog/velocizzare-prestashop-performance/</loc>
+    <lastmod>2025-01-15</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <url>
+    <loc>https://pyprestascanmacos.andreapiani.com/blog/prestashop-friendly-url-guida/</loc>
+    <lastmod>2025-01-15</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <url>
+    <loc>https://pyprestascanmacos.andreapiani.com/blog/google-analytics-4-prestashop/</loc>
+    <lastmod>2025-01-15</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+</urlset>
