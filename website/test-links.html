@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Links - PyPrestaScan</title>
+    <style>
+        body {
+            font-family: system-ui, -apple-system, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        h1 { color: #2c3e50; }
+        h2 {
+            color: #34495e;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 10px;
+            margin-top: 30px;
+        }
+        .test-section {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+        .link-test {
+            display: inline-block;
+            margin: 5px;
+            padding: 8px 15px;
+            background: #3498db;
+            color: white;
+            text-decoration: none;
+            border-radius: 4px;
+            transition: background 0.3s;
+        }
+        .link-test:hover {
+            background: #2980b9;
+        }
+        .success { color: #27ae60; }
+        .error { color: #e74c3c; }
+        .info {
+            background: #ecf0f1;
+            padding: 15px;
+            border-left: 4px solid #3498db;
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+    <h1>🔗 Test Navigazione PyPrestaScan Website</h1>
+
+    <div class="info">
+        <strong>📝 Nota:</strong> Questa pagina serve per testare che tutti i link del sito funzionino correttamente.
+        Clicca su ogni link per verificare che porti alla pagina corretta.
+    </div>
+
+    <h2>1. Homepage → Blog</h2>
+    <div class="test-section">
+        <p>Dalla homepage, il link al blog deve funzionare:</p>
+        <a href="blog/" class="link-test">Blog (da homepage)</a>
+    </div>
+
+    <h2>2. Blog Index → Articoli</h2>
+    <div class="test-section">
+        <p>Dal blog index, tutti gli articoli devono aprirsi correttamente:</p>
+        <a href="blog/guida-seo-prestashop-2025/index.html" class="link-test">Guida SEO 2025</a>
+        <a href="blog/prestashop-vs-woocommerce-seo/index.html" class="link-test">PrestaShop vs WooCommerce</a>
+        <a href="blog/errori-seo-prestashop-comuni/index.html" class="link-test">Errori SEO Comuni</a>
+        <a href="blog/generare-meta-description-ai/index.html" class="link-test">Meta Description AI</a>
+        <a href="blog/alternative-screaming-frog/index.html" class="link-test">Alternative Screaming Frog</a>
+    </div>
+
+    <h2>3. Articolo → Homepage</h2>
+    <div class="test-section">
+        <p>Da un articolo, deve essere possibile tornare alla homepage:</p>
+        <p><em>Apri un articolo e verifica che il link "Home" nel menu funzioni (../../)</em></p>
+    </div>
+
+    <h2>4. Articolo → Blog Index</h2>
+    <div class="test-section">
+        <p>Da un articolo, deve essere possibile tornare al blog index:</p>
+        <p><em>Apri un articolo e verifica che il link "Blog" nel menu funzioni (../)</em></p>
+    </div>
+
+    <h2>5. Articolo → Sezioni Homepage</h2>
+    <div class="test-section">
+        <p>Da un articolo, i link alle sezioni della homepage devono funzionare:</p>
+        <p><em>Apri un articolo e verifica questi link nel menu:</em></p>
+        <ul>
+            <li>Funzionalità (../../#features)</li>
+            <li>Installazione (../../#installation)</li>
+            <li>Documentazione (../../#docs)</li>
+        </ul>
+    </div>
+
+    <h2>6. Articolo → Altri Articoli (Related)</h2>
+    <div class="test-section">
+        <p>Dalla sezione "Articoli Correlati" di un articolo, deve essere possibile navigare ad altri articoli:</p>
+        <p><em>Apri un articolo e verifica che i link nella sezione "Articoli Correlati" funzionino (../altro-articolo/)</em></p>
+    </div>
+
+    <h2>✅ Checklist Verifica</h2>
+    <div class="test-section">
+        <h3>Blog Index (blog/index.html)</h3>
+        <ul>
+            <li>☐ Link "Home" → torna alla homepage</li>
+            <li>☐ Link articoli → aprono gli articoli (non Finder)</li>
+            <li>☐ Link sezioni (#features, #installation, #docs) → vanno alle sezioni homepage</li>
+        </ul>
+
+        <h3>Articoli (blog/articolo/index.html)</h3>
+        <ul>
+            <li>☐ Link "Home" nel menu → torna alla homepage</li>
+            <li>☐ Link "Blog" nel menu → torna al blog index</li>
+            <li>☐ Breadcrumbs funzionanti (Home › Blog › Articolo)</li>
+            <li>☐ Link sezioni homepage funzionanti</li>
+            <li>☐ Articoli correlati → aprono altri articoli</li>
+            <li>☐ CTA "Installa PyPrestaScan" → va a sezione installazione</li>
+        </ul>
+    </div>
+
+    <h2>📊 Report Navigazione</h2>
+    <div class="test-section">
+        <p class="success"><strong>✅ Links Corretti:</strong></p>
+        <ul>
+            <li>Homepage → Blog: <code>blog/</code></li>
+            <li>Blog → Homepage: <code>../</code></li>
+            <li>Blog → Articolo: <code>articolo/index.html</code></li>
+            <li>Articolo → Homepage: <code>../../</code></li>
+            <li>Articolo → Blog: <code>../</code></li>
+            <li>Articolo → Sezioni: <code>../../#section</code></li>
+            <li>Articolo → Altri articoli: <code>../altro-articolo/</code></li>
+        </ul>
+
+        <p class="error"><strong>❌ Pattern da Evitare:</strong></p>
+        <ul>
+            <li><s>./articolo/</s> - Apre Finder su macOS</li>
+            <li><s>/blog/</s> - Path assoluto, non funziona in locale</li>
+            <li><s>/#features</s> - Path assoluto per anchor</li>
+        </ul>
+    </div>
+
+    <div class="info">
+        <strong>✅ Risultato:</strong> Tutti i link sono stati corretti e utilizzano path relativi appropriati.
+        La navigazione funziona correttamente sia in locale che su server web.
+    </div>
+</body>
+</html>

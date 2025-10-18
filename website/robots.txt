@@ -1,13 +1,18 @@
 # robots.txt for PyPrestaScan Website
+# Scanner SEO Open Source per PrestaShop
 
 User-agent: *
 Allow: /
+Allow: /blog/
 
 # Sitemap
-Sitemap: https://github.com/andreapianidev/pyprestascan/sitemap.xml
+Sitemap: https://pyprestascan.andreapiani.com/sitemap.xml
 
 # Crawl-delay (optional, in seconds)
 Crawl-delay: 1
+
+# Host directive (for Yandex)
+Host: https://pyprestascan.andreapiani.com
 
 # Specific rules for common bots
 User-agent: Googlebot

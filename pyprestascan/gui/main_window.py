@@ -931,7 +931,7 @@ class MainWindow(QMainWindow):
 
         self.stop_btn = QPushButton(self.translation_manager.t("btn_stop_scan"))
         self.stop_btn.setStyleSheet("QPushButton { background-color: #f44336; color: white; font-weight: bold; padding: 10px; }")
-        self.stop_btn.setEnabled(False)
+        self.stop_btn.setVisible(False)  # Nascosto di default
         self.stop_btn.clicked.connect(self._stop_crawl)
         button_layout.addWidget(self.stop_btn)
         
@@ -1921,10 +1921,10 @@ class MainWindow(QMainWindow):
     
     def _update_crawling_ui(self, is_crawling: bool):
         """Aggiorna UI per stato crawling"""
-        # Bottoni
-        self.start_btn.setEnabled(not is_crawling)
-        self.stop_btn.setEnabled(is_crawling)
-        
+        # Bottoni - mostra/nascondi in base allo stato
+        self.start_btn.setVisible(not is_crawling)
+        self.stop_btn.setVisible(is_crawling)
+
         # Status bar
         if is_crawling:
             self.status_bar.showMessage("🔍 Scansione in corso...")
