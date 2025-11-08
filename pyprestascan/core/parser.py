@@ -25,12 +25,15 @@ class ParsedData:
 
 class SEOParser:
     """Parser SEO con euristiche specifiche PrestaShop"""
-    
-    def __init__(self, url_normalizer: URLNormalizer, prestashop_mode: bool = True):
+
+    def __init__(self, url_normalizer: URLNormalizer, prestashop_mode: bool = True, logger=None):
         self.url_normalizer = url_normalizer
         self.prestashop_mode = prestashop_mode
         self.ps_detector = PrestaShopDetector()
         self.text_analyzer = TextAnalyzer()
+
+        # Logger opzionale per debugging
+        self.logger = logger
     
     def parse(self, response: FetchResponse, depth: int = 0) -> ParsedData:
         """Parse completo di una response HTTP"""
@@ -87,25 +90,34 @@ class SEOParser:
         try:
             # Parse HTML
             tree = HTMLParser(response.text)
-            
+
             # Estrazione dati base
             page_data = self._extract_basic_seo(tree, page_data, response.url)
-            
+
             # Estrazione links e immagini
             internal_links, page_data = self._extract_links(tree, page_data, response.url)
             images, page_data = self._extract_images(tree, page_data, response.url)
-            
+
             # Rilevamento tipo pagina PrestaShop
             if self.prestashop_mode:
                 page_data = self._detect_prestashop_features(tree, page_data, response.text)
-            
+
             # Hash contenuto per duplicati
             visible_text = self.text_analyzer.extract_visible_text(response.text)
             page_data.content_hash = self.text_analyzer.calculate_content_hash(visible_text)
-            
+
         except Exception as e:
-            # In caso di errore parsing, mantieni dati base
-            pass
+            # In caso di errore parsing, mantieni dati base e logga errore
+            error_msg = f"❌ Errore parsing HTML per {response.url}: {e.__class__.__name__}: {e}"
+            if self.logger:
+                self.logger.error(error_msg)
+                self.logger.debug(f"Stack trace completo:")
+                import traceback
+                self.logger.debug(traceback.format_exc())
+            else:
+                # Fallback a print se logger non disponibile
+                import sys
+                print(error_msg, file=sys.stderr)
         
         return ParsedData(page=page_data, images=images, links=internal_links)
     

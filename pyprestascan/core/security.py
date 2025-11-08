@@ -3,7 +3,7 @@ Security validation per enterprise-grade protection
 """
 import ipaddress
 from urllib.parse import urlparse
-from typing import Optional, Set
+from typing import Optional, Set, Tuple
 import re
 
 
@@ -71,7 +71,7 @@ class SecurityValidator:
         self.allow_localhost = allow_localhost
         self.allow_private_ips = allow_private_ips
 
-    def validate_url(self, url: str) -> tuple[bool, Optional[str]]:
+    def validate_url(self, url: str) -> Tuple[bool, Optional[str]]:
         """
         Valida URL per security issues
 

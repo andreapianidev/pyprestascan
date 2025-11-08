@@ -12,6 +12,7 @@ import httpx
 from aiolimiter import AsyncLimiter
 
 from ..core.utils import RichLogger
+from ..core.security import SecurityValidator
 
 
 @dataclass
@@ -46,8 +47,10 @@ class HttpFetcher:
                  timeout: int = 15,
                  user_agent: Optional[str] = None,
                  auth: Optional[Tuple[str, str]] = None,
-                 logger: Optional[RichLogger] = None):
-        
+                 logger: Optional[RichLogger] = None,
+                 allow_localhost: bool = False,
+                 allow_private_ips: bool = False):
+
         self.concurrency = concurrency
         self.delay_ms = delay_ms
         self.timeout = timeout
@@ -61,26 +64,33 @@ class HttpFetcher:
         self.user_agent = user_agent
         self.auth = auth
         self.logger = logger or RichLogger()
-        
+
+        # Security validator per protezione SSRF
+        self.security_validator = SecurityValidator(
+            allow_localhost=allow_localhost,
+            allow_private_ips=allow_private_ips
+        )
+
         # Rate limiter globale
         self.limiter = AsyncLimiter(max_rate=concurrency, time_period=1.0)
-        
+
         # Semaforo per limitare richieste concurrent
         self.semaphore = asyncio.Semaphore(concurrency)
-        
+
         # Cache robots.txt per dominio (stored as boolean for now without reppy)
         self.robots_cache: Dict[str, bool] = {}
-        
+
         # Client HTTP
         self.client: Optional[httpx.AsyncClient] = None
-        
+
         # Statistiche
         self.stats = {
             'requests_made': 0,
             'requests_failed': 0,
             'bytes_downloaded': 0,
             'robots_checks': 0,
-            'robots_denied': 0
+            'robots_denied': 0,
+            'security_blocked': 0
         }
     
     async def __aenter__(self):
@@ -121,53 +131,72 @@ class HttpFetcher:
                         f"MB scaricati: {self.stats['bytes_downloaded'] / 1024 / 1024:.1f}")
     
     async def _get_robots_txt(self, domain: str):
-        """Recupera e caching robots.txt per dominio"""
+        """
+        Recupera e caching robots.txt per dominio
+
+        NOTA: Attualmente implementa solo il fetch di robots.txt ma NON il parsing.
+        Assume sempre permissivo. Per implementazione completa, usare libreria 'reppy' o 'robotexclusionrulesparser'.
+        """
         if domain in self.robots_cache:
             return self.robots_cache[domain]
-        
+
         robots_url = f"https://{domain}/robots.txt"
-        
+
         try:
             response = await self.client.get(robots_url)
             self.stats['requests_made'] += 1
-            
+
             if response.status_code == 200:
-                # Simuliamo robots permissivo per ora (senza reppy)
-                self.logger.robots_ok(f"robots.txt trovato per {domain}")
+                # TODO: Implementare parsing robots.txt con libreria dedicata (es. reppy)
+                # Per ora assumiamo permissivo - non rispettiamo le regole robots.txt!
+                self.logger.debug(f"📥 robots.txt trovato per {domain} (parsing non implementato - assume permissivo)")
             else:
                 self.logger.debug(f"📥 robots.txt non trovato per {domain}, assumo permissivo")
-            
+
             # Memorizza come permissivo
             self.robots_cache[domain] = True
             return True
-            
+
         except Exception as e:
             # In caso di errore, assumo permissivo
-            self.logger.debug(f"⚠️ Errore caricamento robots.txt per {domain}: {e}")
+            self.logger.debug(f"⚠️ Errore caricamento robots.txt per {domain}: {e}, assumo permissivo")
             self.robots_cache[domain] = True
             return True
     
     async def check_robots_allowed(self, url: str) -> RobotsInfo:
-        """Verifica se URL è permesso da robots.txt"""
+        """
+        Verifica se URL è permesso da robots.txt
+
+        IMPORTANTE: Attualmente ritorna sempre allowed=True poiché il parsing
+        delle regole robots.txt non è implementato. Questo significa che il crawler
+        NON rispetta le restrizioni robots.txt.
+
+        Per rispettare robots.txt, implementare parsing con libreria dedicata
+        come 'reppy' o 'robotexclusionrulesparser'.
+
+        Returns:
+            RobotsInfo con allowed=True (sempre permissivo per ora)
+        """
         parsed = urlparse(url)
         domain = parsed.netloc.lower()
-        
+
         robots_ok = await self._get_robots_txt(domain)
         self.stats['robots_checks'] += 1
-        
-        # Per ora assumiamo sempre permesso (senza parsing robots.txt completo)
-        allowed = True  
-        
-        if not allowed:
+
+        # NOTA: Assumiamo sempre permesso poiché parsing robots.txt non implementato
+        # TODO: Implementare parsing reale delle regole robots.txt
+        allowed = True
+
+        if not allowed:  # Attualmente mai eseguito
             self.stats['robots_denied'] += 1
             self.logger.robots_deny(url)
-        
-        # Default crawl delay
+
+        # Default crawl delay (non estratto da robots.txt)
         crawl_delay = None
-        
-        # Nessuna sitemap per ora
+
+        # Nessuna sitemap estratta da robots.txt
         sitemaps = []
-        
+
         return RobotsInfo(
             allowed=allowed,
             crawl_delay=crawl_delay,
@@ -281,10 +310,28 @@ class HttpFetcher:
         )
     
     async def fetch(self, url: str, check_robots: bool = True) -> FetchResponse:
-        """Fetch singolo URL con controlli robots.txt"""
+        """Fetch singolo URL con controlli robots.txt e security validation"""
         if not self.client:
             await self.start()
-        
+
+        # Security validation (SSRF protection)
+        is_valid, security_error = self.security_validator.validate_url(url)
+        if not is_valid:
+            self.stats['security_blocked'] += 1
+            self.logger.warning(f"🔒 URL bloccato per sicurezza: {url} - {security_error}")
+            return FetchResponse(
+                url=url,
+                status_code=403,
+                headers={},
+                content=b'',
+                text='',
+                content_type='',
+                content_length=0,
+                ttfb_ms=0,
+                total_time_ms=0,
+                error=f"Security: {security_error}"
+            )
+
         # Controllo robots.txt
         robots_info = None
         if check_robots:

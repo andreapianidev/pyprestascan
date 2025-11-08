@@ -438,10 +438,12 @@ class CrawlDatabase:
             except Exception as e:
                 # Log errore database per debugging
                 import traceback
-                error_msg = f"Errore salvando pagina {page.url}: {e}"
-                if hasattr(self, 'logger'):
-                    self.logger.error(error_msg)
-                    self.logger.debug(traceback.format_exc())
+                import logging
+                logger = logging.getLogger(__name__)
+                error_msg = f"❌ Errore salvando pagina {page.url}: {e}"
+                logger.error(error_msg)
+                logger.debug(f"Stack trace: {traceback.format_exc()}")
+                # Re-raise per permettere al chiamante di gestire
                 raise
             await db.commit()
     

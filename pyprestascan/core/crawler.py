@@ -99,12 +99,12 @@ class PyPrestaScanner:
         # Componenti
         self.project_manager = ProjectManager(config.project)
         self.url_normalizer = URLNormalizer(
-            urlparse(str(config.url)).netloc, 
+            urlparse(str(config.url)).netloc,
             config.include_subdomains
         )
         self.db = CrawlDatabase(self.project_manager.get_db_path())
         self.fetcher: Optional[HttpFetcher] = None
-        self.parser = SEOParser(self.url_normalizer, config.prestashop_mode)
+        self.parser = SEOParser(self.url_normalizer, config.prestashop_mode, logger=self.logger)
         self.analyzer = SEORuleEngine(config.prestashop_mode)
         self.duplicate_detector = DuplicateDetector()
         
